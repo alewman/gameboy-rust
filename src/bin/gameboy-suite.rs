@@ -393,7 +393,7 @@ fn cgb_pictures(args: &[String]) {
 fn pictures() {
     let g = gbtr();
     let shades = |gb: &GameBoy| -> Vec<u8> { gb.hw.ppu.frame.iter().map(|&v| v as u8).collect() };
-    let report =|name: &str, bad: usize| println!("{name}: {bad} pixels differ");
+    let report = |name: &str, bad: usize| println!("{name}: {bad} pixels differ");
     // dmg-acid2 from skip-boot, 30 frames
     let mut gb = board(&g.join("dmg-acid2/dmg-acid2.gb"), DMG_B, None);
     gb.run_frames(30, 50_000_000);

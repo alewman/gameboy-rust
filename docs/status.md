@@ -11,6 +11,7 @@ its interpreter is `external/venv` (PyPy 3.11 with sm83-python `95f2b8b` and gb-
 | --- | --- | --- |
 | 1 | blargg `cpu_instrs` 01-11 pass natively (and the combined ROM, 3,191 frames) | see below |
 | 2 | Lockstep gate built: 36 of 36 cases identical (23 test-ROM cases incl. real DMG and CGB boot, 13 commercial dumps on DMG and CGB, 1,200-1,800 slices each, with `scripts/inputs/poke.txt`), APU register values included | `python3 scripts/lockstep.py --reference-cache external/refcache` |
+| 3 | Mealybug DMG 24 of 24 pixel-exact; CGB-D 20 of 21 exact, the 21st (`m3_lcdc_obj_size_change_scx`, 15 pixels: the reference's documented photo match) differing by the same 15 pixels on the reference; cgb-acid-hell, cgb-acid2, dmg-acid2, halt_bug, strikethrough exact. Gambatte: DMG-08 1,695 of 1,784, the pass list reproduced exactly (skip-boot and real boot); CGB-04c 2,867 of 3,221 from skip-boot = the list's 2,864 plus 3 the list is stale on (the reference at the pin passes them too: `enable_display/frame1_m2stat_count_ds_2`, `lcd_offset/offset1_lyc99int_m2stat_count_ds_2`, `ly0/lycint152_ly0stat_ds_3`). Lockstep: `cases-rung3.tsv` 229 of 229 identical (all Mealybug DMG and CGB-D from the real boot ROMs, acid pictures, every 20th/30th Gambatte listed ROM) | `gameboy-suite pictures`, `gameboy-suite mealybug-dmg`, `gameboy-suite cgb-pictures`, `gameboy-suite gambatte [--cgb] [--skip-boot] --write F` and diff with `external/gameboy-python/tests/gambatte_*_pass.txt`; `lockstep.py --cases scripts/cases-rung3.tsv` |
 
 ```sh
 # setup (once)

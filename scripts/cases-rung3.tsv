@@ -1,0 +1,230 @@
+# name	slices	rom	arguments: rung 3 (PPU): Mealybug DMG+CGB-D from the real boot ROMs, Gambatte samples (every 20th listed DMG, every 30th CGB) from skip-boot
+mealybug-dmg/m2_win_en_toggle	420	$GBTR/mealybug-tearoom-tests/ppu/m2_win_en_toggle.gb	--boot real
+mealybug-dmg/m3_bgp_change	420	$GBTR/mealybug-tearoom-tests/ppu/m3_bgp_change.gb	--boot real
+mealybug-dmg/m3_bgp_change_sprites	420	$GBTR/mealybug-tearoom-tests/ppu/m3_bgp_change_sprites.gb	--boot real
+mealybug-dmg/m3_lcdc_bg_en_change	420	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_bg_en_change.gb	--boot real
+mealybug-dmg/m3_lcdc_bg_map_change	420	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_bg_map_change.gb	--boot real
+mealybug-dmg/m3_lcdc_obj_en_change	420	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_obj_en_change.gb	--boot real
+mealybug-dmg/m3_lcdc_obj_en_change_variant	420	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_obj_en_change_variant.gb	--boot real
+mealybug-dmg/m3_lcdc_obj_size_change	420	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_obj_size_change.gb	--boot real
+mealybug-dmg/m3_lcdc_obj_size_change_scx	420	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_obj_size_change_scx.gb	--boot real
+mealybug-dmg/m3_lcdc_tile_sel_change	420	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_tile_sel_change.gb	--boot real
+mealybug-dmg/m3_lcdc_tile_sel_win_change	420	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_tile_sel_win_change.gb	--boot real
+mealybug-dmg/m3_lcdc_win_en_change_multiple	420	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_win_en_change_multiple.gb	--boot real
+mealybug-dmg/m3_lcdc_win_en_change_multiple_wx	420	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_win_en_change_multiple_wx.gb	--boot real
+mealybug-dmg/m3_lcdc_win_map_change	420	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_win_map_change.gb	--boot real
+mealybug-dmg/m3_obp0_change	420	$GBTR/mealybug-tearoom-tests/ppu/m3_obp0_change.gb	--boot real
+mealybug-dmg/m3_scx_high_5_bits	420	$GBTR/mealybug-tearoom-tests/ppu/m3_scx_high_5_bits.gb	--boot real
+mealybug-dmg/m3_scx_low_3_bits	420	$GBTR/mealybug-tearoom-tests/ppu/m3_scx_low_3_bits.gb	--boot real
+mealybug-dmg/m3_scy_change	420	$GBTR/mealybug-tearoom-tests/ppu/m3_scy_change.gb	--boot real
+mealybug-dmg/m3_window_timing	420	$GBTR/mealybug-tearoom-tests/ppu/m3_window_timing.gb	--boot real
+mealybug-dmg/m3_window_timing_wx_0	420	$GBTR/mealybug-tearoom-tests/ppu/m3_window_timing_wx_0.gb	--boot real
+mealybug-dmg/m3_wx_4_change	420	$GBTR/mealybug-tearoom-tests/ppu/m3_wx_4_change.gb	--boot real
+mealybug-dmg/m3_wx_4_change_sprites	420	$GBTR/mealybug-tearoom-tests/ppu/m3_wx_4_change_sprites.gb	--boot real
+mealybug-dmg/m3_wx_5_change	420	$GBTR/mealybug-tearoom-tests/ppu/m3_wx_5_change.gb	--boot real
+mealybug-dmg/m3_wx_6_change	420	$GBTR/mealybug-tearoom-tests/ppu/m3_wx_6_change.gb	--boot real
+mealybug-cgb/m2_win_en_toggle	260	$GBTR/mealybug-tearoom-tests/ppu/m2_win_en_toggle.gb	--machine cgb --boot real
+mealybug-cgb/m3_bgp_change	260	$GBTR/mealybug-tearoom-tests/ppu/m3_bgp_change.gb	--machine cgb --boot real
+mealybug-cgb/m3_bgp_change_sprites	260	$GBTR/mealybug-tearoom-tests/ppu/m3_bgp_change_sprites.gb	--machine cgb --boot real
+mealybug-cgb/m3_lcdc_bg_en_change	260	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_bg_en_change.gb	--machine cgb --boot real
+mealybug-cgb/m3_lcdc_bg_map_change	260	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_bg_map_change.gb	--machine cgb --boot real
+mealybug-cgb/m3_lcdc_obj_en_change	260	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_obj_en_change.gb	--machine cgb --boot real
+mealybug-cgb/m3_lcdc_obj_en_change_variant	260	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_obj_en_change_variant.gb	--machine cgb --boot real
+mealybug-cgb/m3_lcdc_obj_size_change	260	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_obj_size_change.gb	--machine cgb --boot real
+mealybug-cgb/m3_lcdc_obj_size_change_scx	260	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_obj_size_change_scx.gb	--machine cgb --boot real
+mealybug-cgb/m3_lcdc_tile_sel_change	260	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_tile_sel_change.gb	--machine cgb --boot real
+mealybug-cgb/m3_lcdc_tile_sel_win_change	260	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_tile_sel_win_change.gb	--machine cgb --boot real
+mealybug-cgb/m3_lcdc_win_en_change_multiple	260	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_win_en_change_multiple.gb	--machine cgb --boot real
+mealybug-cgb/m3_lcdc_win_map_change	260	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_win_map_change.gb	--machine cgb --boot real
+mealybug-cgb/m3_obp0_change	260	$GBTR/mealybug-tearoom-tests/ppu/m3_obp0_change.gb	--machine cgb --boot real
+mealybug-cgb/m3_scx_high_5_bits	260	$GBTR/mealybug-tearoom-tests/ppu/m3_scx_high_5_bits.gb	--machine cgb --boot real
+mealybug-cgb/m3_scx_low_3_bits	260	$GBTR/mealybug-tearoom-tests/ppu/m3_scx_low_3_bits.gb	--machine cgb --boot real
+mealybug-cgb/m3_scy_change	260	$GBTR/mealybug-tearoom-tests/ppu/m3_scy_change.gb	--machine cgb --boot real
+mealybug-cgb/m3_window_timing	260	$GBTR/mealybug-tearoom-tests/ppu/m3_window_timing.gb	--machine cgb --boot real
+mealybug-cgb/m3_window_timing_wx_0	260	$GBTR/mealybug-tearoom-tests/ppu/m3_window_timing_wx_0.gb	--machine cgb --boot real
+mealybug-cgb/m3_wx_4_change_sprites	260	$GBTR/mealybug-tearoom-tests/ppu/m3_wx_4_change_sprites.gb	--machine cgb --boot real
+cgb-acid-hell-real	260	$GBTR/cgb-acid-hell/cgb-acid-hell.gbc	--machine cgb --boot real
+cgb-acid2-real	300	$GBTR/cgb-acid2/cgb-acid2.gbc	--machine cgb --boot real
+strikethrough	60	$GBTR/strikethrough/strikethrough.gb	
+halt_bug-600	600	$GBTR/blargg/halt_bug.gb	
+gambatte-dmg/bgtiledata/bgtiledata_spx08_1.gbc	15	$GBTR/gambatte/bgtiledata/bgtiledata_spx08_1.gbc
+gambatte-dmg/bgtilemap/bgtilemap_spx09_1.gbc	15	$GBTR/gambatte/bgtilemap/bgtilemap_spx09_1.gbc
+gambatte-dmg/dmgpalette_during_m3/dmgpalette_during_m3_scx1_1.gb	15	$GBTR/gambatte/dmgpalette_during_m3/dmgpalette_during_m3_scx1_1.gb
+gambatte-dmg/enable_display/frame0_m0irq_count_scx2_1_dmg08_cgb04c_out90.gbc	15	$GBTR/gambatte/enable_display/frame0_m0irq_count_scx2_1_dmg08_cgb04c_out90.gbc
+gambatte-dmg/enable_display/frame1_m2irq_count_1_dmg08_cgb04c_out98.gbc	15	$GBTR/gambatte/enable_display/frame1_m2irq_count_1_dmg08_cgb04c_out98.gbc
+gambatte-dmg/enable_display/ly0_late_vramr_3_dmg08_cgb04c_outFF.gbc	15	$GBTR/gambatte/enable_display/ly0_late_vramr_3_dmg08_cgb04c_outFF.gbc
+gambatte-dmg/halt/late_m0int_halt_m0stat_scx2_3b_dmg08_cgb04c_out2.gbc	15	$GBTR/gambatte/halt/late_m0int_halt_m0stat_scx2_3b_dmg08_cgb04c_out2.gbc
+gambatte-dmg/halt/late_m0irq_halt_m0stat_scx2_2a_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/halt/late_m0irq_halt_m0stat_scx2_2a_dmg08_cgb04c_out0.gbc
+gambatte-dmg/halt/m0int_m0stat_scx3_1_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/halt/m0int_m0stat_scx3_1_dmg08_cgb04c_out0.gbc
+gambatte-dmg/halt/m1int_ly_3_dmg08_cgb04c_out91.gbc	15	$GBTR/gambatte/halt/m1int_ly_3_dmg08_cgb04c_out91.gbc
+gambatte-dmg/irq_precedence/late_m0irq_vs_tima_scx2_halt_1_dmg08_cgb04c_out4.gbc	15	$GBTR/gambatte/irq_precedence/late_m0irq_vs_tima_scx2_halt_1_dmg08_cgb04c_out4.gbc
+gambatte-dmg/lcdirq_precedence/m0irq_ly00_lcdstat18_dmg08_cgb04c_out2.gbc	15	$GBTR/gambatte/lcdirq_precedence/m0irq_ly00_lcdstat18_dmg08_cgb04c_out2.gbc
+gambatte-dmg/ly0/lycint152_ly153_1_dmg08_cgb04c_out98.gbc	15	$GBTR/gambatte/ly0/lycint152_ly153_1_dmg08_cgb04c_out98.gbc
+gambatte-dmg/ly0/lycint152_lyc153irq_ifw_1_dmg08_cgb04c_outE2.gbc	15	$GBTR/gambatte/ly0/lycint152_lyc153irq_ifw_1_dmg08_cgb04c_outE2.gbc
+gambatte-dmg/lycEnable/ff40_disable_1_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/lycEnable/ff40_disable_1_dmg08_cgb04c_out0.gbc
+gambatte-dmg/lycEnable/late_ff41_enable_3_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/lycEnable/late_ff41_enable_3_dmg08_cgb04c_out0.gbc
+gambatte-dmg/lycEnable/lyc0_late_ff45_enable_3_dmg08_cgb04c_outE0.gbc	15	$GBTR/gambatte/lycEnable/lyc0_late_ff45_enable_3_dmg08_cgb04c_outE0.gbc
+gambatte-dmg/lycEnable/lyc_ff41_enable_4_dmg08_cgb04c_out2.gbc	15	$GBTR/gambatte/lycEnable/lyc_ff41_enable_4_dmg08_cgb04c_out2.gbc
+gambatte-dmg/lycint_lycirq/lycint_lycirq_1_dmg08_cgb04c_out1.gbc	15	$GBTR/gambatte/lycint_lycirq/lycint_lycirq_1_dmg08_cgb04c_out1.gbc
+gambatte-dmg/m0enable/disable_scx1_1_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/m0enable/disable_scx1_1_dmg08_cgb04c_out0.gbc
+gambatte-dmg/m0enable/enable_after_m2_during_2_dmg08_cgb04c_out2.gbc	15	$GBTR/gambatte/m0enable/enable_after_m2_during_2_dmg08_cgb04c_out2.gbc
+gambatte-dmg/m0enable/lycdisable_ff41_scx3_1_dmg08_cgb04c_out2.gbc	15	$GBTR/gambatte/m0enable/lycdisable_ff41_scx3_1_dmg08_cgb04c_out2.gbc
+gambatte-dmg/m0enable/m0_enable_5_dmg08_cgb04c_out2.gbc	15	$GBTR/gambatte/m0enable/m0_enable_5_dmg08_cgb04c_out2.gbc
+gambatte-dmg/m1/lyc143_late_m0enable_lycdisable_3_dmg08_out3_cgb04c_out1.gbc	15	$GBTR/gambatte/m1/lyc143_late_m0enable_lycdisable_3_dmg08_out3_cgb04c_out1.gbc
+gambatte-dmg/m1/lycint_vblankirq_1_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/m1/lycint_vblankirq_1_dmg08_cgb04c_out0.gbc
+gambatte-dmg/m1/m1irq_m0enable_2_dmg08_cgb04c_out3.gbc	15	$GBTR/gambatte/m1/m1irq_m0enable_2_dmg08_cgb04c_out3.gbc
+gambatte-dmg/m2enable/disable_ly0_2_dmg08_cgb04c_out2.gbc	15	$GBTR/gambatte/m2enable/disable_ly0_2_dmg08_cgb04c_out2.gbc
+gambatte-dmg/m2enable/late_enable_m1disable_ly0_2_dmg08_out2_cgb04c_out0.gbc	15	$GBTR/gambatte/m2enable/late_enable_m1disable_ly0_2_dmg08_out2_cgb04c_out0.gbc
+gambatte-dmg/m2int_m0irq/m2int_m0irq_scx2_2_dmg08_cgb04c_out2.gbc	15	$GBTR/gambatte/m2int_m0irq/m2int_m0irq_scx2_2_dmg08_cgb04c_out2.gbc
+gambatte-dmg/m2int_m0irq/m2int_m0irq_scx3_reti_2_dmg08_cgb04c_out2.gbc	15	$GBTR/gambatte/m2int_m0irq/m2int_m0irq_scx3_reti_2_dmg08_cgb04c_out2.gbc
+gambatte-dmg/m2int_m3stat/scx/m2int_scx2_m3stat_1_dmg08_cgb04c_out3.gbc	15	$GBTR/gambatte/m2int_m3stat/scx/m2int_scx2_m3stat_1_dmg08_cgb04c_out3.gbc
+gambatte-dmg/miscmstatirq/lycstatwirq_trigger_bf_40_dmg08_out2_cgb04c_out2.gbc	15	$GBTR/gambatte/miscmstatirq/lycstatwirq_trigger_bf_40_dmg08_out2_cgb04c_out2.gbc
+gambatte-dmg/miscmstatirq/lycstatwirq_trigger_m0_early_ly44_lyc44_08_40_9_dmg08_cgb04c_outE0.gbc	15	$GBTR/gambatte/miscmstatirq/lycstatwirq_trigger_m0_early_ly44_lyc44_08_40_9_dmg08_cgb04c_outE0.gbc
+gambatte-dmg/miscmstatirq/lycwirq_trigger_m0_early_ly44_7_dmg08_cgb04c_outE2.gbc	15	$GBTR/gambatte/miscmstatirq/lycwirq_trigger_m0_early_ly44_7_dmg08_cgb04c_outE2.gbc
+gambatte-dmg/miscmstatirq/m0statwirq_scx5_2_dmg08_out2.gb	15	$GBTR/gambatte/miscmstatirq/m0statwirq_scx5_2_dmg08_out2.gb
+gambatte-dmg/miscmstatirq/m1statwirq_1_dmg08_out3.gb	15	$GBTR/gambatte/miscmstatirq/m1statwirq_1_dmg08_out3.gb
+gambatte-dmg/miscmstatirq/m1statwirq_trigger_ly94_lyc94_00_10_dmg08_cgb04c_outE2.gbc	15	$GBTR/gambatte/miscmstatirq/m1statwirq_trigger_ly94_lyc94_00_10_dmg08_cgb04c_outE2.gbc
+gambatte-dmg/miscmstatirq/m2statwirq_trigger_ff_00_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/miscmstatirq/m2statwirq_trigger_ff_00_dmg08_cgb04c_out0.gbc
+gambatte-dmg/oam_access/postwrite_1_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/oam_access/postwrite_1_dmg08_cgb04c_out0.gbc
+gambatte-dmg/oamdma/oamdma_src0000_busypop7FFF_dmg08_cgb04c_out657665AA.gbc	15	$GBTR/gambatte/oamdma/oamdma_src0000_busypop7FFF_dmg08_cgb04c_out657665AA.gbc
+gambatte-dmg/oamdma/oamdma_src0000_busypushFE01_dmg08_out65AA1298_cgb04c_out6576AA98.gbc	15	$GBTR/gambatte/oamdma/oamdma_src0000_busypushFE01_dmg08_out65AA1298_cgb04c_out6576AA98.gbc
+gambatte-dmg/oamdma/oamdma_src0000_srambankchange_2_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/oamdma/oamdma_src0000_srambankchange_2_dmg08_cgb04c_out0.gbc
+gambatte-dmg/oamdma/oamdma_src7F00_busypushF001_dmg08_out55AA1234_cgb04c_out6576AA55.gbc	15	$GBTR/gambatte/oamdma/oamdma_src7F00_busypushF001_dmg08_out55AA1234_cgb04c_out6576AA55.gbc
+gambatte-dmg/oamdma/oamdma_src8000_busypushA001_dmg08_out65AA1255_cgb04c_out65001255.gbc	15	$GBTR/gambatte/oamdma/oamdma_src8000_busypushA001_dmg08_out65AA1255_cgb04c_out65001255.gbc
+gambatte-dmg/oamdma/oamdma_src9F00_busypop9FFF_dmg08_out657665AA_cgb04c_out007665AA.gbc	15	$GBTR/gambatte/oamdma/oamdma_src9F00_busypop9FFF_dmg08_out657665AA_cgb04c_out007665AA.gbc
+gambatte-dmg/oamdma/oamdma_src9F00_busypushFF01_dmg08_out657600DF_cgb04c_out657612DF.gbc	15	$GBTR/gambatte/oamdma/oamdma_src9F00_busypushFF01_dmg08_out657600DF_cgb04c_out657612DF.gbc
+gambatte-dmg/oamdma/oamdma_srcA000_busypushE001_dmg08_out55AA1234_cgb04c_out6576AA55.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcA000_busypushE001_dmg08_out55AA1234_cgb04c_out6576AA55.gbc
+gambatte-dmg/oamdma/oamdma_srcBF00_busypopFDFF_dmg08_out657665FF_cgb04c_out657655FF.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcBF00_busypopFDFF_dmg08_out657665FF_cgb04c_out657655FF.gbc
+gambatte-dmg/oamdma/oamdma_srcC000_busypopBFFF_2_dmg08_out65766576_cgb04c_out6576FF76.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcC000_busypopBFFF_2_dmg08_out65766576_cgb04c_out6576FF76.gbc
+gambatte-dmg/oamdma/oamdma_srcC000_busypushFF81_dmg08_cgb04c_out6576FF55.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcC000_busypushFF81_dmg08_cgb04c_out6576FF55.gbc
+gambatte-dmg/oamdma/oamdma_srcDF00_busypushA001_dmg08_out4576AA34_cgb04c_out6576AA55.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcDF00_busypushA001_dmg08_out4576AA34_cgb04c_out6576AA55.gbc
+gambatte-dmg/oamdma/oamdma_srcE000_busypopFF7F_dmg08_out6576FFAA_cgb04c_outFFFFFFAA.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcE000_busypopFF7F_dmg08_out6576FFAA_cgb04c_outFFFFFFAA.gbc
+gambatte-dmg/oamdma/oamdma_srcEF00_busypopDFFF_dmg08_out65766576_cgb04c_outFFFF55AA.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcEF00_busypopDFFF_dmg08_out65766576_cgb04c_outFFFF55AA.gbc
+gambatte-dmg/oamdma/oamdma_srcF000_busypop9FFF_2_dmg08_out65765576_cgb04c_outFFFF55FF.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcF000_busypop9FFF_2_dmg08_out65765576_cgb04c_outFFFF55FF.gbc
+gambatte-dmg/oamdma/oamdma_srcF000_busypushFEA1_dmg08_out65768700_cgb04c_outFFFFFF34.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcF000_busypushFEA1_dmg08_out65768700_cgb04c_outFFFFFF34.gbc
+gambatte-dmg/oamdma/oamdma_srcFE00_busypopFFFF_dmg08_out65765576_cgb04c_outFFFF55FF.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcFE00_busypopFFFF_dmg08_out65765576_cgb04c_outFFFF55FF.gbc
+gambatte-dmg/oamdma/oamdma_srcFF00_busypopEFFF_dmg08_out65766576_cgb04c_outFFFF55AA.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcFF00_busypopEFFF_dmg08_out65766576_cgb04c_outFFFF55AA.gbc
+gambatte-dmg/oamdma/oamdma_srcFF00_busyreadA000_dmg08_out1_cgb04c_out0.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcFF00_busyreadA000_dmg08_out1_cgb04c_out0.gbc
+gambatte-dmg/scx_during_m3/scx_0360c0/scx_during_m3_1.gbc	15	$GBTR/gambatte/scx_during_m3/scx_0360c0/scx_during_m3_1.gbc
+gambatte-dmg/scx_during_m3/scx_0761c0/scx_during_m3_5.gbc	15	$GBTR/gambatte/scx_during_m3/scx_0761c0/scx_during_m3_5.gbc
+gambatte-dmg/scy/scy_during_m3_spx08_2.gbc	15	$GBTR/gambatte/scy/scy_during_m3_spx08_2.gbc
+gambatte-dmg/serial/nopx2_start83_wait_read_if_2_dmg08_outE0_cgb04c_outE8.gbc	15	$GBTR/gambatte/serial/nopx2_start83_wait_read_if_2_dmg08_outE0_cgb04c_outE8.gbc
+gambatte-dmg/serial/start_wait_sc80_read_if_1_dmg08_cgb04c_outE0.gbc	15	$GBTR/gambatte/serial/start_wait_sc80_read_if_1_dmg08_cgb04c_outE0.gbc
+gambatte-dmg/sound/ch2_init_reset_length_counter_timing_nr52_4_dmg08_out2_cgb04c_out0.gbc	15	$GBTR/gambatte/sound/ch2_init_reset_length_counter_timing_nr52_4_dmg08_out2_cgb04c_out0.gbc
+gambatte-dmg/sound/ch3_reset_nr4init_freq7fd_write_ff30_3_dmg08_cgb04c_out00.gbc	15	$GBTR/gambatte/sound/ch3_reset_nr4init_freq7fd_write_ff30_3_dmg08_cgb04c_out00.gbc
+gambatte-dmg/sprites/10spritesPrLine_10xposA7_m3stat_2_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/sprites/10spritesPrLine_10xposA7_m3stat_2_dmg08_cgb04c_out0.gbc
+gambatte-dmg/sprites/1spritesPrLine_xpos01_scx4_m3stat_2_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/sprites/1spritesPrLine_xpos01_scx4_m3stat_2_dmg08_cgb04c_out0.gbc
+gambatte-dmg/sprites/9spritesPrLine_m3stat_2_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/sprites/9spritesPrLine_m3stat_2_dmg08_cgb04c_out0.gbc
+gambatte-dmg/sprites/sprite_late_disable_spx1B_2_dmg08_out3.gb	15	$GBTR/gambatte/sprites/sprite_late_disable_spx1B_2_dmg08_out3.gb
+gambatte-dmg/tima/tc00_div_write_start_2_dmg08_cgb04c_outF1.gbc	15	$GBTR/gambatte/tima/tc00_div_write_start_2_dmg08_cgb04c_outF1.gbc
+gambatte-dmg/tima/tc00_late_div_write_if_1a_dmg08_cgb04c_outE0.gbc	15	$GBTR/gambatte/tima/tc00_late_div_write_if_1a_dmg08_cgb04c_outE0.gbc
+gambatte-dmg/tima/tc00_start_4_dmg08_outF1.gbc	15	$GBTR/gambatte/tima/tc00_start_4_dmg08_outF1.gbc
+gambatte-dmg/tima/tc01_1stopstart_offset2_irq_2_dmg08_cgb04c_outE4.gbc	15	$GBTR/gambatte/tima/tc01_1stopstart_offset2_irq_2_dmg08_cgb04c_outE4.gbc
+gambatte-dmg/tima/tc01_late_div_write_3b_dmg08_cgb04c_outFF.gbc	15	$GBTR/gambatte/tima/tc01_late_div_write_3b_dmg08_cgb04c_outFF.gbc
+gambatte-dmg/tima/tc01_tma_next_1_dmg08_cgb04c_outF0.gbc	15	$GBTR/gambatte/tima/tc01_tma_next_1_dmg08_cgb04c_outF0.gbc
+gambatte-dmg/vram_m3/postread_scx5_1_dmg08_cgb04c_out3.gbc	15	$GBTR/gambatte/vram_m3/postread_scx5_1_dmg08_cgb04c_out3.gbc
+gambatte-dmg/window/arg/late_enable_afterVblank_4_dmg08_out3_cgb04c_out0.gbc	15	$GBTR/gambatte/window/arg/late_enable_afterVblank_4_dmg08_out3_cgb04c_out0.gbc
+gambatte-dmg/window/arg/late_wy_FFto0_ly0_1_dmg08_cgb04c_out3.gbc	15	$GBTR/gambatte/window/arg/late_wy_FFto0_ly0_1_dmg08_cgb04c_out3.gbc
+gambatte-dmg/window/arg/late_wy_FFto2_ly2_scx5_3_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/window/arg/late_wy_FFto2_ly2_scx5_3_dmg08_cgb04c_out0.gbc
+gambatte-dmg/window/late_disable_late_scx03_wx10_3_dmg08_cgb04c_out3.gbc	15	$GBTR/gambatte/window/late_disable_late_scx03_wx10_3_dmg08_cgb04c_out3.gbc
+gambatte-dmg/window/late_reenable_1_dmg08_cgb04c_out3.gbc	15	$GBTR/gambatte/window/late_reenable_1_dmg08_cgb04c_out3.gbc
+gambatte-dmg/window/late_wx_scx2_2_dmg08_cgb04c_out3.gbc	15	$GBTR/gambatte/window/late_wx_scx2_2_dmg08_cgb04c_out3.gbc
+gambatte-dmg/window/m2int_wx07_scx2_m3stat_1_dmg08_cgb04c_out3.gbc	15	$GBTR/gambatte/window/m2int_wx07_scx2_m3stat_1_dmg08_cgb04c_out3.gbc
+gambatte-dmg/window/m2int_wxA6_m3stat_3_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/window/m2int_wxA6_m3stat_3_dmg08_cgb04c_out0.gbc
+gambatte-dmg/window/m2int_wxA6_vrambusyread_1_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/window/m2int_wxA6_vrambusyread_1_dmg08_cgb04c_out0.gbc
+gambatte-cgb/bgen/bgoff_bgon_sprite_above_window.gbc	15	$GBTR/gambatte/bgen/bgoff_bgon_sprite_above_window.gbc	--machine cgb
+gambatte-cgb/bgtilemap/bgtilemap_spx09_3.gbc	15	$GBTR/gambatte/bgtilemap/bgtilemap_spx09_3.gbc	--machine cgb
+gambatte-cgb/cgbpal_m3/cgbpal_m3start_1_cgb04c_out1.gbc	15	$GBTR/gambatte/cgbpal_m3/cgbpal_m3start_1_cgb04c_out1.gbc	--machine cgb
+gambatte-cgb/div/start_stop1_inc_2_cgb04c_out01.gbc	15	$GBTR/gambatte/div/start_stop1_inc_2_cgb04c_out01.gbc	--machine cgb
+gambatte-cgb/dma/gdma_cycles_short_2_cgb04c_out0.gbc	15	$GBTR/gambatte/dma/gdma_cycles_short_2_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/dma/hdma_ei_m3halt_m0unhalt_ly_2_cgb04c_out03.gbc	15	$GBTR/gambatte/dma/hdma_ei_m3halt_m0unhalt_ly_2_cgb04c_out03.gbc	--machine cgb
+gambatte-cgb/dma/hdma_late_length_1_cgb04c_out0.gbc	15	$GBTR/gambatte/dma/hdma_late_length_1_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/dma/hdma_late_m3halt_m2unhalt_ly_scx2_5_cgb04c_out02.gbc	15	$GBTR/gambatte/dma/hdma_late_m3halt_m2unhalt_ly_scx2_5_cgb04c_out02.gbc	--machine cgb
+gambatte-cgb/dma/hdma_m3halt_m0unhalt_ly_1_cgb04c_out02.gbc	15	$GBTR/gambatte/dma/hdma_m3halt_m0unhalt_ly_1_cgb04c_out02.gbc	--machine cgb
+gambatte-cgb/enable_display/enable_display_ly0_oambusy_read_1_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/enable_display/enable_display_ly0_oambusy_read_1_dmg08_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/enable_display/frame0_m3stat_count_1_dmg08_cgb04c_out90.gbc	15	$GBTR/gambatte/enable_display/frame0_m3stat_count_1_dmg08_cgb04c_out90.gbc	--machine cgb
+gambatte-cgb/enable_display/frame2_m0irq_count_scx3_2_dmg08_cgb04c_out90.gbc	15	$GBTR/gambatte/enable_display/frame2_m0irq_count_scx3_2_dmg08_cgb04c_out90.gbc	--machine cgb
+gambatte-cgb/enable_display/ly1_late_cgbpw_1_cgb04c_outAA.gbc	15	$GBTR/gambatte/enable_display/ly1_late_cgbpw_1_cgb04c_outAA.gbc	--machine cgb
+gambatte-cgb/halt/late_m0irq_halt_dec_scx3_1_dmg08_cgb04c_out7.gbc	15	$GBTR/gambatte/halt/late_m0irq_halt_dec_scx3_1_dmg08_cgb04c_out7.gbc	--machine cgb
+gambatte-cgb/halt/m0int_m0stat_scx3_ds_2_cgb04c_out2.gbc	15	$GBTR/gambatte/halt/m0int_m0stat_scx3_ds_2_cgb04c_out2.gbc	--machine cgb
+gambatte-cgb/irq_precedence/if_and_ie_0_if_2_dmg08_cgb04c_outE1.gbc	15	$GBTR/gambatte/irq_precedence/if_and_ie_0_if_2_dmg08_cgb04c_outE1.gbc	--machine cgb
+gambatte-cgb/lcd_offset/offset1_lyc8fint_m1irq_ds_1_cgb04c_outE0.gbc	15	$GBTR/gambatte/lcd_offset/offset1_lyc8fint_m1irq_ds_1_cgb04c_outE0.gbc	--machine cgb
+gambatte-cgb/lcd_offset/offset3_lyc8fint_m1stat_1_cgb04c_outC0.gbc	15	$GBTR/gambatte/lcd_offset/offset3_lyc8fint_m1stat_1_cgb04c_outC0.gbc	--machine cgb
+gambatte-cgb/lcdirq_precedence/m0irq_ly44_lcdstat48_lyc45_dmg08_cgb04c_out2.gbc	15	$GBTR/gambatte/lcdirq_precedence/m0irq_ly44_lcdstat48_lyc45_dmg08_cgb04c_out2.gbc	--machine cgb
+gambatte-cgb/ly0/lycint152_lyc0flag_ds_4_cgb04c_outC2.gbc	15	$GBTR/gambatte/ly0/lycint152_lyc0flag_ds_4_cgb04c_outC2.gbc	--machine cgb
+gambatte-cgb/ly0/lycint152_m2irq_1_dmg08_cgb04c_outE0.gbc	15	$GBTR/gambatte/ly0/lycint152_m2irq_1_dmg08_cgb04c_outE0.gbc	--machine cgb
+gambatte-cgb/lycEnable/ff45_disable_ds_1_cgb04c_out1.gbc	15	$GBTR/gambatte/lycEnable/ff45_disable_ds_1_cgb04c_out1.gbc	--machine cgb
+gambatte-cgb/lycEnable/late_ff45_enable_ds_lcdoffset1_1_cgb04c_out2.gbc	15	$GBTR/gambatte/lycEnable/late_ff45_enable_ds_lcdoffset1_1_cgb04c_out2.gbc	--machine cgb
+gambatte-cgb/lycEnable/lyc153_late_ff41_enable_ds_lcdoffset1_1_cgb04c_outE2.gbc	15	$GBTR/gambatte/lycEnable/lyc153_late_ff41_enable_ds_lcdoffset1_1_cgb04c_outE2.gbc	--machine cgb
+gambatte-cgb/lycEnable/lyc_ff41_trigger_delay_1_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/lycEnable/lyc_ff41_trigger_delay_1_dmg08_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/lycint_m0stat/lycint_m0stat_1_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/lycint_m0stat/lycint_m0stat_1_dmg08_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/m0enable/disable_scx4_3_dmg08_cgb04c_out2.gbc	15	$GBTR/gambatte/m0enable/disable_scx4_3_dmg08_cgb04c_out2.gbc	--machine cgb
+gambatte-cgb/m0enable/lycdisable_ff41_3_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/m0enable/lycdisable_ff41_3_dmg08_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/m0enable/m0_enable_3_dmg08_cgb04c_out2.gbc	15	$GBTR/gambatte/m0enable/m0_enable_3_dmg08_cgb04c_out2.gbc	--machine cgb
+gambatte-cgb/m1/ly143_late_m0enable_1_dmg08_cgb04c_out3.gbc	15	$GBTR/gambatte/m1/ly143_late_m0enable_1_dmg08_cgb04c_out3.gbc	--machine cgb
+gambatte-cgb/m1/lycint143_m1irq_late_retrigger_1_dmg08_cgb04c_out3.gbc	15	$GBTR/gambatte/m1/lycint143_m1irq_late_retrigger_1_dmg08_cgb04c_out3.gbc	--machine cgb
+gambatte-cgb/m1/m1irq_late_enable_1_dmg08_cgb04c_out2.gbc	15	$GBTR/gambatte/m1/m1irq_late_enable_1_dmg08_cgb04c_out2.gbc	--machine cgb
+gambatte-cgb/m1/m1irq_m2enable_lyc_ds_2_cgb04c_out3.gbc	15	$GBTR/gambatte/m1/m1irq_m2enable_lyc_ds_2_cgb04c_out3.gbc	--machine cgb
+gambatte-cgb/m2enable/late_enable_after_lycint_disable_3_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/m2enable/late_enable_after_lycint_disable_3_dmg08_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/m2enable/lyc0_late_m2enable_lycdisable_2_dmg08_out2_cgb04c_out0.gbc	15	$GBTR/gambatte/m2enable/lyc0_late_m2enable_lycdisable_2_dmg08_out2_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/m2int_m0irq/m2int_m0irq_scx2_ei_1_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/m2int_m0irq/m2int_m0irq_scx2_ei_1_dmg08_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/m2int_m0stat/m2int_m0stat_2_dmg08_cgb04c_out2.gbc	15	$GBTR/gambatte/m2int_m0stat/m2int_m0stat_2_dmg08_cgb04c_out2.gbc	--machine cgb
+gambatte-cgb/m2int_m3stat/scx/m2int_scx2_m3stat_ds_1_cgb04c_out3.gbc	15	$GBTR/gambatte/m2int_m3stat/scx/m2int_scx2_m3stat_ds_1_cgb04c_out3.gbc	--machine cgb
+gambatte-cgb/miscmstatirq/lycstatwirq_trigger_bf_ff_dmg08_out2_cgb04c_out2.gbc	15	$GBTR/gambatte/miscmstatirq/lycstatwirq_trigger_bf_ff_dmg08_out2_cgb04c_out2.gbc	--machine cgb
+gambatte-cgb/miscmstatirq/lycstatwirq_trigger_m0_late_ly44_lyc44_08_40_ds_2_cgb04c_outE0.gbc	15	$GBTR/gambatte/miscmstatirq/lycstatwirq_trigger_m0_late_ly44_lyc44_08_40_ds_2_cgb04c_outE0.gbc	--machine cgb
+gambatte-cgb/miscmstatirq/lycwirq_trigger_m0_late_ly44_lyc45_3_dmg08_cgb04c_outE2.gbc	15	$GBTR/gambatte/miscmstatirq/lycwirq_trigger_m0_late_ly44_lyc45_3_dmg08_cgb04c_outE2.gbc	--machine cgb
+gambatte-cgb/miscmstatirq/m1statwirq_trigger_10_00_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/miscmstatirq/m1statwirq_trigger_10_00_dmg08_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/miscmstatirq/m2statwirq_trigger_df_20_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/miscmstatirq/m2statwirq_trigger_df_20_dmg08_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/oam_access/postwrite_ds_1_cgb04c_out0.gbc	15	$GBTR/gambatte/oam_access/postwrite_ds_1_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/oamdma/late_sp39x_3_cgb04c_out0.gbc	15	$GBTR/gambatte/oamdma/late_sp39x_3_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/oamdma/oamdma_src0000_busypushFF81_dmg08_cgb04c_out6576FF55.gbc	15	$GBTR/gambatte/oamdma/oamdma_src0000_busypushFF81_dmg08_cgb04c_out6576FF55.gbc	--machine cgb
+gambatte-cgb/oamdma/oamdma_src7F00_busypopFE9F_dmg08_cgb04c_out6576FFFF.gbc	15	$GBTR/gambatte/oamdma/oamdma_src7F00_busypopFE9F_dmg08_cgb04c_out6576FFFF.gbc	--machine cgb
+gambatte-cgb/oamdma/oamdma_src8000_busypushC001_2_dmg08_cgb04c_out6576FF55.gbc	15	$GBTR/gambatte/oamdma/oamdma_src8000_busypushC001_2_dmg08_cgb04c_out6576FF55.gbc	--machine cgb
+gambatte-cgb/oamdma/oamdma_src9F00_busypopFFFF_dmg08_cgb04c_out657655AA.gbc	15	$GBTR/gambatte/oamdma/oamdma_src9F00_busypopFFFF_dmg08_cgb04c_out657655AA.gbc	--machine cgb
+gambatte-cgb/oamdma/oamdma_srcA000_busypushF001_dmg08_out55AA1234_cgb04c_out6576AA55.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcA000_busypushF001_dmg08_out55AA1234_cgb04c_out6576AA55.gbc	--machine cgb
+gambatte-cgb/oamdma/oamdma_srcBF00_busypushFE01_dmg08_out65AA1298_cgb04c_out6576AA98.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcBF00_busypushFE01_dmg08_out65AA1298_cgb04c_out6576AA98.gbc	--machine cgb
+gambatte-cgb/oamdma/oamdma_srcDF00_busypop7FFF_dmg08_out657665AA_cgb04c_out657655AA.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcDF00_busypop7FFF_dmg08_out657665AA_cgb04c_out657655AA.gbc	--machine cgb
+gambatte-cgb/oamdma/oamdma_srcE000_busypopFDFF_dmg08_out657665FF_cgb04c_outFFFF55FF.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcE000_busypopFDFF_dmg08_out657665FF_cgb04c_outFFFF55FF.gbc	--machine cgb
+gambatte-cgb/oamdma/oamdma_srcEF00_busypushA001_2_dmg08_out4576AAFF_cgb04c_out55FFAAFF.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcEF00_busypushA001_2_dmg08_out4576AAFF_cgb04c_out55FFAAFF.gbc	--machine cgb
+gambatte-cgb/oamdma/oamdma_srcF000_busyread0000_1_dmg08_out9_cgb04c_out0.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcF000_busyread0000_1_dmg08_out9_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/oamdma/oamdma_srcFE00_readFE00_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/oamdma/oamdma_srcFE00_readFE00_dmg08_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/scx_during_m3/scx2_scx0_during_m3_1.gbc	15	$GBTR/gambatte/scx_during_m3/scx2_scx0_during_m3_1.gbc	--machine cgb
+gambatte-cgb/scx_during_m3/scx_0360c0/scx_during_m3_1.gbc	15	$GBTR/gambatte/scx_during_m3/scx_0360c0/scx_during_m3_1.gbc	--machine cgb
+gambatte-cgb/scx_during_m3/scx_0367c0/scx_during_m3_3.gbc	15	$GBTR/gambatte/scx_during_m3/scx_0367c0/scx_during_m3_3.gbc	--machine cgb
+gambatte-cgb/scx_during_m3/scx_m3_extend_2_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/scx_during_m3/scx_m3_extend_2_dmg08_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/serial/nopx2_start83_wait_read_if_2_dmg08_outE0_cgb04c_outE8.gbc	15	$GBTR/gambatte/serial/nopx2_start83_wait_read_if_2_dmg08_outE0_cgb04c_outE8.gbc	--machine cgb
+gambatte-cgb/serial/start_wait_stop_read_if_2_dmg08_cgb04c_outE8.gbc	15	$GBTR/gambatte/serial/start_wait_stop_read_if_2_dmg08_cgb04c_outE8.gbc	--machine cgb
+gambatte-cgb/sound/ch2_late_reset_nr52_1a_dmg08_cgb04c_out2.gbc	15	$GBTR/gambatte/sound/ch2_late_reset_nr52_1a_dmg08_cgb04c_out2.gbc	--machine cgb
+gambatte-cgb/sound/ch3_reset_nr4init_freq7ff_read_ff30_ds_1_cgb04c_out10.gbc	15	$GBTR/gambatte/sound/ch3_reset_nr4init_freq7ff_read_ff30_ds_1_cgb04c_out10.gbc	--machine cgb
+gambatte-cgb/speedchange/speedchange2_lcdoff2_m2int_m3stat_scx3_2_cgb04c_out0.gbc	15	$GBTR/gambatte/speedchange/speedchange2_lcdoff2_m2int_m3stat_scx3_2_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/speedchange/speedchange2_ly44_m3_stat_3_cgb04c_outC0.gbc	15	$GBTR/gambatte/speedchange/speedchange2_ly44_m3_stat_3_cgb04c_outC0.gbc	--machine cgb
+gambatte-cgb/speedchange/speedchange2_tima00_1a_cgb04c_out00.gbc	15	$GBTR/gambatte/speedchange/speedchange2_tima00_1a_cgb04c_out00.gbc	--machine cgb
+gambatte-cgb/speedchange/speedchange4_ly44_m3_nop_m3stat_scx3_2_cgb04c_outC0.gbc	15	$GBTR/gambatte/speedchange/speedchange4_ly44_m3_nop_m3stat_scx3_2_cgb04c_outC0.gbc	--machine cgb
+gambatte-cgb/speedchange/speedchange_lcdoff_tima00_1_cgb04c_out80.gbc	15	$GBTR/gambatte/speedchange/speedchange_lcdoff_tima00_1_cgb04c_out80.gbc	--machine cgb
+gambatte-cgb/speedchange/speedchange_tima00_1b_cgb04c_out81.gbc	15	$GBTR/gambatte/speedchange/speedchange_tima00_1b_cgb04c_out81.gbc	--machine cgb
+gambatte-cgb/sprites/10spritesprline_1xposa3_m3stat_ds_1_cgb04c_out3.gbc	15	$GBTR/gambatte/sprites/10spritesprline_1xposa3_m3stat_ds_1_cgb04c_out3.gbc	--machine cgb
+gambatte-cgb/sprites/10spritesprline_3overlap8_m3stat_ds_1_cgb04c_out3.gbc	15	$GBTR/gambatte/sprites/10spritesprline_3overlap8_m3stat_ds_1_cgb04c_out3.gbc	--machine cgb
+gambatte-cgb/sprites/3spritesPrLine_m3stat_ds_1_cgb04c_out3.gbc	15	$GBTR/gambatte/sprites/3spritesPrLine_m3stat_ds_1_cgb04c_out3.gbc	--machine cgb
+gambatte-cgb/sprites/late_sizechange2_sp00_ds_2_cgb04c_out0.gbc	15	$GBTR/gambatte/sprites/late_sizechange2_sp00_ds_2_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/sprites/space/10spritesPrLine_nr10space11_m3stat_ds_2_cgb04c_out0.gbc	15	$GBTR/gambatte/sprites/space/10spritesPrLine_nr10space11_m3stat_ds_2_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/sprites/space/10spritesPrLine_scx3_m3stat_ds_2_cgb04c_out0.gbc	15	$GBTR/gambatte/sprites/space/10spritesPrLine_scx3_m3stat_ds_2_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/sprites/space/2overlap3_offset4_m3stat_ds_1_cgb04c_out3.gbc	15	$GBTR/gambatte/sprites/space/2overlap3_offset4_m3stat_ds_1_cgb04c_out3.gbc	--machine cgb
+gambatte-cgb/sprites/space/3overlap2_scx5_m3stat_ds_1_cgb04c_out3.gbc	15	$GBTR/gambatte/sprites/space/3overlap2_scx5_m3stat_ds_1_cgb04c_out3.gbc	--machine cgb
+gambatte-cgb/sprites/space/3overlap4_scx4_m3stat_ds_1_cgb04c_out3.gbc	15	$GBTR/gambatte/sprites/space/3overlap4_scx4_m3stat_ds_1_cgb04c_out3.gbc	--machine cgb
+gambatte-cgb/sprites/space/3overlap6_scx1_m3stat_ds_1_cgb04c_out3.gbc	15	$GBTR/gambatte/sprites/space/3overlap6_scx1_m3stat_ds_1_cgb04c_out3.gbc	--machine cgb
+gambatte-cgb/sprites/space/3overlap7_scx7_m3stat_ds_1_cgb04c_out3.gbc	15	$GBTR/gambatte/sprites/space/3overlap7_scx7_m3stat_ds_1_cgb04c_out3.gbc	--machine cgb
+gambatte-cgb/sprites/space/9pos8_wx0D_m3stat_ds_1_cgb04c_out3.gbc	15	$GBTR/gambatte/sprites/space/9pos8_wx0D_m3stat_ds_1_cgb04c_out3.gbc	--machine cgb
+gambatte-cgb/tima/tc00_irq_late_retrigger_3_dmg08_cgb04c_outE0.gbc	15	$GBTR/gambatte/tima/tc00_irq_late_retrigger_3_dmg08_cgb04c_outE0.gbc	--machine cgb
+gambatte-cgb/tima/tc00_start_1_cgb04c_outF0.gbc	15	$GBTR/gambatte/tima/tc00_start_1_cgb04c_outF0.gbc	--machine cgb
+gambatte-cgb/tima/tc01_fe_ff_2_dmg08_cgb04c_outFF.gbc	15	$GBTR/gambatte/tima/tc01_fe_ff_2_dmg08_cgb04c_outFF.gbc	--machine cgb
+gambatte-cgb/tima/tc01_nop_div_write_start_2_dmg08_cgb04c_outF2.gbc	15	$GBTR/gambatte/tima/tc01_nop_div_write_start_2_dmg08_cgb04c_outF2.gbc	--machine cgb
+gambatte-cgb/vram_m3/preread_ds_1_cgb04c_out0.gbc	15	$GBTR/gambatte/vram_m3/preread_ds_1_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/vramw_m3end/vramw_m3end_scx3_6_dmg08_cgb04c_out3.gbc	15	$GBTR/gambatte/vramw_m3end/vramw_m3end_scx3_6_dmg08_cgb04c_out3.gbc	--machine cgb
+gambatte-cgb/window/arg/late_wy_2_dmg08_cgb04c_out3.gbc	15	$GBTR/gambatte/window/arg/late_wy_2_dmg08_cgb04c_out3.gbc	--machine cgb
+gambatte-cgb/window/arg/late_wy_FFto2_ly2_wx0f_2_dmg08_out3_cgb04c_out0.gbc	15	$GBTR/gambatte/window/arg/late_wy_FFto2_ly2_wx0f_2_dmg08_out3_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/window/late_disable_late_scx03_wx10_2_dmg08_out3_cgb04c_out0.gbc	15	$GBTR/gambatte/window/late_disable_late_scx03_wx10_2_dmg08_out3_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/window/late_reenable_2_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/window/late_reenable_2_dmg08_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/window/late_wx_scx5_1_dmg08_cgb04c_out0.gbc	15	$GBTR/gambatte/window/late_wx_scx5_1_dmg08_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/window/m2int_wx07_scx2_m3stat_1_dmg08_cgb04c_out3.gbc	15	$GBTR/gambatte/window/m2int_wx07_scx2_m3stat_1_dmg08_cgb04c_out3.gbc	--machine cgb
+gambatte-cgb/window/m2int_wxA6_oambusyread_2_dmg08_out5_cgb04c_out0.gbc	15	$GBTR/gambatte/window/m2int_wxA6_oambusyread_2_dmg08_out5_cgb04c_out0.gbc	--machine cgb
+gambatte-cgb/window/on_screen/wxA6_late_we_reenable_1.gbc	15	$GBTR/gambatte/window/on_screen/wxA6_late_we_reenable_1.gbc	--machine cgb
