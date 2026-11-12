@@ -11,6 +11,7 @@ MBC5, MBC5+RAM+battery, MBC5+rumble, MMM01 (a header with the logo in the last 3
 
 from __future__ import annotations
 
+import os
 import sys
 import zipfile
 from pathlib import Path
@@ -56,7 +57,7 @@ def classify(rom: bytes) -> list[str]:
 
 
 def main() -> int:
-    base = Path(sys.argv[1] if len(sys.argv) > 1 else "/data/emu/source/myrient.erista.me/files/No-Intro")
+    base = Path(sys.argv[1] if len(sys.argv) > 1 else os.environ.get("NO_INTRO_DIR", "No-Intro"))
     found: dict[str, list[Path]] = {}
     for folder in ("Nintendo - Game Boy", "Nintendo - Game Boy Color"):
         for path in sorted((base / folder).glob("*.zip")):

@@ -56,7 +56,7 @@ later, not in this brief.
    arbiter, as megadrive-rust and famicom-rust did
    (`/data/emu/megadrive-rust/scripts/lockstep.py`, its cases.tsv). Cases:
    test ROMs plus commercial dumps from the local No-Intro sets (read in
-   place, never committed: `/data/emu/source/myrient.erista.me/files/No-Intro`).
+   place, never committed: `$NO_INTRO_DIR`).
 3. **PPU (timing + pixels):** Mealybug DMG 24/24 and CGB-D 20/20 pictures
    exact; cgb-acid2, cgb-acid-hell, dmg-acid2 exact; the Gambatte pass lists
    reproduce exactly (same verdicts, every ROM, DMG and CGB); lockstep

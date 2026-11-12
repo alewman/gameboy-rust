@@ -39,7 +39,8 @@ pub const LOCAL: [(&str, &str, &str); 4] = [
 pub fn nointro() -> PathBuf {
     PathBuf::from(
         std::env::var("GAMEBOY_NOINTRO_DIR")
-            .unwrap_or_else(|_| "/data/emu/source/myrient.erista.me/files/No-Intro".into()),
+            .or_else(|_| std::env::var("NO_INTRO_DIR"))
+            .unwrap_or_else(|_| "No-Intro".into()),
     )
 }
 

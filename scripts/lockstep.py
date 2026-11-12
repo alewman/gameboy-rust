@@ -33,7 +33,7 @@ ROOT = HERE.parent
 DEFAULTS = {
     "GBTR": "/data/emu/gameboy-python/tests/test_roms/gbtr",
     "MTS": "/data/emu/gameboy-python/tests/test_roms/mts-20260714-0944-31510e1",
-    "NOINTRO": "/data/emu/source/myrient.erista.me/files/No-Intro",
+    "NOINTRO": os.environ.get("NO_INTRO_DIR", "No-Intro"),
     "INPUTS": str(HERE / "inputs"),
 }
 PYTHON = Path(os.environ.get("GAMEBOY_REFERENCE_PYTHON", ROOT / "external" / "venv" / "bin" / "python"))
