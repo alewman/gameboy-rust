@@ -1,0 +1,26 @@
+[package]
+name = "gameboy-rust"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.85"
+description = "A Rust Game Boy (DMG/CGB) board transcribed from, and proven equivalent to, gameboy-python"
+license = "MIT"
+repository = "https://github.com/alewman/gameboy-rust"
+publish = false
+
+[lib]
+name = "gameboy_rust"
+
+[dependencies]
+# sm83-rust (crate sm83), transcribed from sm83-python 95f2b8b, the revision gameboy-python pins.
+# A path dependency (docs/handoff-brief.md); the repository is private.
+sm83 = { path = "../sm83-rust" }
+zip = { version = "2", default-features = false, features = ["deflate"] }
+crc32fast = "1"
+sha2 = "0.10"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+bincode = "1.3"
+
+[profile.release]
+debug = 1
