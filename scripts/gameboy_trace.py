@@ -19,7 +19,9 @@ APU was a placeholder) and a CRC-32 of the last finished picture
 ROM may be a .zip (its first member is read in place). ``--input``: lines ``SLICE NAME...``;
 before that slice the pressed buttons become exactly NAME... (``-`` for none), released ones
 first, each change through ``joypad.set_pressed`` in the order a, b, select, start, right,
-left, up, down. ``--detail SLICE``: also write every bus M-cycle of that slice, one per line.
+left, up, down. ``--audio``: the APU captures its samples (``apu.capture``, 44,100 Hz) and each
+line ends with ``snd=CRC/COUNT`` of the slice's ``take_samples()`` (little-endian i16).
+``--detail SLICE``: also write every bus M-cycle of that slice, one per line.
 The MBC3 clock runs on board time (``gb.t / 4194304``).
 """
 
@@ -73,6 +75,7 @@ def main() -> int:
     parser.add_argument("--input", type=Path)
     parser.add_argument("--detail", type=int, default=-1)
     parser.add_argument("--mask-apu", action="store_true")
+    parser.add_argument("--audio", action="store_true")
     parser.add_argument("--save-at", type=int, default=-1, help="ignored: the Rust board's round trip")
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
@@ -92,6 +95,7 @@ def main() -> int:
     )
     gb = GameBoy(cart, machine=machine, boot_rom=boot)
     holder.append(gb)
+    gb.apu.capture = args.audio
     cpu = gb.cpu
     log = array("Q")
     apu_values = not args.mask_apu
@@ -145,8 +149,12 @@ def main() -> int:
                 f"ly={ppu.ly} dot={ppu.dot} mode={ppu.mode}/{ppu.read_mode} "
                 f"lcdc={ppu.lcdc:02x} dma={int(gb.dma.active)} "
                 f"ser={len(gb.serial.output)} frames={ppu.frames} "
-                f"bus={bus:08x}/{len(log)} pic={frame:08x}\n"
+                f"bus={bus:08x}/{len(log)} pic={frame:08x}"
             )
+            if args.audio:
+                samples = gb.apu.take_samples().tobytes()
+                out.write(f" snd={zlib.crc32(samples):08x}/{len(samples) // 2}")
+            out.write("\n")
             if index == args.detail:
                 for record in log:
                     t, kind = record >> 26, (record >> 24) & 3

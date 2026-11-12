@@ -420,6 +420,83 @@ fn pictures() {
     report("cgb-acid2", diff_count(&gb.hw.ppu.frame, &want));
 }
 
+// ----- Gambatte audio (scripts/gambatte_audio.py) ----------------------------------------
+
+const BOOT_FRAMES: u64 = 336;
+
+/// The DMG-08's result in a ROM name: `dmg08_outaudio<d>` or `dmg08_cgb..._outaudio<d>`; None
+/// for an unknown (`_x`) one or none.
+fn audio_expected(name: &str) -> Option<u8> {
+    if name.contains("_x") {
+        return None;
+    }
+    if let Some(at) = name.find("dmg08_outaudio") {
+        return name[at + 14..]
+            .chars()
+            .next()?
+            .to_digit(10)
+            .map(|d| d as u8);
+    }
+    // dmg08_cgb\w*?_outaudio(\d): the first _outaudio after a dmg08_cgb
+    let at = name.find("dmg08_cgb")?;
+    let rest = &name[at + 9..];
+    let mut search = 0;
+    while let Some(i) = rest[search..].find("_outaudio") {
+        let start = search + i;
+        let between = &rest[..start];
+        if between.chars().all(|c| c.is_alphanumeric() || c == '_') {
+            return rest[start + 9..]
+                .chars()
+                .next()?
+                .to_digit(10)
+                .map(|d| d as u8);
+        }
+        search = start + 1;
+    }
+    None
+}
+
+fn gambatte_audio(args: &[String]) {
+    let skip = args.iter().any(|a| a == "--skip-boot");
+    let jobs = opt(args, "--jobs")
+        .map(|v| v.parse().unwrap())
+        .unwrap_or(10);
+    let mut files = Vec::new();
+    walk(&gbtr().join("gambatte"), &mut files);
+    files.retain(|p| {
+        p.extension().and_then(|e| e.to_str()) == Some("gbc")
+            && audio_expected(&p.file_name().unwrap().to_string_lossy()).is_some()
+    });
+    files.sort_by(|a, b| a.components().cmp(b.components()));
+    let boot = if skip { None } else { Some(real_boot("DMG")) };
+    let results = parallel(&files, jobs, |path| {
+        let mut gb = board(path, DMG_B, boot.clone());
+        let start = gb.hw.t + if skip { 0 } else { BOOT_FRAMES * FRAME_T };
+        let end = start + 15 * FRAME_T;
+        let mut heard = false;
+        while gb.hw.t < end {
+            gb.step();
+            if gb.hw.t >= end - FRAME_T && gb.hw.apu.audible() {
+                heard = true;
+            }
+        }
+        let name = path.file_name().unwrap().to_string_lossy().to_string();
+        let want = audio_expected(&name).unwrap_or(0);
+        (name, want, heard as u8)
+    });
+    let agree: Vec<_> = results.iter().filter(|r| r.1 == r.2).collect();
+    println!("{} of {} agree with the DMG-08", agree.len(), results.len());
+    for (name, want, got) in &results {
+        if want != got {
+            println!("  disagree {name}: DMG-08 {want}, board {got}");
+        }
+    }
+    if let Some(path) = opt(args, "--write") {
+        let text: String = agree.iter().map(|r| format!("{}\n", r.0)).collect();
+        std::fs::write(path, text).expect("write");
+    }
+}
+
 fn opt(args: &[String], name: &str) -> Option<String> {
     args.iter()
         .position(|a| a == name)
@@ -433,6 +510,7 @@ fn main() {
         Some("mealybug-dmg") => mealybug_dmg(&args[1..]),
         Some("cgb-pictures") => cgb_pictures(&args[1..]),
         Some("pictures") => pictures(),
+        Some("gambatte-audio") => gambatte_audio(&args[1..]),
         _ => {
             eprintln!("usage: gameboy-suite gambatte|mealybug-dmg|cgb-pictures|pictures [options]");
             std::process::exit(2);

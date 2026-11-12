@@ -51,6 +51,7 @@ fn main() {
     let mut apu_values = true;
     let mut out_path: Option<PathBuf> = None;
     let mut save_at: i64 = -1;
+    let mut audio = false;
     let mut i = 0;
     while i < args.len() {
         let a = args[i].clone();
@@ -66,6 +67,7 @@ fn main() {
             "--detail" => detail = value().parse().expect("detail"),
             "--mask-apu" => apu_values = false,
             "--out" => out_path = Some(PathBuf::from(value())),
+            "--audio" => audio = true,
             "--save-at" => save_at = value().parse().expect("save-at"),
             _ => rom = Some(PathBuf::from(a)),
         }
@@ -81,6 +83,7 @@ fn main() {
     let cart = load_cartridge(&data, Clock::Board).expect("cartridge");
     let mut gb = GameBoy::new(cart, m, image.clone()).expect("board");
     gb.hw.bus_log = Some(Vec::new());
+    gb.hw.apu.capture = audio;
     let inputs = read_inputs(input.as_deref());
     let names: Vec<&str> = BUTTONS.iter().chain(DIRECTIONS.iter()).copied().collect();
     let mut pressed: Vec<String> = Vec::new();
@@ -150,7 +153,7 @@ fn main() {
         let pic = h.finalize();
         let c = &gb.cpu;
         let t = &gb.hw.timer;
-        writeln!(
+        write!(
             out,
             "{} t={} pc={:04x} sp={:04x} af={:02x}{:02x} bc={:02x}{:02x} de={:02x}{:02x} \
              hl={:02x}{:02x} ie={:02x} if={:02x} ime={} halt={} stop={} div={:04x} tima={:02x} \
@@ -187,6 +190,15 @@ fn main() {
             pic
         )
         .unwrap();
+        if audio {
+            let samples = gb.hw.apu.take_samples();
+            let mut h = crc32fast::Hasher::new();
+            for v in &samples {
+                h.update(&v.to_le_bytes());
+            }
+            write!(out, " snd={:08x}/{}", h.finalize(), samples.len()).unwrap();
+        }
+        writeln!(out).unwrap();
         if index as i64 == detail {
             for r in &log {
                 let kind = ['r', 'w', 'i'][((r >> 24) & 3) as usize];
