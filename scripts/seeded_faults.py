@@ -29,13 +29,16 @@ FAULTS = [
      "pub const FIRST_OBJECT_DISCOUNT: i32 = 3;", "pub const FIRST_OBJECT_DISCOUNT: i32 = 2;"),
     ("ppu: mode read lag", "src/ppu.rs",
      "pub const MODE0_READ_LAG: i32 = 1;", "pub const MODE0_READ_LAG: i32 = 2;"),
-    ("ppu: LY=LYC flag at line 153", "src/ppu.rs",
-     "return if self.dot < 8 { LAST_LINE } else { 0 };", "return if self.dot < 12 { LAST_LINE } else { 0 };"),
+    # (replaced: LY=LYC compare at line 153, dot < 8 -> 12, is equivalent: lyc_match masks dots 8-11)
+    ("ppu: HBlank IRQ lead", "src/ppu.rs",
+     "pub const HBLANK_IRQ_EARLY: i32 = 2;", "pub const HBLANK_IRQ_EARLY: i32 = 3;"),
     ("ppu: VBlank IF lateness", "src/ppu.rs",
      "pub const VBLANK_IF_LATE: i32 = 4;", "pub const VBLANK_IF_LATE: i32 = 0;"),
-    ("ppu: window line counter", "src/ppu.rs",
-     "self.window_line = (self.window_line + 1) & 255;\n        }\n        self.window_used = false;",
-     "self.window_line = (self.window_line + 2) & 255;\n        }\n        self.window_used = false;"),
+    # (replaced: ppu.window_line + 2 is equivalent: the timing PPU never reads window_line, here or
+    # in the reference; the picture's window row is pixels.wly)
+    ("pixels: window row counter", "src/pixels.rs",
+     "self.w_activating = true;\n        self.wly = (self.wly + 1) & 255;",
+     "self.w_activating = true;\n        self.wly = (self.wly + 2) & 255;"),
     ("pixels: DMG BGP glitch", "src/pixels.rs",
      "self.framebuffer[i] = (((p.bgp | self.last_bgp) >> (colour * 2)) & 3) as u16;",
      "self.framebuffer[i] = ((p.bgp >> (colour * 2)) & 3) as u16;"),

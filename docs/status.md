@@ -29,6 +29,24 @@ B=/data/emu/gameboy-python/tests/test_roms/gbtr/blargg
 for f in $B/cpu_instrs/individual/*.gb; do target/release/gameboy $f --protocol blargg-serial --max-frames 2000; done
 ```
 
+| faults | 17 of 18 seeded one-line faults caught over `cases.tsv`, `cases-rung3/5/6.tsv` and `cases-targeted.tsv` (168 cases: Mooneye mbc/timer/oam_dma/ppu, GBMicrotest vblank/lyc/win/dma, all identical on the true board): PPU (OAM scan height, first-object discount, mode-0 read lag, VBlank IF lateness, HBlank IRQ lead), pixels (DMG BGP glitch, CGB register delay, window row counter), DMA (start delay, length, bus conflict), timer (TAC=01 bit, reload-cycle write, DIV-write edge), cartridge (MBC1 bank 0, MBC3 RTC carry), serial clock bit. MISSED: MBC5 ROM bank bit 8 (no case reads banks 256+ differently: Mooneye `mbc5/rom_64Mb` passes with the bit stuck at 0, on both boards; a >4 MB MBC5 dump case would close it). Two first-draft mutants were equivalent and were replaced (LY=LYC compare at line 153 `dot < 8 -> 12`, masked by `lyc_match`; the timing PPU's `window_line`, written but never read here or in the reference) | `python3 scripts/seeded_faults.py --cases scripts/cases.tsv --cases scripts/cases-rung3.tsv --cases scripts/cases-rung5.tsv --cases scripts/cases-rung6.tsv --cases scripts/cases-targeted.tsv` (worktree at external/faults-tree) |
+
+## Findings about the reference
+
+No divergence where gameboy-python looks wrong; nothing for sm83-rust either. Two of its
+committed pass lists are older than the pin (the reference at `efdde44` agrees with this board):
+`tests/gambatte_cgb04c_pass.txt` (2,864; the pin passes 2,867 from skip-boot) and
+`tests/gambatte_audio_pass.txt` (76; the pin agrees on 82 of 87). The PPU's `window_line` is
+dead state (written, never read).
+
+## Next
+
+The brief's rungs are all done. Open: CI needs the repository secret `SM83_RUST_TOKEN` (read
+access to alewman/sm83-rust and alewman/gb-apu-rust) before it can check out the path
+dependencies; APU state in save states (needs serde in gb-apu-rust); an MBC5 >4 MB case for the
+missed fault; pin-2 (gameboy-python master past `efdde44`: the CGB revision rows, CGB E line-153
+changes) when Aubrey tags it; then gameboy-rust-fast and the SDL2 `play` window.
+
 ## APU
 
 gb-apu-rust (`/data/emu/gb-apu-rust` 0c2c240, its ladder passed) is adopted by path since rung
