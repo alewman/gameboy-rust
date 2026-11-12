@@ -1,0 +1,120 @@
+# name	slices	rom	arguments: rung 7 (APU): run with --extra=--audio (sample CRC per slice); APU register values compared
+dmg_sound/01-registers	1200	$GBTR/blargg/dmg_sound/rom_singles/01-registers.gb	
+dmg_sound/02-len ctr	1200	$GBTR/blargg/dmg_sound/rom_singles/02-len ctr.gb	
+dmg_sound/03-trigger	1200	$GBTR/blargg/dmg_sound/rom_singles/03-trigger.gb	
+dmg_sound/04-sweep	1200	$GBTR/blargg/dmg_sound/rom_singles/04-sweep.gb	
+dmg_sound/05-sweep details	1200	$GBTR/blargg/dmg_sound/rom_singles/05-sweep details.gb	
+dmg_sound/06-overflow on trigger	1200	$GBTR/blargg/dmg_sound/rom_singles/06-overflow on trigger.gb	
+dmg_sound/07-len sweep period sync	1200	$GBTR/blargg/dmg_sound/rom_singles/07-len sweep period sync.gb	
+dmg_sound/08-len ctr during power	1200	$GBTR/blargg/dmg_sound/rom_singles/08-len ctr during power.gb	
+dmg_sound/09-wave read while on	1200	$GBTR/blargg/dmg_sound/rom_singles/09-wave read while on.gb	
+dmg_sound/10-wave trigger while on	1200	$GBTR/blargg/dmg_sound/rom_singles/10-wave trigger while on.gb	
+dmg_sound/11-regs after power	1200	$GBTR/blargg/dmg_sound/rom_singles/11-regs after power.gb	
+dmg_sound/12-wave write while on	1200	$GBTR/blargg/dmg_sound/rom_singles/12-wave write while on.gb	
+cgb_sound/01-registers	1200	$GBTR/blargg/cgb_sound/rom_singles/01-registers.gb	--machine cgb
+cgb_sound/02-len ctr	1200	$GBTR/blargg/cgb_sound/rom_singles/02-len ctr.gb	--machine cgb
+cgb_sound/03-trigger	1200	$GBTR/blargg/cgb_sound/rom_singles/03-trigger.gb	--machine cgb
+cgb_sound/04-sweep	1200	$GBTR/blargg/cgb_sound/rom_singles/04-sweep.gb	--machine cgb
+cgb_sound/05-sweep details	1200	$GBTR/blargg/cgb_sound/rom_singles/05-sweep details.gb	--machine cgb
+cgb_sound/06-overflow on trigger	1200	$GBTR/blargg/cgb_sound/rom_singles/06-overflow on trigger.gb	--machine cgb
+cgb_sound/07-len sweep period sync	1200	$GBTR/blargg/cgb_sound/rom_singles/07-len sweep period sync.gb	--machine cgb
+cgb_sound/08-len ctr during power	1200	$GBTR/blargg/cgb_sound/rom_singles/08-len ctr during power.gb	--machine cgb
+cgb_sound/09-wave read while on	1200	$GBTR/blargg/cgb_sound/rom_singles/09-wave read while on.gb	--machine cgb
+cgb_sound/10-wave trigger while on	1200	$GBTR/blargg/cgb_sound/rom_singles/10-wave trigger while on.gb	--machine cgb
+cgb_sound/11-regs after power	1200	$GBTR/blargg/cgb_sound/rom_singles/11-regs after power.gb	--machine cgb
+cgb_sound/12-wave	1200	$GBTR/blargg/cgb_sound/rom_singles/12-wave.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_align.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_align.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_align_cpu.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_align_cpu.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_delay.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_delay.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_duty.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_duty.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_duty_delay.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_duty_delay.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_extra_length_clocking-cgb0B.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_extra_length_clocking-cgb0B.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_freq_change.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_freq_change.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_freq_change_timing-A.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_freq_change_timing-A.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_freq_change_timing-cgb0BC.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_freq_change_timing-cgb0BC.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_freq_change_timing-cgbDE.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_freq_change_timing-cgbDE.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_nrx2_glitch.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_nrx2_glitch.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_nrx2_speed_change.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_nrx2_speed_change.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_restart.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_restart.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_restart_nrx2_glitch.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_restart_nrx2_glitch.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_stop_div.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_stop_div.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_stop_restart.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_stop_restart.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_sweep.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_sweep.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_sweep_restart.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_sweep_restart.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_sweep_restart_2.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_sweep_restart_2.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_volume.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_volume.gb	--machine cgb
+samesuite/apu/channel_1/channel_1_volume_div.gb	300	$GBTR/same-suite/apu/channel_1/channel_1_volume_div.gb	--machine cgb
+samesuite/apu/channel_2/channel_2_align.gb	300	$GBTR/same-suite/apu/channel_2/channel_2_align.gb	--machine cgb
+samesuite/apu/channel_2/channel_2_align_cpu.gb	300	$GBTR/same-suite/apu/channel_2/channel_2_align_cpu.gb	--machine cgb
+samesuite/apu/channel_2/channel_2_delay.gb	300	$GBTR/same-suite/apu/channel_2/channel_2_delay.gb	--machine cgb
+samesuite/apu/channel_2/channel_2_duty.gb	300	$GBTR/same-suite/apu/channel_2/channel_2_duty.gb	--machine cgb
+samesuite/apu/channel_2/channel_2_duty_delay.gb	300	$GBTR/same-suite/apu/channel_2/channel_2_duty_delay.gb	--machine cgb
+samesuite/apu/channel_2/channel_2_extra_length_clocking-cgb0B.gb	300	$GBTR/same-suite/apu/channel_2/channel_2_extra_length_clocking-cgb0B.gb	--machine cgb
+samesuite/apu/channel_2/channel_2_freq_change.gb	300	$GBTR/same-suite/apu/channel_2/channel_2_freq_change.gb	--machine cgb
+samesuite/apu/channel_2/channel_2_nrx2_glitch.gb	300	$GBTR/same-suite/apu/channel_2/channel_2_nrx2_glitch.gb	--machine cgb
+samesuite/apu/channel_2/channel_2_nrx2_speed_change.gb	300	$GBTR/same-suite/apu/channel_2/channel_2_nrx2_speed_change.gb	--machine cgb
+samesuite/apu/channel_2/channel_2_restart.gb	300	$GBTR/same-suite/apu/channel_2/channel_2_restart.gb	--machine cgb
+samesuite/apu/channel_2/channel_2_restart_nrx2_glitch.gb	300	$GBTR/same-suite/apu/channel_2/channel_2_restart_nrx2_glitch.gb	--machine cgb
+samesuite/apu/channel_2/channel_2_stop_div.gb	300	$GBTR/same-suite/apu/channel_2/channel_2_stop_div.gb	--machine cgb
+samesuite/apu/channel_2/channel_2_stop_restart.gb	300	$GBTR/same-suite/apu/channel_2/channel_2_stop_restart.gb	--machine cgb
+samesuite/apu/channel_2/channel_2_volume.gb	300	$GBTR/same-suite/apu/channel_2/channel_2_volume.gb	--machine cgb
+samesuite/apu/channel_2/channel_2_volume_div.gb	300	$GBTR/same-suite/apu/channel_2/channel_2_volume_div.gb	--machine cgb
+samesuite/apu/channel_3/channel_3_and_glitch.gb	300	$GBTR/same-suite/apu/channel_3/channel_3_and_glitch.gb	--machine cgb
+samesuite/apu/channel_3/channel_3_delay.gb	300	$GBTR/same-suite/apu/channel_3/channel_3_delay.gb	--machine cgb
+samesuite/apu/channel_3/channel_3_extra_length_clocking-cgb0.gb	300	$GBTR/same-suite/apu/channel_3/channel_3_extra_length_clocking-cgb0.gb	--machine cgb
+samesuite/apu/channel_3/channel_3_extra_length_clocking-cgbB.gb	300	$GBTR/same-suite/apu/channel_3/channel_3_extra_length_clocking-cgbB.gb	--machine cgb
+samesuite/apu/channel_3/channel_3_first_sample.gb	300	$GBTR/same-suite/apu/channel_3/channel_3_first_sample.gb	--machine cgb
+samesuite/apu/channel_3/channel_3_freq_change_delay.gb	300	$GBTR/same-suite/apu/channel_3/channel_3_freq_change_delay.gb	--machine cgb
+samesuite/apu/channel_3/channel_3_restart_delay.gb	300	$GBTR/same-suite/apu/channel_3/channel_3_restart_delay.gb	--machine cgb
+samesuite/apu/channel_3/channel_3_restart_during_delay.gb	300	$GBTR/same-suite/apu/channel_3/channel_3_restart_during_delay.gb	--machine cgb
+samesuite/apu/channel_3/channel_3_restart_stop_delay.gb	300	$GBTR/same-suite/apu/channel_3/channel_3_restart_stop_delay.gb	--machine cgb
+samesuite/apu/channel_3/channel_3_shift_delay.gb	300	$GBTR/same-suite/apu/channel_3/channel_3_shift_delay.gb	--machine cgb
+samesuite/apu/channel_3/channel_3_shift_skip_delay.gb	300	$GBTR/same-suite/apu/channel_3/channel_3_shift_skip_delay.gb	--machine cgb
+samesuite/apu/channel_3/channel_3_stop_delay.gb	300	$GBTR/same-suite/apu/channel_3/channel_3_stop_delay.gb	--machine cgb
+samesuite/apu/channel_3/channel_3_stop_div.gb	300	$GBTR/same-suite/apu/channel_3/channel_3_stop_div.gb	--machine cgb
+samesuite/apu/channel_3/channel_3_wave_ram_dac_on_rw.gb	300	$GBTR/same-suite/apu/channel_3/channel_3_wave_ram_dac_on_rw.gb	--machine cgb
+samesuite/apu/channel_3/channel_3_wave_ram_locked_write.gb	300	$GBTR/same-suite/apu/channel_3/channel_3_wave_ram_locked_write.gb	--machine cgb
+samesuite/apu/channel_3/channel_3_wave_ram_sync.gb	300	$GBTR/same-suite/apu/channel_3/channel_3_wave_ram_sync.gb	--machine cgb
+samesuite/apu/channel_4/channel_4_align.gb	300	$GBTR/same-suite/apu/channel_4/channel_4_align.gb	--machine cgb
+samesuite/apu/channel_4/channel_4_delay.gb	300	$GBTR/same-suite/apu/channel_4/channel_4_delay.gb	--machine cgb
+samesuite/apu/channel_4/channel_4_equivalent_frequencies.gb	300	$GBTR/same-suite/apu/channel_4/channel_4_equivalent_frequencies.gb	--machine cgb
+samesuite/apu/channel_4/channel_4_extra_length_clocking-cgb0B.gb	300	$GBTR/same-suite/apu/channel_4/channel_4_extra_length_clocking-cgb0B.gb	--machine cgb
+samesuite/apu/channel_4/channel_4_freq_change.gb	300	$GBTR/same-suite/apu/channel_4/channel_4_freq_change.gb	--machine cgb
+samesuite/apu/channel_4/channel_4_frequency_alignment.gb	300	$GBTR/same-suite/apu/channel_4/channel_4_frequency_alignment.gb	--machine cgb
+samesuite/apu/channel_4/channel_4_lfsr.gb	300	$GBTR/same-suite/apu/channel_4/channel_4_lfsr.gb	--machine cgb
+samesuite/apu/channel_4/channel_4_lfsr15.gb	300	$GBTR/same-suite/apu/channel_4/channel_4_lfsr15.gb	--machine cgb
+samesuite/apu/channel_4/channel_4_lfsr_15_7.gb	300	$GBTR/same-suite/apu/channel_4/channel_4_lfsr_15_7.gb	--machine cgb
+samesuite/apu/channel_4/channel_4_lfsr_7_15.gb	300	$GBTR/same-suite/apu/channel_4/channel_4_lfsr_7_15.gb	--machine cgb
+samesuite/apu/channel_4/channel_4_lfsr_restart.gb	300	$GBTR/same-suite/apu/channel_4/channel_4_lfsr_restart.gb	--machine cgb
+samesuite/apu/channel_4/channel_4_lfsr_restart_fast.gb	300	$GBTR/same-suite/apu/channel_4/channel_4_lfsr_restart_fast.gb	--machine cgb
+samesuite/apu/channel_4/channel_4_volume_div.gb	300	$GBTR/same-suite/apu/channel_4/channel_4_volume_div.gb	--machine cgb
+samesuite/apu/div_trigger_volume_10.gb	300	$GBTR/same-suite/apu/div_trigger_volume_10.gb	--machine cgb
+samesuite/apu/div_write_trigger.gb	300	$GBTR/same-suite/apu/div_write_trigger.gb	--machine cgb
+samesuite/apu/div_write_trigger_10.gb	300	$GBTR/same-suite/apu/div_write_trigger_10.gb	--machine cgb
+samesuite/apu/div_write_trigger_volume.gb	300	$GBTR/same-suite/apu/div_write_trigger_volume.gb	--machine cgb
+samesuite/apu/div_write_trigger_volume_10.gb	300	$GBTR/same-suite/apu/div_write_trigger_volume_10.gb	--machine cgb
+gambatte-audio/ch1_duty0_pattern_pos0_dmg08_cgb04c_outaudio0	360	$GBTR/gambatte/sound/ch1_duty0_pattern_pos0_dmg08_cgb04c_outaudio0.gbc	--boot real
+gambatte-audio/ch1_duty0_pos6_to_pos7_timing_ds_2_cgb04c_outaudio1	360	$GBTR/gambatte/sound/ch1_duty0_pos6_to_pos7_timing_ds_2_cgb04c_outaudio1.gbc	--boot real
+gambatte-audio/ch1_duty1_pattern_pos3_dmg08_cgb04c_outaudio0	360	$GBTR/gambatte/sound/ch1_duty1_pattern_pos3_dmg08_cgb04c_outaudio0.gbc	--boot real
+gambatte-audio/ch1_duty2_pattern_pos6_dmg08_cgb04c_outaudio1	360	$GBTR/gambatte/sound/ch1_duty2_pattern_pos6_dmg08_cgb04c_outaudio1.gbc	--boot real
+gambatte-audio/ch1_init_pos_1_dmg08_outaudio0_cgb04c_outaudio1	360	$GBTR/gambatte/sound/ch1_init_pos_1_dmg08_outaudio0_cgb04c_outaudio1.gbc	--boot real
+gambatte-audio/ch1_init_reset_sweep_counter_timing_2_dmg08_xoutaudio1lowpitch_cgb04c_outaudio1	360	$GBTR/gambatte/sound/ch1_init_reset_sweep_counter_timing_2_dmg08_xoutaudio1lowpitch_cgb04c_outaudio1.gbc	--boot real
+gambatte-audio/ch2_init_pos_1_dmg08_cgb04c_outaudio0	360	$GBTR/gambatte/sound/ch2_init_pos_1_dmg08_cgb04c_outaudio0.gbc	--boot real
+gambatte-audio/ch2_init_reset_env_counter_timing_4_dmg08_outaudio0_cgb04c_outaudio1	360	$GBTR/gambatte/sound/ch2_init_reset_env_counter_timing_4_dmg08_outaudio0_cgb04c_outaudio1.gbc	--boot real
+gambatte-audio/ch2_init_reset_length_counter_timing_7_dmg08_outaudio0_cgb04c_outaudio1	360	$GBTR/gambatte/sound/ch2_init_reset_length_counter_timing_7_dmg08_outaudio0_cgb04c_outaudio1.gbc	--boot real
+gambatte-audio/speedchange3_ch1_duty0_pos6_to_pos7_timing_1_cgb04c_outaudio0	360	$GBTR/gambatte/speedchange/speedchange3_ch1_duty0_pos6_to_pos7_timing_1_cgb04c_outaudio0.gbc	--boot real
+gambatte-audio/speedchange5_ch1_duty0_pos6_to_pos7_timing_nop_1_cgb04c_outaudio0	360	$GBTR/gambatte/speedchange/speedchange5_ch1_duty0_pos6_to_pos7_timing_nop_1_cgb04c_outaudio0.gbc	--boot real
+gambatte-audio/speedchange_ch1_nr4init_duty0_pos6_to_pos7_timing_1_cgb04c_outaudio0	360	$GBTR/gambatte/speedchange/speedchange_ch1_nr4init_duty0_pos6_to_pos7_timing_1_cgb04c_outaudio0.gbc	--boot real
+audio-game/tetris	1800	$NOINTRO/Nintendo - Game Boy/Tetris (World) (Rev 1).zip	--input $INPUTS/poke.txt
+audio-game/super-mario-land	1800	$NOINTRO/Nintendo - Game Boy/Super Mario Land (World) (Rev 1).zip	--input $INPUTS/poke.txt
+audio-game/kirbys-dream-land	1800	$NOINTRO/Nintendo - Game Boy/Kirby's Dream Land (USA, Europe).zip	--input $INPUTS/poke.txt
+audio-game/links-awakening	1800	$NOINTRO/Nintendo - Game Boy/Legend of Zelda, The - Link's Awakening (USA, Europe) (Rev 2).zip	--input $INPUTS/poke.txt
+audio-game/pokemon-red	1800	$NOINTRO/Nintendo - Game Boy/Pokemon - Red Version (USA, Europe) (SGB Enhanced).zip	--input $INPUTS/poke.txt
+audio-game/kirbys-pinball-land	1200	$NOINTRO/Nintendo - Game Boy/Kirby's Pinball Land (USA, Europe).zip	--input $INPUTS/poke.txt
+audio-game/pokemon-yellow-cgb	1800	$NOINTRO/Nintendo - Game Boy/Pokemon - Yellow Version - Special Pikachu Edition (USA, Europe) (CGB+SGB Enhanced).zip	--machine cgb --input $INPUTS/poke.txt
+audio-game/links-awakening-dx-cgb	1800	$NOINTRO/Nintendo - Game Boy Color/Legend of Zelda, The - Link's Awakening DX (USA, Europe) (Rev 2) (SGB Enhanced) (GB Compatible).zip	--machine cgb --input $INPUTS/poke.txt
+audio-game/wario-land-3-cgb	1800	$NOINTRO/Nintendo - Game Boy Color/Wario Land 3 (World) (En,Ja).zip	--machine cgb --input $INPUTS/poke.txt
+audio-game/tetris-dx-dmg	1200	$NOINTRO/Nintendo - Game Boy Color/Tetris DX (World) (SGB Enhanced) (GB Compatible).zip	--input $INPUTS/poke.txt
+audio-game/super-mario-land-cgb-compat	1200	$NOINTRO/Nintendo - Game Boy/Super Mario Land (World) (Rev 1).zip	--machine cgb --input $INPUTS/poke.txt
+audio-game/pokemon-crystal-cgb	1800	$NOINTRO/Nintendo - Game Boy Color/Pokemon - Crystal Version (USA, Europe) (Rev 1).zip	--machine cgb --input $INPUTS/poke.txt
+audio-game/smb-deluxe-cgb	1800	$NOINTRO/Nintendo - Game Boy Color/Super Mario Bros. Deluxe (USA, Europe) (Rev 1).zip	--machine cgb --input $INPUTS/poke.txt
