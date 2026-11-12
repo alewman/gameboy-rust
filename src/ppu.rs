@@ -898,8 +898,7 @@ impl Ppu {
                 }
                 self.t1_obj = self.obj_entry.is_some(); // ... during an object's fetch
             }
-            if self.f_dot == [MAP_READ_DOT, LOW_READ_DOT, HIGH_READ_DOT][step as usize]
-                && step == 0
+            if self.f_dot == [MAP_READ_DOT, LOW_READ_DOT, HIGH_READ_DOT][step as usize] && step == 0
             {
                 self.ticket_col = self.fetch_col;
                 self.fetch_col += 1;
@@ -1217,11 +1216,9 @@ impl Ppu {
                     self.hblank_early = true; // the HBlank interrupt precedes mode 0 by a few dots
                 }
                 if self.x >= SCREEN_W as i32 {
-                    self.win_carry = (WX166_CARRY != 0
-                        && !self.cgb
-                        && self.wy_hit
-                        && lcdc & 0x20 != 0)
-                        && self.wx == 166;
+                    self.win_carry =
+                        (WX166_CARRY != 0 && !self.cgb && self.wy_hit && lcdc & 0x20 != 0)
+                            && self.wx == 166;
                     if self.mode3_start < MODE2_END {
                         // line 0: the pipeline ran early, STAT did not
                         self.mode0_dot = self.dot + MODE2_END - self.mode3_start;
@@ -1285,7 +1282,10 @@ impl Ppu {
         let rising = if self.stat_blocking {
             line && !self.stat_line
         } else {
-            sources.iter().zip(self.sources.iter()).any(|(&now, &before)| now && !before)
+            sources
+                .iter()
+                .zip(self.sources.iter())
+                .any(|(&now, &before)| now && !before)
         };
         if self.stat_blocking && sources[1] && !self.sources[1] && self.stat_line {
             // a STAT or LYC write later in this M-cycle lands first: dropping the source that
@@ -1753,11 +1753,7 @@ impl Ppu {
         if !self.lcd_on() {
             return 0;
         }
-        if LY_LEAD != 0
-            && !self.line0
-            && self.dot >= DOTS_PER_LINE - LY_LEAD
-            && self.ly < 143
-        {
+        if LY_LEAD != 0 && !self.line0 && self.dot >= DOTS_PER_LINE - LY_LEAD && self.ly < 143 {
             return (self.ly + 1) as u8; // LY reads as the next line a little before it starts
         }
         if self.ly_lead != 0 && self.dot >= DOTS_PER_LINE - self.ly_lead {

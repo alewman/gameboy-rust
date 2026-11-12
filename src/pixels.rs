@@ -789,8 +789,11 @@ impl Pixels {
         }
         let tile_x = self.win_x & 31;
         self.win_x += 1;
-        self.map_address = ((if self.lcdc & 0x40 != 0 { 0x1C00 } else { 0x1800 })
-            + (self.wly >> 3) * 32
+        self.map_address = ((if self.lcdc & 0x40 != 0 {
+            0x1C00
+        } else {
+            0x1800
+        }) + (self.wly >> 3) * 32
             + tile_x) as usize;
         if !(self.cgb && self.lx == self.wx as i32) {
             // CGB: WX met again keeps the last tile

@@ -15,8 +15,12 @@ name = "gameboy_rust"
 # sm83-rust (crate sm83), transcribed from sm83-python 95f2b8b, the revision gameboy-python pins.
 # A path dependency (docs/handoff-brief.md); the repository is private.
 sm83 = { path = "../sm83-rust" }
+# gb-apu-rust (crate gb_apu), transcribed from gb-apu-python b8cab61 (= the reference's f0a7f48 on
+# the DMG and CGB rows for even-T ticks). A path dependency; the repository is private.
+gb-apu-rust = { path = "../gb-apu-rust" }
 zip = { version = "2", default-features = false, features = ["deflate"] }
 crc32fast = "1"
+flate2 = "1"
 sha2 = "0.10"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

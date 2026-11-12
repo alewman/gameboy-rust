@@ -1,0 +1,42 @@
+name: CI
+
+# Kept small: main and pull requests, superseded runs cancelled. The reference (gameboy-python)
+# and the test ROMs and dumps are local, so the lockstep and suite rungs run by hand
+# (docs/status.md); CI runs fmt, clippy and the tests. The CPU crate is a path dependency on the
+# private alewman/sm83-rust, checked out beside this one: that needs a repository secret
+# SM83_RUST_TOKEN (a fine-grained token with read access to alewman/sm83-rust).
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: fmt, clippy, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: gameboy-rust
+      - uses: actions/checkout@v4
+        with:
+          repository: alewman/sm83-rust
+          ref: 105b8c1a440bf665048690df38a96ad0391c01bb
+          path: sm83-rust
+          token: ${{ secrets.SM83_RUST_TOKEN }}
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - run: cargo fmt --check
+        working-directory: gameboy-rust
+      - run: cargo clippy --release --all-targets -- -D warnings
+        working-directory: gameboy-rust
+      - run: cargo test --release
+        working-directory: gameboy-rust

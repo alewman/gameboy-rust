@@ -139,9 +139,6 @@ pub fn run_microtest(gb: &mut GameBoy, frames: u64, vram_flag: bool) -> RomResul
         );
     }
     let r = gb.hw.hram[0x02];
-    let text = format!(
-        "got ${:02X} expected ${:02X}",
-        gb.hw.hram[0], gb.hw.hram[1]
-    );
+    let text = format!("got ${:02X} expected ${:02X}", gb.hw.hram[0], gb.hw.hram[1]);
     result(gb, "microtest", r == 1, text)
 }

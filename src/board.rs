@@ -22,7 +22,7 @@
 use serde::{Deserialize, Serialize};
 use sm83::{CpuState, Sm83, StopAction, StopResult};
 
-use crate::apu::Apu;
+use crate::apu::{self, APU};
 use crate::cartridge::Cartridge;
 use crate::dma::{bus_of, Bus as DmaBus};
 use crate::joypad::Joypad;
@@ -172,12 +172,7 @@ pub fn ppu_irq(ppu: &mut Ppu, ctx: &mut IrqCtx, bit: u8) {
         0
     };
     // the dot within the M-cycle as it would be without the PPU's lead (IRQ_LEAD)
-    let sub = ppu.sub
-        + if ppu.double_speed {
-            0
-        } else {
-            ppu::IRQ_LEAD
-        };
+    let sub = ppu.sub + if ppu.double_speed { 0 } else { ppu::IRQ_LEAD };
     if bit == 1 && ppu.irq_defer {
         // raised in the dots after the access: the dispatch sees it a cycle later, as if the
         // PPU had no lead (IRQ_LEAD)
@@ -244,8 +239,9 @@ impl DmaKind {
     }
 }
 
-/// Everything on the board but the CPU: sm83's `Bus`.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+/// Everything on the board but the CPU: sm83's `Bus`. (Not `Clone`/`Debug`: gb_apu's `APU` is
+/// neither.)
+#[derive(Serialize, Deserialize)]
 pub struct Hw {
     #[serde(skip, default = "default_machine")]
     pub machine: Machine,
@@ -299,7 +295,8 @@ pub struct Hw {
     pub joypad: Joypad,
     pub irq: IrqBoard,
     pub ppu: Ppu,
-    pub apu: Apu,
+    #[serde(skip, default = "apu::placeholder")]
+    pub apu: APU,
     /// every M-cycle (`t << 26 | kind << 24 | address << 8 | value`; kind 0 read, 1 write, 2
     /// internal), when the lockstep gate asks for it
     #[serde(skip)]
@@ -311,7 +308,6 @@ fn default_machine() -> Machine {
 }
 
 /// One console: a machine row, a cartridge, an optional boot ROM, and all the units.
-#[derive(Clone, Debug)]
 pub struct GameBoy {
     pub cpu: Sm83,
     pub hw: Hw,
@@ -381,7 +377,7 @@ impl GameBoy {
                 ..IrqBoard::default()
             },
             ppu,
-            apu: Apu::new(cgb),
+            apu: apu::new(cgb),
             bus_log: None,
         };
         let mut gb = GameBoy {
@@ -672,7 +668,7 @@ impl Hw {
         } else if self.timer.previous & apu_bit == 0 && self.timer.counter & apu_bit != 0 {
             self.apu.secondary_tick(); // and the rising edge half a period later
         }
-        self.apu.tick(dots);
+        self.apu.tick(dots as u32);
         self.serial.tick(self.timer.previous, self.timer.counter);
         self.take_serial_irq(cpu);
         {
@@ -825,7 +821,7 @@ impl Hw {
         self.stopped = 2;
         let dots = if self.double_speed { 2 } else { 4 };
         self.t += dots as u64;
-        self.apu.tick(dots);
+        self.apu.tick(dots as u32);
         if self.cgb {
             let mut ctx = IrqCtx {
                 cpu: &mut *cpu,
@@ -863,9 +859,7 @@ impl Hw {
 
     fn log(&mut self, kind: u64, address: u16, value: u8) {
         if let Some(log) = self.bus_log.as_mut() {
-            log.push(
-                (self.t << 26) | (kind << 24) | ((address as u64) << 8) | value as u64,
-            );
+            log.push((self.t << 26) | (kind << 24) | ((address as u64) << 8) | value as u64);
         }
     }
 
@@ -1212,7 +1206,13 @@ impl Hw {
                     0xFF
                 }
             }
-            0x68 | 0x6A => (if low == 0x6A { self.ppu.ocps } else { self.ppu.bcps }) | 0x40,
+            0x68 | 0x6A => {
+                (if low == 0x6A {
+                    self.ppu.ocps
+                } else {
+                    self.ppu.bcps
+                }) | 0x40
+            }
             0x69 | 0x6B => {
                 if !mode && !self.boot_mapped {
                     return 0xFF;

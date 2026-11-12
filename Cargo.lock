@@ -116,6 +116,7 @@ checksum = "626d4928326b646e70f65ed36fc7cf9f206bdb68a0019ee7c6b4709da4e084c4"
 dependencies = [
  "crc32fast",
  "miniz_oxide",
+ "zlib-rs",
 ]
 
 [[package]]
@@ -124,12 +125,18 @@ version = "0.1.0"
 dependencies = [
  "bincode",
  "crc32fast",
+ "flate2",
+ "gb-apu-rust",
  "serde",
  "serde_json",
  "sha2",
  "sm83",
  "zip",
 ]
+
+[[package]]
+name = "gb-apu-rust"
+version = "0.1.0"
 
 [[package]]
 name = "generic-array"
@@ -320,6 +327,12 @@ dependencies = [
  "memchr",
  "zopfli",
 ]
+
+[[package]]
+name = "zlib-rs"
+version = "0.6.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b268e58e7c693d7c271f93ffc4ba3b380412554231c85bf61ca7af91042a4112"
 
 [[package]]
 name = "zmij"

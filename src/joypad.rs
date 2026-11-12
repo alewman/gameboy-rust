@@ -69,7 +69,10 @@ impl Joypad {
         if let Some(i) = BUTTONS.iter().position(|b| *b == name) {
             return Some(1 << i);
         }
-        DIRECTIONS.iter().position(|b| *b == name).map(|i| 1 << (4 + i))
+        DIRECTIONS
+            .iter()
+            .position(|b| *b == name)
+            .map(|i| 1 << (4 + i))
     }
 
     /// A host-side button change; raises the joypad interrupt on a selected press.

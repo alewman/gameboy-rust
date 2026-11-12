@@ -15,6 +15,7 @@ pub mod dma;
 pub mod joypad;
 pub mod machines;
 pub mod pixels;
+pub mod pngread;
 pub mod ppu;
 pub mod serial;
 pub mod testrom;

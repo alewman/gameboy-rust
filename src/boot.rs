@@ -46,9 +46,7 @@ pub fn nointro() -> PathBuf {
 fn reference_root() -> PathBuf {
     std::env::var("GAMEBOY_REFERENCE_ROOT")
         .map(PathBuf::from)
-        .unwrap_or_else(|_| {
-            Path::new(env!("CARGO_MANIFEST_DIR")).join("external/gameboy-python")
-        })
+        .unwrap_or_else(|_| Path::new(env!("CARGO_MANIFEST_DIR")).join("external/gameboy-python"))
 }
 
 pub fn quickboot() -> PathBuf {
@@ -77,7 +75,10 @@ pub fn read_image(path: &Path) -> std::io::Result<Vec<u8>> {
 }
 
 fn sha256_hex(data: &[u8]) -> String {
-    Sha256::digest(data).iter().map(|b| format!("{b:02x}")).collect()
+    Sha256::digest(data)
+        .iter()
+        .map(|b| format!("{b:02x}"))
+        .collect()
 }
 
 /// The boot image for `name` and a label saying where it came from (None: skip boot).
