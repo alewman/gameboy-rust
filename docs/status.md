@@ -1,9 +1,14 @@
 # Status
 
-Brief: [handoff-brief.md](handoff-brief.md). Reference: gameboy-python at tag
-`gameboy-rust-pin-1` (`efdde44`), cloned to `external/gameboy-python` (not committed);
-its interpreter is `external/venv` (PyPy 3.11 with sm83-python `95f2b8b` and gb-apu-python
-`f0a7f48` installed from the local checkouts, gameboy-python editable from the clone).
+Every rung passes; the ladder below was run on 2026-11-12, the last rung and the seeded faults
+at `8887cea`. Reference: gameboy-python at tag `gameboy-rust-pin-1` (`efdde44`), cloned to
+`external/gameboy-python` (not committed); its interpreter is `external/venv` (PyPy 3.11 with
+sm83-python `95f2b8b` and gb-apu-python `f0a7f48`, gameboy-python editable from the clone).
+The crate was built from [handoff-brief.md](handoff-brief.md) (historical).
+
+Re-checked at `8887cea` (2026-11-12, docs-only changes since): `cargo test --release` 3 pass,
+`cargo fmt --check` and `cargo clippy --release --all-targets -- -D warnings` (clippy 0.1.99)
+clean, the gate on `cases.tsv` 36 of 36 identical and 36 of 36 with `--save-at-half`.
 
 ## Rungs
 
@@ -16,20 +21,23 @@ its interpreter is `external/venv` (PyPy 3.11 with sm83-python `95f2b8b` and gb-
 | 5 | Every board class under the gate on a dump that uses it: `cases-rung5.tsv` 21 of 21 identical (ROM-only, MBC1, MBC1+RAM+battery, MBC1M multicart x2, MBC2, MBC3+RAM+battery, MBC3+timer x3 incl. CGB, MBC30, MBC5, MBC5+rumble, MMM01 x2; rtc3test basic/range/sub-second and mbc3-tester on DMG and CGB). The MBC3 clock runs on board time on both sides. (No No-Intro dump uses ROM+RAM, $08/$09.) Dumps found by `scripts/mapper_dumps.py` | `lockstep.py --cases scripts/cases-rung5.tsv` |
 | 6 | Every row of `machines.py` under the gate: `cases-rung6.tsv` 40 of 40 identical (DMG-0/A/B/C and MGB from their real boot ROMs, SGB/SGB2 from skip-boot, CGB; dmg-acid2, boot_regs, boot_hwio, stat_irq_blocking, oam_bug 5, Tetris). Save states (`src/state.rs`, the reference has none): the round trip (save half way, load into a new console, go on) identical to the reference's uninterrupted trace on every case of `cases.tsv`, `cases-rung5.tsv` and `cases-rung6.tsv` (97 of 97); `tests/board.rs` checks it without ROMs | `lockstep.py --cases scripts/cases-rung6.tsv`; add `--save-at-half` for the round trip |
 | 7 | gb-apu-rust adopted (by path, 0c2c240). APU register reads and writes are in every gate comparison (all case tables above, identical). `cases-rung7.tsv` with `--extra=--audio` (a CRC of each slice's 44.1 kHz samples, `apu.capture`): 119 of 119 identical (blargg dmg_sound and cgb_sound singles, SameSuite apu, every 12th Gambatte outaudio ROM from the real boot ROM, the 13 game cases). Gambatte audio (`gameboy-suite gambatte-audio`, real DMG boot ROM, `APU.audible()` in the last of 15 frames): 82 of 87 agree with the DMG-08, the same 82 as the reference at the pin (its committed `tests/gambatte_audio_pass.txt` has 76: stale by 6). blargg dmg_sound/cgb_sound verdicts are in rung 4's jobs, identical | `lockstep.py --cases scripts/cases-rung7.tsv --extra=--audio`; `gameboy-suite gambatte-audio --write F` and diff with the reference's `scripts/gambatte_audio.py --write` |
+| faults | 17 of 18 seeded one-line faults caught over `cases.tsv`, `cases-rung3/5/6.tsv` and `cases-targeted.tsv` (168 cases: Mooneye mbc/timer/oam_dma/ppu, GBMicrotest vblank/lyc/win/dma, all identical on the true board): PPU (OAM scan height, first-object discount, mode-0 read lag, VBlank IF lateness, HBlank IRQ lead), pixels (DMG BGP glitch, CGB register delay, window row counter), DMA (start delay, length, bus conflict), timer (TAC=01 bit, reload-cycle write, DIV-write edge), cartridge (MBC1 bank 0, MBC3 RTC carry), serial clock bit. MISSED: MBC5 ROM bank bit 8 (no case reads banks 256+ differently: Mooneye `mbc5/rom_64Mb` passes with the bit stuck at 0, on both boards; a >4 MB MBC5 dump case would close it). Two first-draft mutants were equivalent and were replaced (LY=LYC compare at line 153 `dot < 8 -> 12`, masked by `lyc_match`; the timing PPU's `window_line`, written but never read here or in the reference) | `python3 scripts/seeded_faults.py --cases scripts/cases.tsv --cases scripts/cases-rung3.tsv --cases scripts/cases-rung5.tsv --cases scripts/cases-rung6.tsv --cases scripts/cases-targeted.tsv` (worktree at external/faults-tree) |
+
+Setup, once (the reference repositories beside this one). The test ROMs are the ones the
+reference's `scripts/fetch_references.py` puts in its `tests/test_roms/`; the case tables and
+`gameboy-suite` read them in place, by default from `/data/emu/gameboy-python/tests/test_roms`
+and No-Intro dumps from `/data/emu/source/...`: set `GBTR`, `MTS` and `NOINTRO` to move them.
 
 ```sh
-# setup (once)
-git clone /data/emu/gameboy-python external/gameboy-python && git -C external/gameboy-python checkout gameboy-rust-pin-1
-~/.local/opt/pypy/bin/pypy3 -m venv external/venv
-external/venv/bin/pip install "git+file:///data/emu/sm83-python@95f2b8b39c1a1b3890d3b47b39cb1f698e948eca" \
-    "git+file:///data/emu/gb-apu-python@f0a7f48b72dab9cf019cefc3968a09d0227fd189"
+git clone ../gameboy-python external/gameboy-python && git -C external/gameboy-python checkout gameboy-rust-pin-1
+pypy3 -m venv external/venv
+external/venv/bin/pip install "git+file://$PWD/../sm83-python@95f2b8b39c1a1b3890d3b47b39cb1f698e948eca" \
+    "git+file://$PWD/../gb-apu-python@f0a7f48b72dab9cf019cefc3968a09d0227fd189"
 external/venv/bin/pip install --no-deps -e external/gameboy-python
 # rung 1
-B=/data/emu/gameboy-python/tests/test_roms/gbtr/blargg
+B=${GBTR:-/data/emu/gameboy-python/tests/test_roms/gbtr}/blargg
 for f in $B/cpu_instrs/individual/*.gb; do target/release/gameboy $f --protocol blargg-serial --max-frames 2000; done
 ```
-
-| faults | 17 of 18 seeded one-line faults caught over `cases.tsv`, `cases-rung3/5/6.tsv` and `cases-targeted.tsv` (168 cases: Mooneye mbc/timer/oam_dma/ppu, GBMicrotest vblank/lyc/win/dma, all identical on the true board): PPU (OAM scan height, first-object discount, mode-0 read lag, VBlank IF lateness, HBlank IRQ lead), pixels (DMG BGP glitch, CGB register delay, window row counter), DMA (start delay, length, bus conflict), timer (TAC=01 bit, reload-cycle write, DIV-write edge), cartridge (MBC1 bank 0, MBC3 RTC carry), serial clock bit. MISSED: MBC5 ROM bank bit 8 (no case reads banks 256+ differently: Mooneye `mbc5/rom_64Mb` passes with the bit stuck at 0, on both boards; a >4 MB MBC5 dump case would close it). Two first-draft mutants were equivalent and were replaced (LY=LYC compare at line 153 `dot < 8 -> 12`, masked by `lyc_match`; the timing PPU's `window_line`, written but never read here or in the reference) | `python3 scripts/seeded_faults.py --cases scripts/cases.tsv --cases scripts/cases-rung3.tsv --cases scripts/cases-rung5.tsv --cases scripts/cases-rung6.tsv --cases scripts/cases-targeted.tsv` (worktree at external/faults-tree) |
 
 ## Findings about the reference
 
@@ -39,22 +47,21 @@ committed pass lists are older than the pin (the reference at `efdde44` agrees w
 `tests/gambatte_audio_pass.txt` (76; the pin agrees on 82 of 87). The PPU's `window_line` is
 dead state (written, never read).
 
-## Next
+## Open
 
-The brief's rungs are all done. Open: CI needs the repository secret `SM83_RUST_TOKEN` (read
-access to alewman/sm83-rust and alewman/gb-apu-rust) before it can check out the path
-dependencies; APU state in save states (needs serde in gb-apu-rust); an MBC5 >4 MB case for the
-missed fault; pin-2 (gameboy-python master past `efdde44`: the CGB revision rows, CGB E line-153
-changes) when Aubrey tags it; then gameboy-rust-fast and the SDL2 `play` window.
+- APU state in save states (below): needs a state restore in gb-apu-rust.
+- An MBC5 case with more than 4 MB of ROM, for the one missed fault.
+- pin-2: gameboy-python past `efdde44` (the CGB revision rows, CGB E line-153 changes), once
+  Aubrey tags it.
+- Later, in other repositories: a speed fork (gameboy-rust-fast) with an SDL2 window.
 
 ## APU
 
-gb-apu-rust (`/data/emu/gb-apu-rust` 0c2c240, its ladder passed) is adopted by path since rung
-2: `src/apu.rs` re-exports `gb_apu::APU`. Before that a placeholder APU made two cases
-(Pokemon Crystal, SMB Deluxe) diverge on NR52/NR30 reads; with the real core every case is
-identical with APU values compared (`--mask-apu` on both trace tools zeroes them, for history).
-Rung 7's audio checks (Gambatte audio tests, the board's audio outputs) are still to do.
-`gb_apu::APU` is neither `Clone` nor serde: `Hw` and `GameBoy` are not `Clone`.
+gb-apu-rust (0c2c240, its ladder passed) is used by path: `src/apu.rs` re-exports
+`gb_apu::APU`, and APU register values are compared in every gate case (`--mask-apu` on both
+trace tools zeroes them, to compare against traces recorded before the APU was in the gate).
+Rung 7 above covers the audio itself. `gb_apu::APU` is neither `Clone` nor serde, so `Hw` and
+`GameBoy` are not `Clone`.
 
 ## Save states
 
@@ -64,8 +71,7 @@ state is loaded into. The APU is the gap: gb-apu-rust (like gb-apu-python) has n
 restore and its `APU` is not serde, so a state loaded into another console continues with that
 console's APU (audio and APU reads go on from there). The gate's round trip (`--save-at`)
 therefore hands the new console the old one's live APU and proves everything else exact. Closing
-it needs gb-apu-rust to offer serde (or a restore of `capture_state()` plus its internals): a
-request for that crate, not done here.
+the gap needs gb-apu-rust to offer serde (or a restore of `capture_state()` plus its internals).
 
 ## The gate
 

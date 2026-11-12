@@ -6,6 +6,7 @@ rust-version = "1.85"
 description = "A Rust Game Boy (DMG/CGB) board transcribed from, and proven equivalent to, gameboy-python"
 license = "MIT"
 repository = "https://github.com/alewman/gameboy-rust"
+readme = "README.md"
 publish = false
 
 [lib]
@@ -13,10 +14,10 @@ name = "gameboy_rust"
 
 [dependencies]
 # sm83-rust (crate sm83), transcribed from sm83-python 95f2b8b, the revision gameboy-python pins.
-# A path dependency (docs/handoff-brief.md); the repository is private.
+# A path dependency: check it out beside this repository.
 sm83 = { path = "../sm83-rust" }
 # gb-apu-rust (crate gb_apu), transcribed from gb-apu-python b8cab61 (= the reference's f0a7f48 on
-# the DMG and CGB rows for even-T ticks). A path dependency; the repository is private.
+# the DMG and CGB rows for even-T ticks). A path dependency, beside this repository.
 gb-apu-rust = { path = "../gb-apu-rust" }
 zip = { version = "2", default-features = false, features = ["deflate"] }
 crc32fast = "1"

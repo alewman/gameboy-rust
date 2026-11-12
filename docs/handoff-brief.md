@@ -1,3 +1,5 @@
+> Historical: the brief this board was built from, 2026-11-12; current state in [status.md](status.md).
+
 # Handoff brief: gameboy-rust
 
 ## The request

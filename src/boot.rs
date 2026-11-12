@@ -2,7 +2,7 @@
 //! its docs/start-here.md "Boot ROMs").
 //!
 //! Order: a configured path (`override` or `GAMEBOY_BOOT_ROM`, a raw image or a No-Intro
-//! `.zip`), then Aubrey's local No-Intro `[BIOS]` zips read in place and checked by SHA-256
+//! `.zip`), then a local No-Intro set's `[BIOS]` zips read in place and checked by SHA-256
 //! (`GAMEBOY_NOINTRO_DIR` moves the directory), then dmg-sim's `quickboot.bin` and SameBoy's
 //! open ROM from the reference's `reference/` tree (`GAMEBOY_REFERENCE_ROOT`, default the
 //! pinned checkout under `external/`). Nothing is ever copied into this repository.

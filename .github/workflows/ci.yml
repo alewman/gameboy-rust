@@ -2,10 +2,9 @@ name: CI
 
 # Kept small: main and pull requests, superseded runs cancelled. The reference (gameboy-python)
 # and the test ROMs and dumps are local, so the lockstep and suite rungs run by hand
-# (docs/status.md); CI runs fmt, clippy and the tests. The CPU crate is a path dependency on the
-# private alewman/sm83-rust and the sound core on the private alewman/gb-apu-rust, both checked
-# out beside this one: that needs a repository secret SM83_RUST_TOKEN (a fine-grained token with
-# read access to both repositories).
+# (docs/status.md); CI runs fmt, clippy and the tests. The CPU (alewman/sm83-rust) and the sound
+# core (alewman/gb-apu-rust) are path dependencies, checked out beside this one at pinned
+# commits; both repositories are public, so no token is needed.
 on:
   push:
     branches: [main]
@@ -31,13 +30,11 @@ jobs:
           repository: alewman/sm83-rust
           ref: 105b8c1a440bf665048690df38a96ad0391c01bb
           path: sm83-rust
-          token: ${{ secrets.SM83_RUST_TOKEN }}
       - uses: actions/checkout@v4
         with:
           repository: alewman/gb-apu-rust
           ref: 0c2c240d9d5472c9ba37068a7a9a2c82fc35a69f
           path: gb-apu-rust
-          token: ${{ secrets.SM83_RUST_TOKEN }}
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: rustfmt, clippy
