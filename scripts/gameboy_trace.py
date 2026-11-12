@@ -28,7 +28,6 @@ The MBC3 clock runs on board time (``gb.t / 4194304``).
 from __future__ import annotations
 
 import argparse
-import struct
 import zipfile
 import zlib
 from array import array
