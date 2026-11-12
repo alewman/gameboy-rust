@@ -1,0 +1,41 @@
+# name	slices	rom	arguments: rung 6 (machines): every row of machines.py, from its real boot ROM where one exists
+machine/dmg-0/dmg-acid2	300	$GBTR/dmg-acid2/dmg-acid2.gb	--machine dmg-0 --boot real
+machine/dmg-0/boot_regs	200	$MTS/acceptance/boot_regs-dmgABC.gb	--machine dmg-0 --boot real
+machine/dmg-0/boot_hwio	200	$MTS/acceptance/boot_hwio-dmgABCmgb.gb	--machine dmg-0 --boot real
+machine/dmg-0/stat_irq_blocking	200	$MTS/acceptance/ppu/stat_irq_blocking.gb	--machine dmg-0 --boot real
+machine/dmg-0/oam_bug-5	300	$GBTR/blargg/oam_bug/rom_singles/5-timing_bug.gb	--machine dmg-0
+machine/dmg-0/tetris	900	$NOINTRO/Nintendo - Game Boy/Tetris (World) (Rev 1).zip	--machine dmg-0 --boot real --input $INPUTS/poke.txt
+machine/dmg-a/dmg-acid2	300	$GBTR/dmg-acid2/dmg-acid2.gb	--machine dmg-a --boot real
+machine/dmg-a/boot_regs	200	$MTS/acceptance/boot_regs-dmgABC.gb	--machine dmg-a --boot real
+machine/dmg-a/boot_hwio	200	$MTS/acceptance/boot_hwio-dmgABCmgb.gb	--machine dmg-a --boot real
+machine/dmg-a/stat_irq_blocking	200	$MTS/acceptance/ppu/stat_irq_blocking.gb	--machine dmg-a --boot real
+machine/dmg-a/oam_bug-5	300	$GBTR/blargg/oam_bug/rom_singles/5-timing_bug.gb	--machine dmg-a
+machine/dmg-a/tetris	900	$NOINTRO/Nintendo - Game Boy/Tetris (World) (Rev 1).zip	--machine dmg-a --boot real --input $INPUTS/poke.txt
+machine/dmg-b/dmg-acid2	300	$GBTR/dmg-acid2/dmg-acid2.gb	--machine dmg-b --boot real
+machine/dmg-b/boot_regs	200	$MTS/acceptance/boot_regs-dmgABC.gb	--machine dmg-b --boot real
+machine/dmg-b/boot_hwio	200	$MTS/acceptance/boot_hwio-dmgABCmgb.gb	--machine dmg-b --boot real
+machine/dmg-b/stat_irq_blocking	200	$MTS/acceptance/ppu/stat_irq_blocking.gb	--machine dmg-b --boot real
+machine/dmg-b/oam_bug-5	300	$GBTR/blargg/oam_bug/rom_singles/5-timing_bug.gb	--machine dmg-b
+machine/dmg-b/tetris	900	$NOINTRO/Nintendo - Game Boy/Tetris (World) (Rev 1).zip	--machine dmg-b --boot real --input $INPUTS/poke.txt
+machine/dmg-c/dmg-acid2	300	$GBTR/dmg-acid2/dmg-acid2.gb	--machine dmg-c --boot real
+machine/dmg-c/boot_regs	200	$MTS/acceptance/boot_regs-dmgABC.gb	--machine dmg-c --boot real
+machine/dmg-c/boot_hwio	200	$MTS/acceptance/boot_hwio-dmgABCmgb.gb	--machine dmg-c --boot real
+machine/dmg-c/stat_irq_blocking	200	$MTS/acceptance/ppu/stat_irq_blocking.gb	--machine dmg-c --boot real
+machine/dmg-c/oam_bug-5	300	$GBTR/blargg/oam_bug/rom_singles/5-timing_bug.gb	--machine dmg-c
+machine/dmg-c/tetris	900	$NOINTRO/Nintendo - Game Boy/Tetris (World) (Rev 1).zip	--machine dmg-c --boot real --input $INPUTS/poke.txt
+machine/mgb/dmg-acid2	300	$GBTR/dmg-acid2/dmg-acid2.gb	--machine mgb --boot real
+machine/mgb/boot_regs	200	$MTS/acceptance/boot_regs-dmgABC.gb	--machine mgb --boot real
+machine/mgb/boot_hwio	200	$MTS/acceptance/boot_hwio-dmgABCmgb.gb	--machine mgb --boot real
+machine/mgb/stat_irq_blocking	200	$MTS/acceptance/ppu/stat_irq_blocking.gb	--machine mgb --boot real
+machine/mgb/oam_bug-5	300	$GBTR/blargg/oam_bug/rom_singles/5-timing_bug.gb	--machine mgb
+machine/mgb/tetris	900	$NOINTRO/Nintendo - Game Boy/Tetris (World) (Rev 1).zip	--machine mgb --boot real --input $INPUTS/poke.txt
+machine/sgb/dmg-acid2	300	$GBTR/dmg-acid2/dmg-acid2.gb	--machine sgb
+machine/sgb/stat_irq_blocking	200	$MTS/acceptance/ppu/stat_irq_blocking.gb	--machine sgb
+machine/sgb/oam_bug-5	300	$GBTR/blargg/oam_bug/rom_singles/5-timing_bug.gb	--machine sgb
+machine/sgb/tetris	900	$NOINTRO/Nintendo - Game Boy/Tetris (World) (Rev 1).zip	--machine sgb --input $INPUTS/poke.txt
+machine/sgb2/dmg-acid2	300	$GBTR/dmg-acid2/dmg-acid2.gb	--machine sgb2
+machine/sgb2/stat_irq_blocking	200	$MTS/acceptance/ppu/stat_irq_blocking.gb	--machine sgb2
+machine/sgb2/oam_bug-5	300	$GBTR/blargg/oam_bug/rom_singles/5-timing_bug.gb	--machine sgb2
+machine/sgb2/tetris	900	$NOINTRO/Nintendo - Game Boy/Tetris (World) (Rev 1).zip	--machine sgb2 --input $INPUTS/poke.txt
+machine/cgb/tetris-real	900	$NOINTRO/Nintendo - Game Boy/Tetris (World) (Rev 1).zip	--machine cgb --boot real --input $INPUTS/poke.txt
+machine/cgb/stat_irq_blocking	200	$MTS/acceptance/ppu/stat_irq_blocking.gb	--machine cgb --boot real

@@ -73,6 +73,7 @@ def main() -> int:
     parser.add_argument("--input", type=Path)
     parser.add_argument("--detail", type=int, default=-1)
     parser.add_argument("--mask-apu", action="store_true")
+    parser.add_argument("--save-at", type=int, default=-1, help="ignored: the Rust board's round trip")
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
 

@@ -53,14 +53,19 @@ def cases(table: Path) -> list[tuple[str, int, str, list[str]]]:
     return rows
 
 
-def one(case, rust: Path, traces: Path, keep: bool, cache: Path | None, extra: list[str]):
+def one(case, rust: Path, traces: Path, keep: bool, cache: Path | None, extra: list[str],
+        save_half: bool = False):
     name, slices, rom, args = case
     safe = re.sub(r"[^A-Za-z0-9._-]+", "_", name)
     ref, ours = traces / f"{safe}.ref", traces / f"{safe}.rust"
     if cache is not None:
-        tag = re.sub(r"[^A-Za-z0-9._-]+", "_", " ".join(extra)) or "plain"
+        # --save-at is this board's alone (the reference runs uninterrupted): not part of the tag
+        shown = re.sub(r"--save-at\s+\S+", "", " ".join(extra)).strip()
+        tag = re.sub(r"[^A-Za-z0-9._-]+", "_", shown) or "plain"
         ref = cache / f"{safe}.{slices}.{tag}.ref"  # the reference's trace does not change
     common = [rom, "--slices", str(slices), *args, *extra]
+    if save_half:
+        common += ["--save-at", str(slices // 2)]
     began = time.monotonic()
     if cache is None or not ref.is_file():
         partial = ref.with_suffix(".part")
@@ -107,7 +112,11 @@ def main() -> int:
     parser.add_argument("--traces", type=Path, default=ROOT / "external" / "traces")
     parser.add_argument("--keep", action="store_true", help="keep the traces of identical cases")
     parser.add_argument("--reference-cache", type=Path, help="reuse the reference's traces here")
-    parser.add_argument("--extra", default="", help="arguments added to every case (both sides)")
+    parser.add_argument("--extra", default="", help="arguments added to every case (both sides); "
+                        "use --extra=... for ones that start with --")
+    parser.add_argument("--save-at-half", action="store_true",
+                        help="the save-state round trip: this board saves and reloads its state "
+                             "half way through each case (gameboy-trace --save-at)")
     args = parser.parse_args()
     rust = args.rust
     if rust is None:
@@ -127,7 +136,8 @@ def main() -> int:
     failed = 0
 
     def run(case):
-        return one(case, rust, args.traces, args.keep, args.reference_cache, extra)
+        return one(case, rust, args.traces, args.keep, args.reference_cache, extra,
+                   args.save_at_half)
 
     with ThreadPoolExecutor(args.jobs) as pool:
         for name, ok, text in pool.map(run, todo):

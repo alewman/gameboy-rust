@@ -18,6 +18,7 @@ pub mod pixels;
 pub mod pngread;
 pub mod ppu;
 pub mod serial;
+pub mod state;
 pub mod testrom;
 pub mod timer;
 

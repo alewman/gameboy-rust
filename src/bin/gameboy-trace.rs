@@ -2,7 +2,12 @@
 //! the reference (see its docstring for the format and the options).
 //!
 //!     gameboy-trace ROM --slices N [--machine KEY] [--boot skip|real|PATH]
-//!                   [--input FILE] [--detail SLICE] [--mask-apu] --out FILE
+//!                   [--input FILE] [--detail SLICE] [--mask-apu] [--save-at SLICE] --out FILE
+//!
+//! `--save-at SLICE` (this board only: the save-state round trip of rung 6): before that slice
+//! the console saves its state, a new console is built from the same ROM, machine and boot ROM,
+//! the state is loaded into it (with the old console's APU, which the state cannot carry) and the
+//! run goes on there; the trace must equal the reference's uninterrupted one.
 
 use std::collections::HashMap;
 use std::io::Write;
@@ -45,6 +50,7 @@ fn main() {
     let mut detail: i64 = -1;
     let mut apu_values = true;
     let mut out_path: Option<PathBuf> = None;
+    let mut save_at: i64 = -1;
     let mut i = 0;
     while i < args.len() {
         let a = args[i].clone();
@@ -60,6 +66,7 @@ fn main() {
             "--detail" => detail = value().parse().expect("detail"),
             "--mask-apu" => apu_values = false,
             "--out" => out_path = Some(PathBuf::from(value())),
+            "--save-at" => save_at = value().parse().expect("save-at"),
             _ => rom = Some(PathBuf::from(a)),
         }
         i += 1;
@@ -72,7 +79,7 @@ fn main() {
     };
     let data = read_image(&rom.expect("ROM")).expect("ROM");
     let cart = load_cartridge(&data, Clock::Board).expect("cartridge");
-    let mut gb = GameBoy::new(cart, m, image).expect("board");
+    let mut gb = GameBoy::new(cart, m, image.clone()).expect("board");
     gb.hw.bus_log = Some(Vec::new());
     let inputs = read_inputs(input.as_deref());
     let names: Vec<&str> = BUTTONS.iter().chain(DIRECTIONS.iter()).copied().collect();
@@ -94,6 +101,15 @@ fn main() {
                 }
             }
             pressed = wanted.clone();
+        }
+        if index as i64 == save_at {
+            let state = gb.save_state();
+            let cart = load_cartridge(&data, Clock::Board).expect("cartridge");
+            let mut fresh = GameBoy::new(cart, m, image.clone()).expect("board");
+            fresh.load_state(&state).expect("load state");
+            std::mem::swap(&mut fresh.hw.apu, &mut gb.hw.apu);
+            fresh.hw.bus_log = gb.hw.bus_log.take();
+            gb = fresh;
         }
         let end = (index + 1) * SLICE_T;
         while gb.hw.t < end {
