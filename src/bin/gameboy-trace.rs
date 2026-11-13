@@ -6,8 +6,7 @@
 //!
 //! `--save-at SLICE` (this board only: the save-state round trip of rung 6): before that slice
 //! the console saves its state, a new console is built from the same ROM, machine and boot ROM,
-//! the state is loaded into it (with the old console's APU, which the state cannot carry) and the
-//! run goes on there; the trace must equal the reference's uninterrupted one.
+//! the state is loaded into it (APU included) and the run goes on there; the trace must equal the reference's uninterrupted one.
 
 use std::collections::HashMap;
 use std::io::Write;
@@ -110,7 +109,6 @@ fn main() {
             let cart = load_cartridge(&data, Clock::Board).expect("cartridge");
             let mut fresh = GameBoy::new(cart, m, image.clone()).expect("board");
             fresh.load_state(&state).expect("load state");
-            std::mem::swap(&mut fresh.hw.apu, &mut gb.hw.apu);
             fresh.hw.bus_log = gb.hw.bus_log.take();
             gb = fresh;
         }

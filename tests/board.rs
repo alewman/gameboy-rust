@@ -64,17 +64,16 @@ fn save_state_round_trip() {
         let mut a = make().unwrap();
         a.run_frames(5, 10_000_000);
         let state = a.save_state();
-        // two consoles that share nothing but the state (each with its own fresh APU: the APU is
-        // not in the state, docs/status.md) go on identically
+        // a new console loaded from the state goes on exactly as the one that saved it, APU
+        // included
         let mut c = make().unwrap();
         c.load_state(&state).unwrap();
-        let mut d = make().unwrap();
-        d.load_state(&state).unwrap();
-        for gb in [&mut c, &mut d] {
+        for gb in [&mut a, &mut c] {
             gb.run_frames(5, 10_000_000);
         }
-        assert_eq!(c.save_state(), d.save_state());
-        assert_eq!(c.hw.serial.output, d.hw.serial.output);
-        assert_eq!(c.hw.ppu.frame, d.hw.ppu.frame);
+        assert_eq!(a.save_state(), c.save_state());
+        assert_eq!(a.hw.serial.output, c.hw.serial.output);
+        assert_eq!(a.hw.ppu.frame, c.hw.ppu.frame);
+        assert_eq!(a.hw.apu.capture_state(), c.hw.apu.capture_state());
     }
 }

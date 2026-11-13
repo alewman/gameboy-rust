@@ -17,8 +17,9 @@ name = "gameboy_rust"
 # A path dependency: check it out beside this repository.
 sm83 = { path = "../sm83-rust" }
 # gb-apu-rust (crate gb_apu), transcribed from gb-apu-python b8cab61 (= the reference's f0a7f48 on
-# the DMG and CGB rows for even-T ticks). A path dependency, beside this repository.
-gb-apu-rust = { path = "../gb-apu-rust" }
+# the DMG and CGB rows for even-T ticks). A path dependency, beside this repository; its serde
+# feature puts the APU in save states.
+gb-apu-rust = { path = "../gb-apu-rust", features = ["serde"] }
 zip = { version = "2", default-features = false, features = ["deflate"] }
 crc32fast = "1"
 flate2 = "1"

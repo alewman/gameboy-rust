@@ -137,6 +137,9 @@ dependencies = [
 [[package]]
 name = "gb-apu-rust"
 version = "0.1.0"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "generic-array"

@@ -272,7 +272,6 @@ pub struct Hw {
     pub joypad: Joypad,
     pub irq: IrqBoard,
     pub ppu: Ppu,
-    #[serde(skip, default = "apu::placeholder")]
     pub apu: APU,
     /// every M-cycle (`t << 26 | kind << 24 | address << 8 | value`; kind 0 read, 1 write, 2
     /// internal), when the lockstep gate asks for it

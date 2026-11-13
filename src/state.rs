@@ -1,20 +1,19 @@
-//! Save states: the whole board but the sound unit (gameboy-python's `state.py` offers only a
+//! Save states: the whole board, sound unit included (gameboy-python's `state.py` offers only a
 //! comparison snapshot, `capture_board_state`, and no restore; this is the board's own).
 //!
 //! A state is the CPU's `CpuState` (sm83's, saved between steps, where the core's in-step fields
 //! are idle) and every board register, memory, unit and in-flight countdown (`Hw`'s fields,
 //! serde), bincode-encoded behind a header. Left out, and kept from the console the state is
-//! loaded into: the cartridge ROM and header, the boot ROM, the machine row and the APU. gb-apu-rust
-//! (like gb-apu-python) offers no state restore and its `APU` is neither `Clone` nor serde, so a
-//! state loaded into another console takes that console's APU as it is: audio and APU register
-//! reads go on from there (docs/status.md "Save states"). `capture_board_state` is here too.
+//! loaded into: the cartridge ROM and header, the boot ROM and the machine row. The APU is
+//! gb-apu-rust's, serialised whole through its `serde` feature (since `GBRUST02`; `GBRUST01`
+//! states had no APU and are refused). `capture_board_state` is here too.
 
 use serde::{Deserialize, Serialize};
 use sm83::CpuState;
 
 use crate::board::{GameBoy, Hw};
 
-const MAGIC: &[u8; 8] = b"GBRUST01";
+const MAGIC: &[u8; 8] = b"GBRUST02";
 
 #[derive(Serialize, Deserialize)]
 struct Cpu {
@@ -100,7 +99,6 @@ impl GameBoy {
         hw.boot_rom = old.boot_rom.take();
         hw.cartridge.header = old.cartridge.header.clone();
         hw.cartridge.rom = std::mem::take(&mut old.cartridge.rom);
-        std::mem::swap(&mut hw.apu, &mut old.apu);
         hw.bus_log = old.bus_log.take();
         self.hw = hw;
         self.cpu.restore_state(&cpu.to());

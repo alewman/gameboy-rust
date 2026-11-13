@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: alewman/gb-apu-rust
-          ref: 0c2c240d9d5472c9ba37068a7a9a2c82fc35a69f
+          ref: 4032227f676af2074ee4d489087f2c79d4922d11
           path: gb-apu-rust
       - uses: dtolnay/rust-toolchain@stable
         with:

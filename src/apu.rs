@@ -10,8 +10,3 @@ pub use gb_apu::{APU, CGB, DMG};
 pub fn new(cgb: bool) -> APU {
     APU::new(44100, if cgb { CGB } else { DMG })
 }
-
-/// A default APU for a state restored without one (serde).
-pub fn placeholder() -> APU {
-    APU::default()
-}

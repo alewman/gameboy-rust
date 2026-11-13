@@ -49,17 +49,17 @@ gameboy-python looks wrong.
 | 1 | Skeleton: blargg `cpu_instrs` natively | 01-11 and the combined ROM pass |
 | 2 | Lockstep gate (`scripts/lockstep.py`, `scripts/cases.tsv`): test ROMs from the real boot ROMs and commercial dumps, DMG and CGB | 36 of 36 identical |
 | 3 | PPU: Mealybug Tearoom, acid tests, Gambatte hardware tests | Mealybug DMG 24/24, CGB-D as the reference (20 exact, the 21st off by the same 15 pixels), CPU CGB C 24 of 27 as the reference (on the `cgb-c` row); dmg-acid2, cgb-acid2, cgb-acid-hell exact; Gambatte DMG 1,695 and CGB-04c 2,892 on `cgb-c` (skip-boot), the reference's pass lists exactly; 229 of 229 gate cases, and 418 of 418 Gambatte oamdma ROMs on `cgb-c` |
-| 4 | Mooneye, blargg, SameSuite, AGE, GBMicrotest, GB Emulator Shootout | 1,379 suite jobs, every result field identical to the reference's (Shootout 256 of 258) |
+| 4 | Mooneye, blargg, SameSuite, AGE, GBMicrotest, GB Emulator Shootout | 1,379 suite jobs, every result field identical to the reference's (Shootout 257 PASS) |
 | 5 | Every cartridge class under the gate (ROM, MBC1/1M/2/3/30/5, MMM01, MBC3 clock) | 21 of 21 identical |
-| 6 | Every machine row; save states | 48 of 48 identical (incl. the CPU CGB C row); save/load round trip identical on 105 of 105 cases |
+| 6 | Every machine row; save states | 48 of 48 identical (incl. the CPU CGB C row); save/load round trip identical on every gate case, audio included (871 of 871) |
 | 7 | gb-apu-rust in the gate: APU reads and writes in every comparison, a CRC of each slice's samples | 119 of 119 identical; Gambatte audio 82 of 87, as the reference |
 | faults | 18 one-line faults seeded across PPU, pixels, DMA, timer, cartridge, serial | 17 caught; missed: MBC5 ROM bank bit 8 (no case reads banks 256 and up) |
 
-**Save states leave the APU out.** `GameBoy::save_state()` / `load_state()` carry the CPU and
-the whole board except the sound unit (and the cartridge ROM, boot ROM and machine row, which
-come from the console the state is loaded into): gb-apu-rust has no state restore, so after a
-load, audio and APU register reads continue from the loading console's APU. gameboy-python has
-no save states at all; these are this board's own.
+**Save states.** `GameBoy::save_state()` / `load_state()` carry the CPU and the whole board,
+sound unit included (gb-apu-rust's `serde` feature); the cartridge ROM, boot ROM and machine row
+come from the console the state is loaded into. Saved half way and loaded into a new console,
+every gate case goes on identical to the reference's uninterrupted run, audio included (871 of
+871). gameboy-python has no save states at all; these are this board's own.
 
 ## How it is judged
 
