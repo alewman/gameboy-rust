@@ -2,7 +2,8 @@
 //! the reference (see its docstring for the format and the options).
 //!
 //!     gameboy-trace ROM --slices N [--machine KEY] [--boot skip|real|PATH]
-//!                   [--input FILE] [--detail SLICE] [--mask-apu] [--save-at SLICE] --out FILE
+//!                   [--input FILE] [--detail SLICE] [--mask-apu] [--audio] [--sgb]
+//!                   [--save-at SLICE] --out FILE
 //!
 //! `--save-at SLICE` (this board only: the save-state round trip of rung 6): before that slice
 //! the console saves its state, a new console is built from the same ROM, machine and boot ROM,
@@ -14,6 +15,7 @@ use std::path::{Path, PathBuf};
 
 use gameboy_rust::boot::{find_boot_rom, read_image};
 use gameboy_rust::joypad::{BUTTONS, DIRECTIONS};
+use gameboy_rust::sgb::GREY_RAMP;
 use gameboy_rust::{load_cartridge, machine, Clock, GameBoy};
 
 const SLICE_T: u64 = 70224;
@@ -51,6 +53,7 @@ fn main() {
     let mut out_path: Option<PathBuf> = None;
     let mut save_at: i64 = -1;
     let mut audio = false;
+    let mut sgb = false;
     let mut i = 0;
     while i < args.len() {
         let a = args[i].clone();
@@ -67,6 +70,7 @@ fn main() {
             "--mask-apu" => apu_values = false,
             "--out" => out_path = Some(PathBuf::from(value())),
             "--audio" => audio = true,
+            "--sgb" => sgb = true,
             "--save-at" => save_at = value().parse().expect("save-at"),
             _ => rom = Some(PathBuf::from(a)),
         }
@@ -83,6 +87,9 @@ fn main() {
     let mut gb = GameBoy::new(cart, m, image.clone()).expect("board");
     gb.hw.bus_log = Some(Vec::new());
     gb.hw.apu.capture = audio;
+    if sgb {
+        gb.attach_sgb(GREY_RAMP).expect("Super Game Boy");
+    }
     let inputs = read_inputs(input.as_deref());
     let names: Vec<&str> = BUTTONS.iter().chain(DIRECTIONS.iter()).copied().collect();
     let mut pressed: Vec<String> = Vec::new();
@@ -93,13 +100,21 @@ fn main() {
             for name in &names {
                 let n = name.to_string();
                 if pressed.contains(&n) && !wanted.contains(&n) {
-                    gb.set_pressed(name, false);
+                    if sgb {
+                        gb.sgb_set_pressed(name, false, 0);
+                    } else {
+                        gb.set_pressed(name, false);
+                    }
                 }
             }
             for name in &names {
                 let n = name.to_string();
                 if wanted.contains(&n) && !pressed.contains(&n) {
-                    gb.set_pressed(name, true);
+                    if sgb {
+                        gb.sgb_set_pressed(name, true, 0);
+                    } else {
+                        gb.set_pressed(name, true);
+                    }
                 }
             }
             pressed = wanted.clone();
@@ -195,6 +210,16 @@ fn main() {
                 h.update(&v.to_le_bytes());
             }
             write!(out, " snd={:08x}/{}", h.finalize(), samples.len()).unwrap();
+        }
+        if sgb {
+            let unit = gb.hw.sgb.as_deref().expect("Super Game Boy");
+            let mut h = crc32fast::Hasher::new();
+            for v in unit.render() {
+                h.update(&v.to_le_bytes());
+            }
+            let picture = h.finalize();
+            let state = crc32fast::hash(&unit.save_state());
+            write!(out, " sgb={picture:08x}/{state:08x}").unwrap();
         }
         writeln!(out).unwrap();
         if index as i64 == detail {

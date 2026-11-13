@@ -12,8 +12,10 @@ with ``--detail SLICE`` on both tools to see the M-cycles of that slice.
     lockstep.py [--only REGEX] [--jobs N] [--cases FILE] [--rust PATH] [--keep]
                 [--reference-cache DIR] [--extra ARGS]
 
-Case variables (``$GBTR``, ``$NOINTRO``, ``$INPUTS``) come from the environment, with the
-defaults below. Stdlib only.
+Case variables (``$GBTR``, ``$MTS``, ``$NOINTRO``, ``$INPUTS``, ``$SGBBOOT``, ``$SGB2BOOT``)
+come from the environment, with the defaults below; the SGB boot ROMs default to MAME's
+``sns_rom_sgb.zip`` / ``sns_rom_sgb2.zip`` in a directory of ``$MAME_ROMPATH`` (``;``-separated;
+quote them in a case: the path may hold spaces). Stdlib only.
 """
 
 from __future__ import annotations
@@ -36,6 +38,18 @@ DEFAULTS = {
     "NOINTRO": os.environ.get("NO_INTRO_DIR", "No-Intro"),
     "INPUTS": str(HERE / "inputs"),
 }
+
+
+def mame_set(name: str) -> str:
+    """The first ``name`` in a directory of $MAME_ROMPATH (else the bare name)."""
+    for folder in os.environ.get("MAME_ROMPATH", "").split(";"):
+        if folder and (Path(folder) / name).is_file():
+            return str(Path(folder) / name)
+    return name
+
+
+DEFAULTS["SGBBOOT"] = mame_set("sns_rom_sgb.zip")
+DEFAULTS["SGB2BOOT"] = mame_set("sns_rom_sgb2.zip")
 PYTHON = Path(os.environ.get("GAMEBOY_REFERENCE_PYTHON", ROOT / "external" / "venv" / "bin" / "python"))
 
 

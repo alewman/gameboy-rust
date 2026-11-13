@@ -1,0 +1,18 @@
+# name	slices	rom	arguments: the HLE Super Game Boy (--sgb on both tools: sgb.py's picture and state CRCs per slice)
+# From the SGB boot ROM ($SGBBOOT, MAME's sns_rom_sgb.zip): the eight games gameboy-python validated against the real BIOS;
+# every one sends its border (CHR_TRN/PCT_TRN) within 1,000 frames (Tetris DX last, near 780).
+sgb/boot/donkey-kong	1500	$NOINTRO/Nintendo - Game Boy/Donkey Kong (World) (Rev 1) (SGB Enhanced).zip	--machine sgb --boot "$SGBBOOT" --sgb --input $INPUTS/poke.txt
+sgb/boot/kirby2	1500	$NOINTRO/Nintendo - Game Boy/Kirby's Dream Land 2 (USA, Europe) (SGB Enhanced).zip	--machine sgb --boot "$SGBBOOT" --sgb --input $INPUTS/poke.txt
+sgb/boot/pokemon-red	1500	$NOINTRO/Nintendo - Game Boy/Pokemon - Red Version (USA, Europe) (SGB Enhanced).zip	--machine sgb --boot "$SGBBOOT" --sgb --input $INPUTS/poke.txt
+sgb/boot/pokemon-yellow	1500	$NOINTRO/Nintendo - Game Boy/Pokemon - Yellow Version - Special Pikachu Edition (USA, Europe) (CGB+SGB Enhanced).zip	--machine sgb --boot "$SGBBOOT" --sgb --input $INPUTS/poke.txt
+sgb/boot/zelda-dx	1500	$NOINTRO/Nintendo - Game Boy Color/Legend of Zelda, The - Link's Awakening DX (USA, Europe) (Rev 2) (SGB Enhanced) (GB Compatible).zip	--machine sgb --boot "$SGBBOOT" --sgb --input $INPUTS/poke.txt
+sgb/boot/wario-land-2	1500	$NOINTRO/Nintendo - Game Boy/Wario Land II (USA, Europe) (SGB Enhanced).zip	--machine sgb --boot "$SGBBOOT" --sgb --input $INPUTS/poke.txt
+sgb/boot/marios-picross	1500	$NOINTRO/Nintendo - Game Boy/Mario's Picross (USA, Europe) (SGB Enhanced).zip	--machine sgb --boot "$SGBBOOT" --sgb --input $INPUTS/poke.txt
+sgb/boot/tetris-dx	1500	$NOINTRO/Nintendo - Game Boy Color/Tetris DX (World) (SGB Enhanced) (GB Compatible).zip	--machine sgb --boot "$SGBBOOT" --sgb --input $INPUTS/poke.txt
+# the SGB2 row from its boot ROM
+sgb2/boot/donkey-kong	1200	$NOINTRO/Nintendo - Game Boy/Donkey Kong (World) (Rev 1) (SGB Enhanced).zip	--machine sgb2 --boot "$SGB2BOOT" --sgb --input $INPUTS/poke.txt
+# skip-boot: Donkey Kong and Mario's Picross load their borders; Pokemon Red's first packet (MLT_REQ, its SGB check) is lost
+# because the ICD2 starts from the skip-boot P1 select $00, so it never sends a border (docs/status.md, findings)
+sgb/skip/donkey-kong	1200	$NOINTRO/Nintendo - Game Boy/Donkey Kong (World) (Rev 1) (SGB Enhanced).zip	--machine sgb --sgb --input $INPUTS/poke.txt
+sgb/skip/marios-picross	1200	$NOINTRO/Nintendo - Game Boy/Mario's Picross (USA, Europe) (SGB Enhanced).zip	--machine sgb --sgb --input $INPUTS/poke.txt
+sgb/skip/pokemon-red	900	$NOINTRO/Nintendo - Game Boy/Pokemon - Red Version (USA, Europe) (SGB Enhanced).zip	--machine sgb --sgb --input $INPUTS/poke.txt

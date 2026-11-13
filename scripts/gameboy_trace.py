@@ -21,6 +21,10 @@ before that slice the pressed buttons become exactly NAME... (``-`` for none), r
 first, each change through ``joypad.set_pressed`` in the order a, b, select, start, right,
 left, up, down. ``--audio``: the APU captures its samples (``apu.capture``, 44,100 Hz) and each
 line ends with ``snd=CRC/COUNT`` of the slice's ``take_samples()`` (little-endian i16).
+``--sgb``: a Super Game Boy is attached (``gameboy_python.sgb.SuperGameBoy(gb)``, the
+``sgb``/``sgb2`` rows), the inputs go to its player-1 pad (``sgb.set_pressed``) instead of the
+joypad, and each line ends with ``sgb=PIC/STATE``: CRC-32s of ``sgb.render()`` (256 x 224
+little-endian u16) and of ``sgb.save_state()``.
 ``--detail SLICE``: also write every bus M-cycle of that slice, one per line.
 The MBC3 clock runs on board time (``gb.t / 4194304``).
 """
@@ -75,6 +79,7 @@ def main() -> int:
     parser.add_argument("--detail", type=int, default=-1)
     parser.add_argument("--mask-apu", action="store_true")
     parser.add_argument("--audio", action="store_true")
+    parser.add_argument("--sgb", action="store_true")
     parser.add_argument("--save-at", type=int, default=-1, help="ignored: the Rust board's round trip")
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
@@ -95,6 +100,12 @@ def main() -> int:
     gb = GameBoy(cart, machine=machine, boot_rom=boot)
     holder.append(gb)
     gb.apu.capture = args.audio
+    sgb = None
+    if args.sgb:
+        from gameboy_python.sgb import SuperGameBoy
+
+        sgb = SuperGameBoy(gb)
+    set_pressed = sgb.set_pressed if sgb is not None else gb.joypad.set_pressed
     cpu = gb.cpu
     log = array("Q")
     apu_values = not args.mask_apu
@@ -127,10 +138,10 @@ def main() -> int:
                 wanted = set(inputs[index])
                 for name in NAMES:
                     if name in pressed and name not in wanted:
-                        gb.joypad.set_pressed(name, False)
+                        set_pressed(name, False)
                 for name in NAMES:
                     if name in wanted and name not in pressed:
-                        gb.joypad.set_pressed(name, True)
+                        set_pressed(name, True)
                 pressed = wanted
             end = (index + 1) * SLICE_T
             while gb.t < end:
@@ -153,6 +164,12 @@ def main() -> int:
             if args.audio:
                 samples = gb.apu.take_samples().tobytes()
                 out.write(f" snd={zlib.crc32(samples):08x}/{len(samples) // 2}")
+            if sgb is not None:
+                words = sgb.render()
+                if words.itemsize != 2 or array("H", [1]).tobytes() != b"\x01\x00":
+                    raise SystemExit("needs 16-bit little-endian array('H')")
+                picture = zlib.crc32(words.tobytes())
+                out.write(f" sgb={picture:08x}/{zlib.crc32(sgb.save_state()):08x}")
             out.write("\n")
             if index == args.detail:
                 for record in log:
