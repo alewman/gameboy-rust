@@ -57,6 +57,19 @@ pub struct Machine {
     pub stat_blocking: bool,
     /// the boot ROM writes $FF (MGB) or $01 (DMG) to $FF50
     pub boot_disable_value: u8,
+    /// CGB C and older read SCY again at each tile-data fetch; D and E keep the value read at the
+    /// tile-number fetch (SameBoy display.c fetcher_y, model > CGB_C; Mealybug m3_scy_change's
+    /// CPU CGB C and CPU CGB D photos; Gambatte cgb04c scy_during_m3 43/43 only with it)
+    pub scy_at_data_fetch: bool,
+    /// CGB D and E: line 153's LY=LYC sequence (the comparator's switch from 153 to 0, the dots it
+    /// compares nothing, LYC=0's early interrupt) runs 4 dots later than on a DMG or CGB C
+    /// (SameBoy display.c line 153 splits at model > CGB_C; daid ppu_scanline_bgp GBC is exact
+    /// with it, Gambatte cgb04c loses 9 ly0/lycEnable/lyc0int verdicts with it)
+    pub lyc153_4_dots_later: bool,
+    /// CGB C and older: a BGP, OBP0 or OBP1 write reaches the pixels a dot later than on a CGB D
+    /// or E (SameBoy sm83_cpu.c GB_CONFLICT_PALETTE_CGB, model >= CGB_D; Mealybug m3_bgp_change
+    /// and m3_obp0_change, CPU CGB C photos)
+    pub palette_write_late: bool,
     /// has the machine been judged by a suite? Rows below are data only until then.
     pub certified: bool,
 }
@@ -74,6 +87,9 @@ const BASE: Machine = Machine {
     fea0_read: Fea0Read::ZeroWhenFree,
     stat_blocking: true,
     boot_disable_value: 0x01,
+    scy_at_data_fetch: false,
+    lyc153_4_dots_later: false,
+    palette_write_late: false,
     certified: false,
 };
 
@@ -130,11 +146,29 @@ pub const CGB: Machine = Machine {
     stat_write_glitch: false,
     wave_ram_while_on_glitch: false,
     fea0_read: Fea0Read::HighNibbleTwice,
+    lyc153_4_dots_later: true,
+    ..BASE
+};
+/// CPU CGB C: the revision Gambatte's cgb04c captures look like (SameBoy's CGB C/E splits match
+/// where they disagree with the E row). Data only until a suite certifies it.
+pub const CGB_C: Machine = Machine {
+    name: "CPU CGB C",
+    model: "cgb",
+    revision: "C",
+    boot_rom: "CGB",
+    cgb_hardware: true,
+    oam_bug: false,
+    tac_disable_glitch: true,
+    stat_write_glitch: false,
+    wave_ram_while_on_glitch: false,
+    fea0_read: Fea0Read::RevisionMaskedRam,
+    scy_at_data_fetch: true,
+    palette_write_late: true,
     ..BASE
 };
 
 /// The machine table's keys, in the reference's order.
-pub const MACHINES: [(&str, Machine); 9] = [
+pub const MACHINES: [(&str, Machine); 10] = [
     ("dmg", DMG_B),
     ("dmg-b", DMG_B),
     ("dmg-0", DMG_0),
@@ -144,6 +178,7 @@ pub const MACHINES: [(&str, Machine); 9] = [
     ("sgb", SGB),
     ("sgb2", SGB2),
     ("cgb", CGB),
+    ("cgb-c", CGB_C),
 ];
 
 /// The row for a key of `MACHINES`.

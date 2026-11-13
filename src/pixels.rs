@@ -118,7 +118,13 @@ pub struct Pixels {
     pub wx: u8,
     /// CGB: what LCDC will be on the next dot
     pub next_lcdc: u8,
+    /// CGB C and older: SCY read again at each tile-data fetch (machines.rs; the board sets it)
+    pub scy_at_data_fetch: bool,
+    /// CGB C and older: a BGP/OBP0/OBP1 write reaches the pixels a dot later (machines.rs)
+    pub palette_late: bool,
     pub last_bgp: u8,
+    pub last_obp0: u8,
+    pub last_obp1: u8,
     pub last_wx: u8,
     pub last_lcdc: u8,
     /// WY met LY with the window on, at some dot of this frame
@@ -189,7 +195,11 @@ impl Pixels {
             scy: 0,
             wx: 0,
             next_lcdc: 0,
+            scy_at_data_fetch: false,
+            palette_late: false,
             last_bgp: 0,
+            last_obp0: 0,
+            last_obp1: 0,
             last_wx: 0,
             last_lcdc: 0,
             active_for_frame: false,
@@ -294,6 +304,7 @@ impl Pixels {
             self.active_for_frame = true;
         }
         self.last_bgp = p.bgp;
+        (self.last_obp0, self.last_obp1) = (p.obp0, p.obp1);
         self.last_wx = self.wx;
         self.last_lcdc = self.lcdc;
     }
@@ -499,7 +510,17 @@ impl Pixels {
         }
         if let Some(o) = obj {
             if o.0 != 0 && lcdc & 2 != 0 && (lcdc & 1 == 0 || colour == 0 || o.1 & 0x80 == 0) {
-                let palette = if o.1 & 0x10 != 0 { p.obp1 } else { p.obp0 };
+                let palette = if self.palette_late {
+                    if o.1 & 0x10 != 0 {
+                        self.last_obp1
+                    } else {
+                        self.last_obp0
+                    }
+                } else if o.1 & 0x10 != 0 {
+                    p.obp1
+                } else {
+                    p.obp0
+                };
                 let shade = ((palette >> (o.0 * 2)) & 3) as usize;
                 self.framebuffer[i] = if self.cgb {
                     Ppu::rgb(&p.obj_pal, ((o.1 >> 4) & 1) as usize, shade)
@@ -510,8 +531,13 @@ impl Pixels {
             }
         }
         if self.cgb {
+            let bgp = if self.palette_late {
+                self.last_bgp
+            } else {
+                p.bgp
+            };
             let shade = if lcdc & 1 != 0 {
-                ((p.bgp >> (colour * 2)) & 3) as usize
+                ((bgp >> (colour * 2)) & 3) as usize
             } else {
                 0
             };
@@ -738,7 +764,12 @@ impl Pixels {
     }
 
     fn bg_data_address(&mut self) {
-        let scy = if self.cgb { self.tile_scy } else { self.scy }; // the CGB takes SCY once, at GetTile
+        // the CGB D and E take SCY once, at GetTile; the DMG and CGB C and older read it again here
+        let scy = if self.cgb && !self.scy_at_data_fetch {
+            self.tile_scy
+        } else {
+            self.scy
+        };
         let mut row = (self.ly + scy as i32) & 7;
         let attrs = self.tile_attrs;
         if attrs & 0x40 != 0 {

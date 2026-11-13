@@ -106,9 +106,10 @@ pub const WX_EDGE_LEAD: i32 = 7;
 pub const WX_LAG: i32 = 1;
 /// ... and LCDC.5/.0 this many
 pub const WIN_LAG: i32 = 0;
-/// CGB: LCDC.5 cleared just after the window starts puts the background back, as in Gambatte's
-/// StartWindowDraw (DMG keeps the window). FITTED (Gambatte cgb04c window +16 -2,
-/// late_disable_*): the clear undoes the window for this many dots after it starts
+/// CGB: LCDC.5 cleared just after the window starts puts the background back (DMG keeps the
+/// window). FITTED to the hardware verdicts (Gambatte cgb04c window/late_disable_*, +16 -2); the
+/// idea was first read in Gambatte's source (gameboy-python docs/validation.md), the dots are
+/// this board's fit: the clear undoes the window for this many dots after it starts
 pub const WIN_UNDO_DOTS: i32 = 6;
 /// ... and gives back this many of the dots the window's start took
 pub const WIN_UNDO_REFUND: i32 = 3;
@@ -281,6 +282,8 @@ pub struct Ppu {
     pub mode0_dots: i32,
     pub glitching: bool,
     pub early_lyc153: bool,
+    /// CGB D/E line 153 comparator (machines.rs; the board sets it)
+    pub lyc153_late: bool,
     pub early_fired: bool,
     /// the HBlank interrupt reached IF early in this M-cycle (board)
     pub m0_early: bool,
@@ -432,6 +435,7 @@ impl Ppu {
             mode0_dots: 0,
             glitching: false,
             early_lyc153: false,
+            lyc153_late: false,
             early_fired: false,
             m0_early: false,
             m0_hidden: 0,
@@ -1426,12 +1430,26 @@ impl Ppu {
         self.stat_select & 0x08 != 0
     }
 
-    /// The LY the comparator sees: 153 for line 153's first 8 dots (a read sees it for 4).
+    /// The LY the comparator sees: 153 for line 153's first 8 dots (a read sees it for 4);
+    /// on a CGB D or E the whole sequence runs 4 dots later (machines.rs lyc153_4_dots_later).
     fn compare_ly(&self) -> i32 {
         if self.ly == LAST_LINE {
-            return if self.dot < 8 { LAST_LINE } else { 0 };
+            return if self.dot < 8 + self.lyc153_shift() {
+                LAST_LINE
+            } else {
+                0
+            };
         }
         self.ly
+    }
+
+    /// Dots line 153's LY=LYC sequence runs later on a CGB D or E than on a DMG or CGB C.
+    fn lyc153_shift(&self) -> i32 {
+        if self.lyc153_late {
+            4
+        } else {
+            0
+        }
     }
 
     /// The LY=LYC flag: false for 4 dots after the comparator's LY changes (at a line's start,
@@ -1442,7 +1460,9 @@ impl Ppu {
         if dot < 4 && self.ly != 0 {
             return false;
         }
-        if self.ly == LAST_LINE && (8..12).contains(&dot) {
+        if self.ly == LAST_LINE
+            && (8 + self.lyc153_shift()..12 + self.lyc153_shift()).contains(&dot)
+        {
             return false;
         }
         self.compare_ly() == self.lyc as i32
@@ -1471,7 +1491,7 @@ impl Ppu {
     /// line_153_lyc0_int_inc_sled, line_153_lyc_int_b).
     pub fn after_access(&mut self, ctx: &mut IrqCtx) {
         if self.ly == LAST_LINE
-            && self.dot == 8
+            && self.dot == 8 + self.lyc153_shift()
             && self.lcd_on()
             && self.stat_select & 0x40 != 0
             && self.lyc == 0

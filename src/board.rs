@@ -48,9 +48,7 @@ pub const SPEED_SWITCH_HALT: i32 = 0x20008; // units, switching from double to s
 pub const SPEED_SWITCH_HALT_TO_DOUBLE: i32 = 0x20008; // ... and from single to double; FITTED
 /// dots the LCD runs on its own when the speed switches to double, and to single (negative: it
 /// stands still). FITTED on Gambatte speedchange/lcd_offset/lcdoffset1 (230 -> 264 of 357;
-/// -4/3, -2/2, 1/2, -3/3 all lower). SameBoy's TODO has 2 PPU ticks single->double; Gambatte
-/// moves the LCD a cycle ahead on double->single, which is -3 here with our one ds M-cycle
-/// longer halt.
+/// -4/3, -2/2, 1/2, -3/3 all lower). SameBoy's TODO has 2 PPU ticks single->double.
 pub const SWITCH_LCD_DS: i32 = 2;
 /// dots LY shows the next line early after a switch to double speed. daid's
 /// speed_switch_timing_ly.gbc wants 2 (as after an LCD-on in double speed: ppu.LY_LEAD_DS), but
@@ -218,27 +216,6 @@ pub enum Held {
     ObjPal,
 }
 
-/// The kind of an OAM DMA source on a CGB (Gambatte's conflict map, memptrs.cpp).
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-enum DmaKind {
-    Rom,
-    Vram,
-    Sram,
-    Wram,
-    Bad,
-}
-
-impl DmaKind {
-    /// which 4 KiB regions the CPU shares with the DMA by the kind of source; bit n = region $n000
-    fn conflict(self) -> u32 {
-        match self {
-            DmaKind::Rom | DmaKind::Sram | DmaKind::Bad => 0xFCFF,
-            DmaKind::Vram => 0x0300,
-            DmaKind::Wram => 0xF000,
-        }
-    }
-}
-
 /// Everything on the board but the CPU: sm83's `Bus`. (Not `Clone`/`Debug`: gb_apu's `APU` is
 /// neither.)
 #[derive(Serialize, Deserialize)]
@@ -336,6 +313,10 @@ impl GameBoy {
         // 4 T ahead of the M-cycle count since reset (fitted; the only phase that passes it)
         timer.counter = 4;
         let mut ppu = Ppu::new(machine.stat_write_glitch, machine.stat_blocking, cgb);
+        let pixels = ppu.pixels.as_mut().expect("pixels");
+        pixels.scy_at_data_fetch = machine.scy_at_data_fetch;
+        pixels.palette_late = machine.palette_write_late;
+        ppu.lyc153_late = machine.lyc153_4_dots_later;
         ppu.cgb_mode = cgb; // the boot ROM runs in CGB mode and picks compatibility by KEY0
         let hw = Hw {
             machine,
@@ -1062,67 +1043,99 @@ impl Hw {
 
     // ----- DMA hooks --------------------------------------------------------------------
 
-    fn cgb_dma_kind(&self) -> DmaKind {
-        let page = self.ppu.dma.base;
-        if page < 0x80 {
-            return DmaKind::Rom;
+    // CGB OAM DMA against the CPU, as SameBoy models it (Core/memory.c is_addr_in_dma_use,
+    // GB_read_memory, GB_write_memory; Expat licence). A CGB has three buses: the cartridge
+    // ($0000-$7FFF, $A000-$BFFF), VRAM, and WRAM ($C000 up). While a DMA is moving bytes (not in
+    // its first cycle), a CPU access below $FE00 collides with it when it is on the bus the DMA
+    // reads, and also: anything from $C000 up collides unless the DMA reads VRAM; with a source
+    // from $E000 up (invalid on a CGB) everything but VRAM collides.
+
+    /// 0 the cartridge bus, 1 VRAM, 2 WRAM (a CGB's three buses).
+    fn cgb_bus(address: u16) -> u8 {
+        if address < 0x8000 || (0xA000..0xC000).contains(&address) {
+            return 0;
         }
-        if page < 0xA0 {
-            return DmaKind::Vram;
-        }
-        if page < 0xC0 {
-            return DmaKind::Sram;
-        }
-        if page < 0xE0 {
-            DmaKind::Wram
+        if address < 0xA000 {
+            1
         } else {
-            DmaKind::Bad
+            2
         }
     }
 
     fn cgb_dma_conflict(&self, address: u16) -> bool {
-        address < 0xFE00 && (self.cgb_dma_kind().conflict() >> (address >> 12)) & 1 != 0
+        let dma = &self.ppu.dma;
+        if address >= 0xFE00 || dma.index == 0 {
+            return false;
+        }
+        // the address the DMA read this M-cycle
+        let last = ((dma.base as u16) << 8) | (dma.index - 1) as u16;
+        if address == last {
+            return false;
+        }
+        if address >= 0xC000 {
+            return Self::cgb_bus(last) != 1;
+        }
+        if dma.base >= 0xE0 {
+            return Self::cgb_bus(address) != 1;
+        }
+        Self::cgb_bus(address) == Self::cgb_bus(last)
     }
 
     fn dma_wram_index(&self, address: u16) -> usize {
-        // the WRAM half is named by bit 4 of the DMA page, not by SVBK's bank at $C000
+        // the WRAM half is the one the DMA's address names (its bit 12), not the CPU's
         if (self.ppu.dma.base >> 4) & 1 != 0 {
             return (self.svbk << 12) | (address & 0xFFF) as usize;
         }
         (address & 0xFFF) as usize
     }
 
+    // What a colliding access does is fitted to Gambatte's oamdma_src*_busypush*/busypop* hardware
+    // verdicts (cgb04c, a CPU CGB C), where they differ from SameBoy (which has OAM get 0 for any
+    // ROM-source write on CGB C-E and never clears OAM on a read). The revisions after C are not
+    // judged: the same rules are used.
+
     fn cgb_dma_read(&mut self, address: u16) -> u8 {
-        // the CPU gets the byte the DMA just moved; from $C000 up and a non-WRAM source it reads
-        // WRAM instead (Gambatte nontrivial_read)
-        let kind = self.cgb_dma_kind();
-        if kind != DmaKind::Wram && address >= 0xC000 {
+        let base = self.ppu.dma.base;
+        if base >= 0xE0 && Self::cgb_bus(address) == 0 {
+            return 0xFF; // an invalid source leaves the cartridge bus undriven
+        }
+        if address >= 0xC000 && (Self::cgb_bus((base as u16) << 8) != 2 || base >= 0xE0) {
             return self.wram[self.dma_wram_index(address)];
         }
-        // (index - 1: Python's oam[-1] when the index is 0 is the last byte)
-        let i = (self.ppu.dma.index + 0xA0 - 1) % 0xA0;
-        let value = self.ppu.oam[i];
-        if kind == DmaKind::Vram {
+        let i = self.ppu.dma.index - 1;
+        let value = self.ppu.oam[i]; // the byte the DMA just moved
+        if (0x80..0xA0).contains(&base) {
+            // a VRAM source: the byte is taken from OAM (busypop7FFF/9FFF from $8000/$9F00: 00)
             self.ppu.oam[i] = 0;
         }
         value
     }
 
     fn cgb_dma_write(&mut self, address: u16, value: u8) {
-        let kind = self.cgb_dma_kind();
-        if address < 0xC000 {
-            let i = self.ppu.dma.index - 1;
-            self.ppu.oam[i] = if kind == DmaKind::Vram { 0 } else { value };
-        } else if kind != DmaKind::Wram {
-            let i = self.dma_wram_index(address);
-            self.wram[i] = value;
+        let base = self.ppu.dma.base;
+        if address >= 0xC000 {
+            // from a WRAM source the write is lost (srcC000 busypushC001); from any other it
+            // reaches WRAM, in the half the DMA's address names (src0000/A000/E000 busypushC001)
+            if !(0xC0..0xE0).contains(&base) {
+                let i = self.dma_wram_index(address);
+                self.wram[i] = value;
+            }
+            return;
         }
+        // below $C000 the write is lost and OAM takes its place: the CPU's byte, or 0 from a VRAM
+        // source (busypushA001 from $0000/$A000/$E000: 55; busypush8001 from $8000: 00)
+        let i = self.ppu.dma.index - 1;
+        self.ppu.oam[i] = if (0x80..0xA0).contains(&base) {
+            0
+        } else {
+            value
+        };
     }
 
     /// A DMA source read, on the bus the source page is on (no locks apply).
     fn dma_source(&mut self, address: u16) -> u8 {
         if self.cgb && self.ppu.dma.base >= 0xE0 {
-            return 0xFF; // CGB: sources from $E0 up are invalid (Gambatte oam_dma_src_invalid)
+            return 0xFF; // CGB: sources from $E0 up are invalid (SameBoy GB_dma_run)
         }
         if self.boot_at(address) {
             self.boot_rom.as_ref().expect("boot ROM")[address as usize]

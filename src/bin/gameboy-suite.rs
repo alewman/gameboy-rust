@@ -2,25 +2,26 @@
 //! `scripts/gambatte_dmg08.py`, `scripts/mealybug_compare.py`, `scripts/cgb_pictures.py`,
 //! `scripts/cgb_picture.py`, `tests/test_pictures.py`):
 //!
-//!     gameboy-suite gambatte [--cgb] [--skip-boot] [--jobs N] [--write FILE]
+//!     gameboy-suite gambatte [--cgb [--machine cgb|cgb-c]] [--skip-boot] [--jobs N] [--write FILE]
 //!     gameboy-suite mealybug-dmg [--jobs N]        # real DMG boot ROM, run_mooneye 420 frames
-//!     gameboy-suite cgb-pictures [--jobs N] [--revision cgb_d]   # real CGB boot ROM, 260 frames
+//!     gameboy-suite cgb-pictures [--jobs N] [--revision cgb_d|cgb_c]   # real CGB boot ROM, 260 frames
 //!     gameboy-suite pictures                       # dmg-acid2, cgb-acid2, halt_bug, strikethrough
 //!
 //! `$GBTR` moves the test-ROM directory (default gameboy-python's tests/test_roms/gbtr).
 
+use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::Mutex;
+use std::sync::{Mutex, OnceLock};
 
 use gameboy_rust::boot::find_boot_rom;
 use gameboy_rust::pngread::{read_rgb555, read_rgb888, read_shades};
 use gameboy_rust::testrom::run_mooneye;
-use gameboy_rust::{load_cartridge, Clock, GameBoy, Machine, CGB, DMG_B};
+use gameboy_rust::{load_cartridge, machine, Clock, GameBoy, Machine, CGB, DMG_B};
 
 const FRAME_T: u64 = 70224;
 const FRAMES: u64 = 334 + 15;
-const CGB_FRAMES: u64 = 186 + 15; // testrunner.cpp: the CGB boot ROM's frames and 15 more
+const CGB_FRAMES: u64 = 186 + 15; // the CGB boot ROM's frames and the 15 the protocol waits
 
 fn gbtr() -> PathBuf {
     PathBuf::from(
@@ -79,30 +80,53 @@ fn parallel<T: Sync, R: Send>(items: &[T], jobs: usize, f: impl Fn(&T) -> R + Sy
 
 // ----- Gambatte ---------------------------------------------------------------------------
 
-fn glyph(ch: char) -> [u8; 64] {
-    let rows = match ch {
-        '0' => "........|.#######|.#.....#|.#.....#|.#.....#|.#.....#|.#.....#|.#######",
-        '1' => "........|....#...|....#...|....#...|....#...|....#...|....#...|....#...",
-        '2' => "........|.#######|.......#|.......#|.#######|.#......|.#......|.#######",
-        '3' => "........|.#######|.......#|.......#|..######|.......#|.......#|.#######",
-        '4' => "........|.#.....#|.#.....#|.#.....#|.#######|.......#|.......#|.......#",
-        '5' => "........|.#######|.#......|.#......|.######.|.......#|.......#|.######.",
-        '6' => "........|.#######|.#......|.#......|.#######|.#.....#|.#.....#|.#######",
-        '7' => "........|.#######|.......#|......#.|.....#..|....#...|...#....|...#....",
-        '8' => "........|..#####.|.#.....#|.#.....#|..#####.|.#.....#|.#.....#|..#####.",
-        '9' => "........|.#######|.#.....#|.#.....#|.#######|.......#|.......#|.#######",
-        'a' => "........|....#...|..#...#.|.#.....#|.#######|.#.....#|.#.....#|.#.....#",
-        'b' => "........|.######.|.#.....#|.#.....#|.######.|.#.....#|.#.....#|.######.",
-        'c' => "........|..#####.|.#.....#|.#......|.#......|.#......|.#.....#|..#####.",
-        'd' => "........|.######.|.#.....#|.#.....#|.#.....#|.#.....#|.#.....#|.######.",
-        'e' => "........|.#######|.#......|.#......|.#######|.#......|.#......|.#######",
-        _ => "........|.#######|.#......|.#......|.#######|.#......|.#......|.#......",
-    };
-    let mut out = [0u8; 64];
-    for (i, c) in rows.chars().filter(|&c| c != '|').enumerate() {
-        out[i] = if c == '#' { 3 } else { 0 };
-    }
-    out
+// The digit glyphs and the CGB picture colours, learned from the tests themselves by
+// gameboy-python's scripts/gambatte_learn.py (the digits each ROM's name says its screen shows;
+// the expected PNGs); copies in tests/data.
+
+/// digit -> its 8x8 tile in shades (3 where the table has #)
+fn glyphs() -> &'static HashMap<char, [u8; 64]> {
+    static TABLE: OnceLock<HashMap<char, [u8; 64]>> = OnceLock::new();
+    TABLE.get_or_init(|| {
+        let mut out = HashMap::new();
+        for line in include_str!("../../tests/data/gambatte_glyphs.txt").lines() {
+            if line.is_empty() || line.starts_with('#') {
+                continue;
+            }
+            let mut fields = line.split_whitespace();
+            let ch = fields.next().unwrap().chars().next().unwrap();
+            let mut tile = [0u8; 64];
+            for (i, c) in fields
+                .next()
+                .unwrap()
+                .chars()
+                .filter(|&c| c != '|')
+                .enumerate()
+            {
+                tile[i] = if c == '#' { 3 } else { 0 };
+            }
+            out.insert(ch, tile);
+        }
+        out
+    })
+}
+
+/// RGB555 word -> 0xRRGGBB
+fn colours() -> &'static HashMap<u16, u32> {
+    static TABLE: OnceLock<HashMap<u16, u32>> = OnceLock::new();
+    TABLE.get_or_init(|| {
+        let mut out = HashMap::new();
+        for line in include_str!("../../tests/data/gambatte_cgb_colours.txt").lines() {
+            if line.is_empty() || line.starts_with('#') {
+                continue;
+            }
+            let mut fields = line.split_whitespace();
+            let word = u16::from_str_radix(fields.next().unwrap(), 16).unwrap();
+            let colour = u32::from_str_radix(fields.next().unwrap(), 16).unwrap();
+            out.insert(word, colour);
+        }
+        out
+    })
 }
 
 #[derive(Clone, Debug)]
@@ -162,7 +186,7 @@ fn plan(rom: &Path, cgb: bool) -> Vec<Test> {
 
 fn matches_out(frame: &[u8], digits: &str) -> bool {
     for (i, ch) in digits.chars().enumerate() {
-        let tile = glyph(ch);
+        let tile = &glyphs()[&ch];
         for y in 0..8 {
             let start = y * 160 + i * 8;
             if frame.get(start..start + 8) != Some(&tile[y * 8..y * 8 + 8]) {
@@ -173,16 +197,10 @@ fn matches_out(frame: &[u8], digits: &str) -> bool {
     true
 }
 
-/// Gambatte's testrunner colour for an RGB555 word, as 0xRRGGBB (its `lut` in runTestRom).
-fn lut(word: u16) -> u32 {
-    let (r, g, b) = (
-        (word & 31) as u32,
-        ((word >> 5) & 31) as u32,
-        ((word >> 10) & 31) as u32,
-    );
-    (((13 * r + 2 * g + b) >> 1) << 16)
-        | (((3 * g + b) << 1) << 8)
-        | ((3 * r + 2 * g + 11 * b) >> 1)
+/// The expected PNGs' colour for an RGB555 word (tests/data/gambatte_cgb_colours.txt); None for
+/// a word no picture test has shown, which matches nothing.
+fn lut(word: u16) -> Option<u32> {
+    colours().get(&(word & 0x7FFF)).copied()
 }
 
 fn judge(frame: &[u16], tests: &[Test], cgb: bool) -> Vec<bool> {
@@ -208,7 +226,7 @@ fn judge(frame: &[u16], tests: &[Test], cgb: bool) -> Vec<bool> {
                         && frame
                             .iter()
                             .zip(pixels.iter())
-                            .all(|(&f, &p)| lut(f) & 0xF8F8F8 == p & 0xF8F8F8)
+                            .all(|(&f, &p)| lut(f) == Some(p & 0xF8F8F8))
                 }
                 Err(_) => false,
             },
@@ -237,6 +255,9 @@ fn walk(dir: &Path, out: &mut Vec<PathBuf>) {
 fn gambatte(args: &[String]) {
     let cgb = args.iter().any(|a| a == "--cgb");
     let skip = args.iter().any(|a| a == "--skip-boot");
+    // with --cgb: the CGB row to run (cgb, cgb-c)
+    let cgb_row = opt(args, "--machine").unwrap_or_else(|| "cgb".into());
+    let cgb_machine = machine(&cgb_row).expect("--machine: a key of MACHINES");
     let jobs = opt(args, "--jobs")
         .map(|v| v.parse().unwrap())
         .unwrap_or(10);
@@ -261,7 +282,7 @@ fn gambatte(args: &[String]) {
     };
     let results = parallel(&roms, jobs, |rom| {
         let tests = plan(rom, cgb);
-        let mut gb = board(rom, if cgb { CGB } else { DMG_B }, boot.clone());
+        let mut gb = board(rom, if cgb { cgb_machine } else { DMG_B }, boot.clone());
         let frames = if skip {
             15
         } else if cgb {
@@ -371,9 +392,12 @@ fn cgb_pictures(args: &[String]) {
             cases.push((rom, png));
         }
     }
+    // the machine row each revision's pictures run on (machines.rs)
+    let row = if revision == "cgb_c" { "cgb-c" } else { "cgb" };
+    let cgb_machine = machine(row).unwrap();
     let boot = real_boot("CGB");
     let results = parallel(&cases, jobs, |(rom, png)| {
-        let mut gb = board(rom, CGB, Some(boot.clone()));
+        let mut gb = board(rom, cgb_machine, Some(boot.clone()));
         run_to(&mut gb, frames * FRAME_T);
         let (want, _, _) = read_rgb555(png).unwrap();
         let name = rom.file_name().unwrap().to_string_lossy().to_string();

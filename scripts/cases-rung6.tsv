@@ -39,3 +39,11 @@ machine/sgb2/oam_bug-5	300	$GBTR/blargg/oam_bug/rom_singles/5-timing_bug.gb	--ma
 machine/sgb2/tetris	900	$NOINTRO/Nintendo - Game Boy/Tetris (World) (Rev 1).zip	--machine sgb2 --input $INPUTS/poke.txt
 machine/cgb/tetris-real	900	$NOINTRO/Nintendo - Game Boy/Tetris (World) (Rev 1).zip	--machine cgb --boot real --input $INPUTS/poke.txt
 machine/cgb/stat_irq_blocking	200	$MTS/acceptance/ppu/stat_irq_blocking.gb	--machine cgb --boot real
+machine/cgb-c/tetris-real	900	$NOINTRO/Nintendo - Game Boy/Tetris (World) (Rev 1).zip	--machine cgb-c --boot real --input $INPUTS/poke.txt
+machine/cgb-c/stat_irq_blocking	200	$MTS/acceptance/ppu/stat_irq_blocking.gb	--machine cgb-c --boot real
+machine/cgb-c/m3_scy_change	260	$GBTR/mealybug-tearoom-tests/ppu/m3_scy_change.gb	--machine cgb-c --boot real
+machine/cgb-c/m3_bgp_change	260	$GBTR/mealybug-tearoom-tests/ppu/m3_bgp_change.gb	--machine cgb-c --boot real
+machine/cgb-c/m3_obp0_change	260	$GBTR/mealybug-tearoom-tests/ppu/m3_obp0_change.gb	--machine cgb-c --boot real
+machine/cgb-c/lycint152_ly0stat_1_dmg08_cgb04c_outC1	15	$GBTR/gambatte/ly0/lycint152_ly0stat_1_dmg08_cgb04c_outC1.gbc	--machine cgb-c
+machine/cgb-c/lycint152_ly0stat_ds_3_cgb04c_outC2	15	$GBTR/gambatte/ly0/lycint152_ly0stat_ds_3_cgb04c_outC2.gbc	--machine cgb-c
+machine/cgb-c/lycint152_ly153_2_dmg08_cgb04c_out99	15	$GBTR/gambatte/ly0/lycint152_ly153_2_dmg08_cgb04c_out99.gbc	--machine cgb-c
