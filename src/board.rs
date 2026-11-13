@@ -719,8 +719,9 @@ impl Hw {
             return StopResult::new(StopAction::Halt);
         }
         if self.cgb && self.ppu.cgb_mode && self.key1 & 1 != 0 {
-            // the switch clears DIV like any STOP (Gambatte stop(), SameBoy), at the end of STOP's
-            // operand read: a counter bit that is still high there makes its falling edge
+            // the switch clears DIV like any STOP (Pan Docs Timer_and_Divider_Registers.md,
+            // SameBoy), at the end of STOP's operand read: a counter bit that is still high there
+            // makes its falling edge
             // (Gambatte speedchange*_tima _1/_2 pairs move STOP by one M-cycle). With IME off the
             // CPU then holds the reset one M-cycle more (SameBoy enter_stop_mode;
             // Gambatte speedchange*_div pairs).
@@ -1288,8 +1289,8 @@ impl Hw {
             0x07 => self.timer.write_tac(value),
             0x0F => {
                 // an interrupt raised late in this very cycle is not cleared by the write nor is
-                // a serial interrupt still hidden: it has not happened yet (Gambatte flags it at
-                // the end of the hiding)
+                // a serial interrupt still hidden: it has not happened yet (it reaches IF at the
+                // end of the hiding: Gambatte serial/*_read_if_* verdicts)
                 cpu.if_ = (value & 0x1F) | self.irq.late_bits | (cpu.if_ & self.irq.hide & 8);
             }
             0x40 => {

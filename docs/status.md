@@ -59,10 +59,9 @@ for f in $B/cpu_instrs/individual/*.gb; do target/release/gameboy $f --protocol 
 No divergence where gameboy-python looks wrong; nothing for sm83-rust either. At pin-1 two of
 its committed pass lists were stale; at pin-2 `tests/gambatte_cgb04c_pass.txt` is current (2,892
 on `cgb-c`), and `tests/gambatte_audio_pass.txt` (76) still trails what the board agrees on (82
-of 87). The PPU's `window_line` is dead state (written, never read). Comments that still name
-Gambatte's source functions (`board.rs` "Gambatte stop()", "Gambatte flags it at the end of the
-hiding"; `pixels.rs` "Gambatte ppu.cpp tileword") are word for word the reference's and were
-left as transcribed.
+of 87). The PPU's `window_line` is dead state (written, never read). Three comments that named
+Gambatte's source functions were reworded in gameboy-python `2b0b40f` (comments only, after
+pin-2) and here to match.
 
 ## Open
 

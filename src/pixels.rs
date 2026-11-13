@@ -544,8 +544,8 @@ impl Pixels {
             self.framebuffer[i] = Ppu::rgb(&p.bg_pal, 0, shade);
         } else {
             // LCDC.0 clear: the background's colour number is 0, still looked up in BGP
-            // (Gambatte ppu.cpp tileword, SameBoy; Megami Tensei Gaiden: Last Bible II fades this
-            // way). docboy and Pan Docs draw white, which is the same for the usual BGP
+            // (SameBoy; Megami Tensei Gaiden: Last Bible II fades this way). docboy and Pan Docs
+            // draw white, which is the same for the usual BGP
             if lcdc & 1 == 0 {
                 colour = 0;
             }
