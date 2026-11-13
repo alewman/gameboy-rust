@@ -9,7 +9,8 @@ direction, board time) and every finished picture, slice by slice. The CPU is
 dependencies, so check them out beside this one.
 
 Each `src/*.rs` file is the transcription of one `gameboy_python` module (`board`, `ppu`,
-`pixels`, `dma`, `timer`, `joypad`, `serial`, `machines`, `cartridge`, `boot`, `testrom`), with
+`pixels`, `dma`, `timer`, `joypad`, `serial`, `machines`, `cartridge`, `boot`, `testrom`, and
+`sgb`, the high-level Super Game Boy from gameboy-python's `sgb-hle` branch, `a8bdf5e`), with
 the same names, the same order of work inside an M-cycle and the hardware comments carried over;
 where Rust forced a difference, the module header says so. It is a reference board: correct,
 not fast, and there is no window yet.
@@ -36,11 +37,25 @@ default) starts from the boot ROM's hand-off state. Nothing is copied into this 
 
 The other binaries are the judges' tools: `gameboy-trace` (the board side of the lockstep gate),
 `gameboy-suite` (Gambatte, Mealybug and picture suites with the reference's rules) and
-`gameboy-jobs` (rung 4's suite jobs).
+`gameboy-jobs` (rung 4's suite jobs); and `gameboy-sgb`, which runs a game with the Super Game
+Boy attached and writes its 256 x 224 picture (border and colourised Game Boy screen) as PNG:
+
+```sh
+target/release/gameboy-sgb game.gb --frames 900 --png out.png [--machine sgb2] \
+    [--boot skip|mame|PATH] [--every 60 --out-dir pictures/]
+```
+
+**Super Game Boy.** `GameBoy::attach_sgb(palette)` on the `sgb`/`sgb2` rows attaches
+`sgb::SuperGameBoy` (the ICD2 packet receiver and multiplayer lines, and a high-level version of
+the SGB's SNES program: palettes, attribute maps, VRAM transfers, the border). The board owns it
+(`hw.sgb`), it is in save states, and host input goes to `sgb_set_pressed`. `render()` gives
+SNES BGR555 words, `sgb::rgb_bytes` 8-bit RGB. The SGB BIOS's own artwork (default border,
+built-in palettes) is Nintendo's and not reproduced; see gameboy-python's docs/sgb.md.
 
 ## Status
 
-Every rung passes (measured 2026-11-12; the last rung and the seeded faults at `8887cea`). Exact
+Every rung passes (measured 2026-11-12; the last rung and the seeded faults at `8887cea`; the
+Super Game Boy row on 2026-11-13 against gameboy-python `a8bdf5e`, branch `sgb-hle`). Exact
 numbers and commands are in [docs/status.md](docs/status.md). No case was found where
 gameboy-python looks wrong.
 
@@ -54,6 +69,7 @@ gameboy-python looks wrong.
 | 6 | Every machine row; save states | 48 of 48 identical (incl. the CPU CGB C row); save/load round trip identical on every gate case, audio included (871 of 871) |
 | 7 | gb-apu-rust in the gate: APU reads and writes in every comparison, a CRC of each slice's samples | 119 of 119 identical; Gambatte audio 82 of 87, as the reference |
 | faults | 18 one-line faults seeded across PPU, pixels, DMA, timer, cartridge, serial | 17 caught; missed: MBC5 ROM bank bit 8 (no case reads banks 256 and up) |
+| SGB | The HLE Super Game Boy (`src/sgb.rs`) under the gate: a CRC of its 256 x 224 picture and of its state in every slice (`--sgb`, `scripts/cases-sgb.tsv`): the eight SGB games the reference validated against the real BIOS, from the SGB boot ROM, plus SGB2 and skip-boot | 12 of 12 identical (16,500 slices), save/load round trip 12 of 12; every other table unchanged; PNGs pixel-identical to the reference's; seeded faults 4 of 5 caught (missed: an inside-only ATTR_BLK's edge palette, which no case's game exercises; `tests/sgb.rs` catches it) |
 
 **Save states.** `GameBoy::save_state()` / `load_state()` carry the CPU and the whole board,
 sound unit included (gb-apu-rust's `serde` feature); the cartridge ROM, boot ROM and machine row

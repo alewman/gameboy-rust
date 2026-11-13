@@ -5,7 +5,8 @@
 //! Each module is the transcription of one `gameboy_python` module, with the same names, the
 //! same structure and the hardware comments carried over. Where Rust forced a difference, the
 //! module header says so. The CPU is the `sm83` crate (sm83-rust, transcribed from sm83-python
-//! `95f2b8b`, the revision the reference pins).
+//! `95f2b8b`, the revision the reference pins). `sgb` is the reference's high-level Super Game
+//! Boy from its `sgb-hle` branch (`a8bdf5e`), attached with `GameBoy::attach_sgb`.
 
 pub mod apu;
 pub mod board;
