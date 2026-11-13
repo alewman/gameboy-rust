@@ -11,8 +11,13 @@ sgb/boot/marios-picross	1500	$NOINTRO/Nintendo - Game Boy/Mario's Picross (USA, 
 sgb/boot/tetris-dx	1500	$NOINTRO/Nintendo - Game Boy Color/Tetris DX (World) (SGB Enhanced) (GB Compatible).zip	--machine sgb --boot "$SGBBOOT" --sgb --input $INPUTS/poke.txt
 # the SGB2 row from its boot ROM
 sgb2/boot/donkey-kong	1200	$NOINTRO/Nintendo - Game Boy/Donkey Kong (World) (Rev 1) (SGB Enhanced).zip	--machine sgb2 --boot "$SGB2BOOT" --sgb --input $INPUTS/poke.txt
-# skip-boot: Donkey Kong and Mario's Picross load their borders; Pokemon Red's first packet (MLT_REQ, its SGB check) is lost
-# because the ICD2 starts from the skip-boot P1 select $00, so it never sends a border (docs/status.md, findings)
+# skip-boot (as play-gb runs): every game loads its border. The ICD2 starts at $30, where the SGB boot ROM leaves it
+# (gameboy-python c5e9568; from the skip-boot select $00 a game's first packet was lost: Pokemon Red's MLT_REQ check)
 sgb/skip/donkey-kong	1200	$NOINTRO/Nintendo - Game Boy/Donkey Kong (World) (Rev 1) (SGB Enhanced).zip	--machine sgb --sgb --input $INPUTS/poke.txt
 sgb/skip/marios-picross	1200	$NOINTRO/Nintendo - Game Boy/Mario's Picross (USA, Europe) (SGB Enhanced).zip	--machine sgb --sgb --input $INPUTS/poke.txt
 sgb/skip/pokemon-red	900	$NOINTRO/Nintendo - Game Boy/Pokemon - Red Version (USA, Europe) (SGB Enhanced).zip	--machine sgb --sgb --input $INPUTS/poke.txt
+sgb/skip/kirby2	1500	$NOINTRO/Nintendo - Game Boy/Kirby's Dream Land 2 (USA, Europe) (SGB Enhanced).zip	--machine sgb --sgb --input $INPUTS/poke.txt
+sgb/skip/pokemon-yellow	1500	$NOINTRO/Nintendo - Game Boy/Pokemon - Yellow Version - Special Pikachu Edition (USA, Europe) (CGB+SGB Enhanced).zip	--machine sgb --sgb --input $INPUTS/poke.txt
+sgb/skip/zelda-dx	1500	$NOINTRO/Nintendo - Game Boy Color/Legend of Zelda, The - Link's Awakening DX (USA, Europe) (Rev 2) (SGB Enhanced) (GB Compatible).zip	--machine sgb --sgb --input $INPUTS/poke.txt
+sgb/skip/wario-land-2	1500	$NOINTRO/Nintendo - Game Boy/Wario Land II (USA, Europe) (SGB Enhanced).zip	--machine sgb --sgb --input $INPUTS/poke.txt
+sgb/skip/tetris-dx	1500	$NOINTRO/Nintendo - Game Boy Color/Tetris DX (World) (SGB Enhanced) (GB Compatible).zip	--machine sgb --sgb --input $INPUTS/poke.txt

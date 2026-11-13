@@ -516,7 +516,13 @@ impl GameBoy {
     /// that is not `sgb`/`sgb2`.
     pub fn attach_sgb(&mut self, palette: [u16; 4]) -> Result<(), String> {
         let hw = &mut self.hw;
-        let mut sgb = SuperGameBoy::new(&hw.machine, &hw.cartridge.rom, hw.joypad.select, palette)?;
+        let mut sgb = SuperGameBoy::new(
+            &hw.machine,
+            &hw.cartridge.rom,
+            hw.joypad.select,
+            hw.boot_mapped,
+            palette,
+        )?;
         hw.ppu.taps = true;
         let mut icd = Icd {
             joypad: &mut hw.joypad,

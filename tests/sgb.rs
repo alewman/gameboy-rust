@@ -428,3 +428,16 @@ fn board_save_state_carries_the_sgb() {
     other.run_frames(2, 1_000_000);
     assert_eq!(sgb(&other).save_state(), sgb(&gb).save_state());
 }
+
+/// Skip-boot starts after the SGB boot ROM, which leaves the ICD2 at both lines high: a game's
+/// very first packet (Pokemon Red's MLT_REQ check) is a write of $00 straight away, and it must
+/// not be taken for no change (gameboy-python test_from_skip_boot_the_first_packet_arrives).
+#[test]
+fn from_skip_boot_the_first_packet_arrives() {
+    let mut gb = sgb_machine();
+    assert_eq!(sgb(&gb).p1, 0x30);
+    let mut packet = vec![0x89, 0x01];
+    packet.resize(16, 0);
+    send(&mut gb, &packet, 0); // MLT_REQ, two players, with no $30 first
+    assert_eq!(sgb(&gb).players, 1);
+}

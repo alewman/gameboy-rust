@@ -10,7 +10,7 @@ dependencies, so check them out beside this one.
 
 Each `src/*.rs` file is the transcription of one `gameboy_python` module (`board`, `ppu`,
 `pixels`, `dma`, `timer`, `joypad`, `serial`, `machines`, `cartridge`, `boot`, `testrom`, and
-`sgb`, the high-level Super Game Boy from gameboy-python's `sgb-hle` branch, `a8bdf5e`), with
+`sgb`, the high-level Super Game Boy from gameboy-python's `sgb-hle` branch, `c5e9568`), with
 the same names, the same order of work inside an M-cycle and the hardware comments carried over;
 where Rust forced a difference, the module header says so. It is a reference board: correct,
 not fast, and there is no window yet.
@@ -55,7 +55,7 @@ built-in palettes) is Nintendo's and not reproduced; see gameboy-python's docs/s
 ## Status
 
 Every rung passes (measured 2026-11-12; the last rung and the seeded faults at `8887cea`; the
-Super Game Boy row on 2026-11-13 against gameboy-python `a8bdf5e`, branch `sgb-hle`). Exact
+Super Game Boy row on 2026-11-13 against gameboy-python `c5e9568`, branch `sgb-hle`). Exact
 numbers and commands are in [docs/status.md](docs/status.md). No case was found where
 gameboy-python looks wrong.
 
@@ -69,7 +69,7 @@ gameboy-python looks wrong.
 | 6 | Every machine row; save states | 48 of 48 identical (incl. the CPU CGB C row); save/load round trip identical on every gate case, audio included (871 of 871) |
 | 7 | gb-apu-rust in the gate: APU reads and writes in every comparison, a CRC of each slice's samples | 119 of 119 identical; Gambatte audio 82 of 87, as the reference |
 | faults | 18 one-line faults seeded across PPU, pixels, DMA, timer, cartridge, serial | 17 caught; missed: MBC5 ROM bank bit 8 (no case reads banks 256 and up) |
-| SGB | The HLE Super Game Boy (`src/sgb.rs`) under the gate: a CRC of its 256 x 224 picture and of its state in every slice (`--sgb`, `scripts/cases-sgb.tsv`): the eight SGB games the reference validated against the real BIOS, from the SGB boot ROM, plus SGB2 and skip-boot | 12 of 12 identical (16,500 slices), save/load round trip 12 of 12; every other table unchanged; PNGs pixel-identical to the reference's; seeded faults 4 of 5 caught (missed: an inside-only ATTR_BLK's edge palette, which no case's game exercises; `tests/sgb.rs` catches it) |
+| SGB | The HLE Super Game Boy (`src/sgb.rs`) under the gate: a CRC of its 256 x 224 picture and of its state in every slice (`--sgb`, `scripts/cases-sgb.tsv`): the eight SGB games the reference validated against the real BIOS, from the SGB boot ROM, plus SGB2 and all eight from skip-boot | 17 of 17 identical (22,500 slices), save/load round trip 17 of 17; every other table unchanged; PNGs pixel-identical to the reference's; seeded faults 4 of 5 caught (missed: an inside-only ATTR_BLK's edge palette, which no case's game exercises; `tests/sgb.rs` catches it) |
 
 **Save states.** `GameBoy::save_state()` / `load_state()` carry the CPU and the whole board,
 sound unit included (gb-apu-rust's `serde` feature); the cartridge ROM, boot ROM and machine row

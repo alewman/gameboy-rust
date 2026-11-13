@@ -266,11 +266,13 @@ pub struct SuperGameBoy {
 
 impl SuperGameBoy {
     /// The constructor's state half (`GameBoy::attach_sgb` attaches it): `select` is the
-    /// joypad's select bits, `rom` the cartridge ROM.
+    /// joypad's select bits, `boot_mapped` whether a boot ROM is mapped, `rom` the cartridge
+    /// ROM.
     pub fn new(
         machine: &Machine,
         rom: &[u8],
         select: u8,
+        boot_mapped: bool,
         palette: [u16; 4],
     ) -> Result<SuperGameBoy, String> {
         if machine.model != "sgb" && machine.model != "sgb2" {
@@ -286,7 +288,12 @@ impl SuperGameBoy {
             }
         }
         Ok(SuperGameBoy {
-            p1: select,
+            // the last select bits written (bits 5-4). The SGB boot ROM leaves the ICD2 at $30
+            // (both lines high after its header packets); skip-boot starts after the boot ROM, so
+            // it starts there too: from the board's skip-boot select ($00) a game's first start
+            // pulse ($00) would look like no change and its first packet (Pokemon Red's MLT_REQ
+            // check) be lost
+            p1: if boot_mapped { select } else { 0x30 },
             receiving: false,
             wait_high: false,
             bit_count: 0,
