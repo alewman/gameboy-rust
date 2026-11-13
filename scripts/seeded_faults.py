@@ -67,6 +67,20 @@ FAULTS = [
      "        if live[0] == 58 {\n            live[0] = 0;"),
     ("serial: clock bit", "src/serial.rs",
      "pub const SERIAL_CLOCK_BIT: u32 = 7;", "pub const SERIAL_CLOCK_BIT: u32 = 8;"),
+    # the HLE Super Game Boy (scripts/cases-sgb.tsv)
+    ("sgb: first screen line", "src/sgb.rs",
+     "pub const FIRST_LINE: usize = 1;", "pub const FIRST_LINE: usize = 0;"),
+    ("sgb: VRAM transfer delay", "src/sgb.rs",
+     "pub const TRANSFER_DELAY: u8 = 2;", "pub const TRANSFER_DELAY: u8 = 1;"),
+    ("sgb: border palette bits", "src/sgb.rs",
+     "(entry >> 10 & 7) as usize * 16 + color as usize",
+     "(entry >> 10 & 3) as usize * 16 + color as usize"),
+    # (missed by the gate: no case's game sends an inside-only ATTR_BLK whose outside palette
+    # differs; tests/sgb.rs attr_blk_inside_edge_outside_and_the_exception catches it)
+    ("sgb: ATTR_BLK inside-only edge", "src/sgb.rs",
+     "(edge, edge_pal) = (2, inside_pal);", "(edge, edge_pal) = (2, outside_pal);"),
+    ("sgb: PAL_SET shared colour 0", "src/sgb.rs",
+     "if palette == 0 {", "if palette == 1 {"),
 ]
 
 
