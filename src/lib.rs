@@ -1,5 +1,5 @@
-//! A Rust Game Boy (DMG/CGB) board transcribed from gameboy-python at `gameboy-rust-pin-1`
-//! (`efdde44`) and proven equivalent to it in lockstep: every M-cycle's bus access (address,
+//! A Rust Game Boy (DMG/CGB) board transcribed from gameboy-python at `gameboy-rust-pin-2`
+//! (`47a97e6`) and proven equivalent to it in lockstep: every M-cycle's bus access (address,
 //! value, direction, board time) and every finished picture.
 //!
 //! Each module is the transcription of one `gameboy_python` module, with the same names, the

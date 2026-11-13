@@ -3,7 +3,7 @@
 
 Each case of ``scripts/cases.tsv`` runs ``gameboy-trace`` (this board) and
 ``scripts/gameboy_trace.py`` on the reference's interpreter (``external/venv``, gameboy-python
-at ``gameboy-rust-pin-1``), into ``external/traces/``, several at a time under ``nice``; the two
+at ``gameboy-rust-pin-2``), into ``external/traces/``, several at a time under ``nice``; the two
 traces are compared line for line (one line per 70,224 T slice: CPU state, board time, timer,
 PPU and DMA position, a CRC of every bus M-cycle and a CRC of the finished picture). A case
 passes when they are identical; otherwise the first differing line is reported. Rerun the case
