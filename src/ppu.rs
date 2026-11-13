@@ -22,7 +22,10 @@
 //! - the timing stepper's background FIFO (`bg`) is a count: its entries (tile tickets) are never
 //!   read, only its length, so the tickets are not kept;
 //! - the drawing machine is held in an `Option<Box<_>>` so it can read the PPU while it runs;
-//! - the Super Game Boy taps (`line_out`, `frame_start`) are not carried over (no SGB host).
+//! - the Super Game Boy taps (`line_out`, `frame_start`, callbacks into `sgb.py`) are a queue:
+//!   with `taps` set, `next_line` pushes a [`Tap`] at the points where the reference calls them,
+//!   and the board hands the queue to its [`SuperGameBoy`](crate::sgb::SuperGameBoy) right after
+//!   each `tick` (`Hw::sgb_taps`), before anything else runs; only the SGB reads them.
 
 use serde::{Deserialize, Serialize};
 
@@ -412,6 +415,19 @@ pub struct Ppu {
     pub dma: OamDma,
     /// the picture
     pub pixels: Option<Box<Pixels>>,
+    /// the Super Game Boy taps are on (the reference's `line_out` / `frame_start` are set)
+    pub taps: bool,
+    /// the taps' calls since the board last took them (always empty between M-cycles)
+    #[serde(skip)]
+    pub tapped: Vec<Tap>,
+}
+
+/// One call of a Super Game Boy tap: `line_out(shades)` (with the PPU's LY at the call) or
+/// `frame_start()`.
+#[derive(Clone, Debug)]
+pub enum Tap {
+    Line(i32, Vec<u8>),
+    Frame,
 }
 
 impl Ppu {
@@ -523,6 +539,8 @@ impl Ppu {
             win_start_x: -1,
             dma: OamDma::default(),
             pixels: None,
+            taps: false,
+            tapped: Vec::new(),
         };
         ppu.frame = ppu.blank();
         ppu.pixels = Some(Box::new(Pixels::new(cgb)));
@@ -735,11 +753,21 @@ impl Ppu {
             self.window_line = (self.window_line + 1) & 255;
         }
         self.window_used = false;
+        if self.taps && self.ly < VBLANK_LINE {
+            let start = self.ly as usize * SCREEN_W;
+            // the drawing machine, DRAW_LAG dots behind, finished this row long before dot 456
+            let line = &self.px().framebuffer[start..start + SCREEN_W];
+            let shades = line.iter().map(|&v| v as u8).collect();
+            self.tapped.push(Tap::Line(self.ly, shades));
+        }
         self.ly = if self.ly == LAST_LINE { 0 } else { self.ly + 1 };
         if self.ly == 0 {
             self.window_line = 0;
             self.wy_hit = false;
             self.mode3_start = MODE2_END - LINE0_LEAD;
+            if self.taps {
+                self.tapped.push(Tap::Frame);
+            }
         }
         if self.ly == VBLANK_LINE {
             self.frames += 1;

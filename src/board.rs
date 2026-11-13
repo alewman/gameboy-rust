@@ -27,8 +27,10 @@ use crate::cartridge::Cartridge;
 use crate::dma::{bus_of, Bus as DmaBus};
 use crate::joypad::Joypad;
 use crate::machines::{Fea0Read, Machine, DMG_B};
+use crate::ppu::Tap;
 use crate::ppu::{self, OamBugKind, Ppu};
 use crate::serial::Serial;
+use crate::sgb::{Icd, SuperGameBoy};
 use crate::timer::Timer;
 
 /// post-boot register values for DMG-CPU A/B/C (Pan Docs Power_Up_Sequence.md "CPU registers",
@@ -273,6 +275,9 @@ pub struct Hw {
     pub irq: IrqBoard,
     pub ppu: Ppu,
     pub apu: APU,
+    /// the attached Super Game Boy (`sgb.rs`; the reference's `SuperGameBoy(gb)`), on the
+    /// `sgb`/`sgb2` rows only, by `GameBoy::attach_sgb`
+    pub sgb: Option<Box<SuperGameBoy>>,
     /// every M-cycle (`t << 26 | kind << 24 | address << 8 | value`; kind 0 read, 1 write, 2
     /// internal), when the lockstep gate asks for it
     #[serde(skip)]
@@ -358,6 +363,7 @@ impl GameBoy {
             },
             ppu,
             apu: apu::new(cgb),
+            sgb: None,
             bus_log: None,
         };
         let mut gb = GameBoy {
@@ -499,6 +505,50 @@ impl GameBoy {
     /// A host-side button change; raises the joypad interrupt on a selected press.
     pub fn set_pressed(&mut self, name: &str, down: bool) {
         if self.hw.joypad.set_pressed(name, down) {
+            self.cpu.request_interrupt(4, false, false);
+        }
+    }
+
+    // ----- the Super Game Boy (sgb.rs) --------------------------------------------------
+
+    /// Attach an HLE Super Game Boy (the reference's `SuperGameBoy(gb, palette)`): it takes the
+    /// P1 writes and the PPU's taps and drives the joypad's input lines. An error on a machine
+    /// that is not `sgb`/`sgb2`.
+    pub fn attach_sgb(&mut self, palette: [u16; 4]) -> Result<(), String> {
+        let hw = &mut self.hw;
+        let mut sgb = SuperGameBoy::new(&hw.machine, &hw.cartridge.rom, hw.joypad.select, palette)?;
+        hw.ppu.taps = true;
+        let mut icd = Icd {
+            joypad: &mut hw.joypad,
+            boot_mapped: hw.boot_mapped,
+            irq: false,
+        };
+        sgb.update_lines(&mut icd);
+        let irq = icd.irq;
+        hw.sgb = Some(Box::new(sgb));
+        if irq {
+            self.cpu.request_interrupt(4, false, false);
+        }
+        Ok(())
+    }
+
+    /// A P1 write outside a CPU access (harnesses and tests: the reference's `gb.joypad.write`).
+    pub fn joypad_write(&mut self, value: u8) {
+        self.hw.joypad_write(value, &mut self.cpu);
+    }
+
+    /// A host button change on one of the Super Game Boy's SNES pads (`SuperGameBoy.set_pressed`;
+    /// with an SGB attached, `set_pressed` reaches nothing: the ICD2 drives the input lines).
+    pub fn sgb_set_pressed(&mut self, name: &str, down: bool, player: usize) {
+        let hw = &mut self.hw;
+        let sgb = hw.sgb.as_deref_mut().expect("no Super Game Boy attached");
+        let mut icd = Icd {
+            joypad: &mut hw.joypad,
+            boot_mapped: hw.boot_mapped,
+            irq: false,
+        };
+        sgb.set_pressed(name, down, player, &mut icd);
+        if icd.irq {
             self.cpu.request_interrupt(4, false, false);
         }
     }
@@ -664,6 +714,7 @@ impl Hw {
                 self.ppu.tick(dots, &mut ctx);
             }
         }
+        self.sgb_taps();
         self.dma_tick();
         if self.hdma_hblank {
             let mut mode = self.ppu.mode;
@@ -811,9 +862,48 @@ impl Hw {
             self.ppu.tick(dots, &mut ctx);
             self.ppu.after_access(&mut ctx);
         }
+        self.sgb_taps();
         cpu.stop_if = cpu.if_ & 0x1F; // an interrupt raised meanwhile waits; it does not wake
         if self.joypad.read() & 0x0F != 0x0F {
             cpu.stopped = false;
+        }
+    }
+
+    /// A P1 write (the reference's `joypad.write`, with the attached SGB's `on_write` between
+    /// the select change and the interrupt check).
+    pub fn joypad_write(&mut self, value: u8, cpu: &mut Sm83) {
+        let before = self.joypad.write_select(value);
+        let mut irq = false;
+        if let Some(sgb) = self.sgb.as_deref_mut() {
+            // the reference's joypad.on_write
+            let select = self.joypad.select;
+            let mut icd = Icd {
+                joypad: &mut self.joypad,
+                boot_mapped: self.boot_mapped,
+                irq: false,
+            };
+            sgb.p1_write(select, &mut icd);
+            irq = icd.irq;
+        }
+        if self.joypad.fell(before) || irq {
+            cpu.request_interrupt(4, false, false);
+        }
+    }
+
+    /// The PPU's Super Game Boy taps since the last call, handed to the SGB in order (the
+    /// reference calls `line_out` / `frame_start` from inside the PPU; ppu.rs header).
+    fn sgb_taps(&mut self) {
+        if self.ppu.tapped.is_empty() {
+            return;
+        }
+        let tapped = std::mem::take(&mut self.ppu.tapped);
+        if let Some(sgb) = self.sgb.as_deref_mut() {
+            for tap in &tapped {
+                match tap {
+                    Tap::Line(ly, shades) => sgb.lcd_line(*ly as usize, shades),
+                    Tap::Frame => sgb.lcd_frame(),
+                }
+            }
         }
     }
 
@@ -1262,11 +1352,7 @@ impl Hw {
             return;
         }
         match low {
-            0x00 => {
-                if self.joypad.write(value) {
-                    cpu.request_interrupt(4, false, false);
-                }
-            }
+            0x00 => self.joypad_write(value, cpu),
             0x01 => self.serial.write_sb(value),
             0x02 => {
                 self.serial.cgb_mode = self.ppu.cgb_mode;

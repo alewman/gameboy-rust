@@ -4,12 +4,15 @@
 //! four lines of the selected rows, 0 = pressed; bits 7-6 read 1. Any high-to-low transition on
 //! a selected input raises IF bit 4.
 //!
-//! On a Super Game Boy no buttons are wired: the ICD2 drives the four input lines (`external`).
-//! The reference's `on_write` hook (the ICD2's command channel) is not carried over: this board
-//! has no SGB host yet.
+//! On a Super Game Boy no buttons are wired: the ICD2 drives the four input lines (`external`)
+//! and watches every write's select bits for command packets and the multiplayer ID (`on_write`;
+//! Pan Docs SGB_Command_Packet.md, SGB_Command_Multiplayer.md; SameBoy `GB_icd_set_joyp`).
 //!
 //! Where Rust forced a difference: the reference raises IF bit 4 through a callback; here the
-//! methods that can raise it return true and the board makes the call.
+//! methods that can raise it return true and the board makes the call. The reference's
+//! `on_write` callback is the board's: `write` is split into `write_select` and `fell`, and the
+//! board calls the attached `SuperGameBoy::p1_write` between them, where `write` calls
+//! `on_write`.
 
 use serde::{Deserialize, Serialize};
 
@@ -51,8 +54,20 @@ impl Joypad {
 
     #[must_use]
     pub fn write(&mut self, value: u8) -> bool {
+        let before = self.write_select(value);
+        self.fell(before)
+    }
+
+    /// `write`'s first half: the new select bits; returns the input lines before them.
+    pub fn write_select(&mut self, value: u8) -> u8 {
         let before = self.lines();
         self.select = value & 0x30;
+        before
+    }
+
+    /// `write`'s second half: an input line fell since `before` (IF bit 4).
+    #[must_use]
+    pub fn fell(&self, before: u8) -> bool {
         before & !self.lines() != 0
     }
 
