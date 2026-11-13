@@ -336,9 +336,8 @@ impl SuperGameBoy {
             self.receiving = true;
             self.wait_high = true;
             self.bit_count = 0;
-            for i in 0..16 {
-                self.packet[i] = 0;
-            }
+            // (the reference's `for i in range(16): self.packet[i] = 0`)
+            self.packet.fill(0);
         } else if self.wait_high {
             self.wait_high = false;
             if select != 0x30 {
