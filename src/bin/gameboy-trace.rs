@@ -212,13 +212,12 @@ fn main() {
             write!(out, " snd={:08x}/{}", h.finalize(), samples.len()).unwrap();
         }
         if sgb {
-            let unit = gb.hw.sgb.as_deref().expect("Super Game Boy");
             let mut h = crc32fast::Hasher::new();
-            for v in unit.render() {
+            for v in gb.sgb_render() {
                 h.update(&v.to_le_bytes());
             }
             let picture = h.finalize();
-            let state = crc32fast::hash(&unit.save_state());
+            let state = crc32fast::hash(&gb.sgb_save_state());
             write!(out, " sgb={picture:08x}/{state:08x}").unwrap();
         }
         writeln!(out).unwrap();

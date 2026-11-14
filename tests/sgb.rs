@@ -4,7 +4,8 @@
 //! `scripts/cases-sgb.tsv`).
 
 use gameboy_rust::sgb::{
-    SuperGameBoy, BORDER_ROWS, FIRST_LINE, GREY_RAMP, SNES_W, WINDOW_X, WINDOW_Y,
+    SuperGameBoy, BORDER_ROWS, FADE_DELAY_FRAMES, FADE_END_TICK, FADE_IN_TICK, FADE_TICK_FRAMES,
+    FIRST_LINE, GREY_RAMP, SNES_FRAME_T, SNES_W, WINDOW_X, WINDOW_Y,
 };
 use gameboy_rust::{load_cartridge, machine, Clock, GameBoy};
 
@@ -65,12 +66,13 @@ fn command(gb: &mut GameBoy, code: u8, data: &[u8]) {
 
 /// Draw `shades` (160 x 144) as whole LCD frames, as the PPU taps deliver them.
 fn show(gb: &mut GameBoy, shades: &[u8], frames: usize) {
+    let t = gb.hw.t;
     let unit = sgb_mut(gb);
     for _ in 0..frames {
         for y in 0..144 {
             unit.lcd_line(y, &shades[y * 160..y * 160 + 160]);
         }
-        unit.lcd_frame();
+        unit.lcd_frame(t);
     }
 }
 
@@ -120,6 +122,35 @@ fn transfer(gb: &mut GameBoy, code: u8, data: &[u8], arg: u8) {
     show(gb, &tiles_screen(data), 2);
 }
 
+/// Let SNES frames pass on the Game Boy's clock (the fade's time), no LCD frames drawn.
+fn wait(gb: &mut GameBoy, snes_frames: u64) {
+    gb.hw.t += snes_frames * SNES_FRAME_T;
+    let t = gb.hw.t;
+    sgb_mut(gb).run_fade(t);
+}
+
+/// Wait out a whole border fade (the new border is then shown at its own colours).
+fn fade_through(gb: &mut GameBoy) {
+    wait(
+        gb,
+        FADE_DELAY_FRAMES + FADE_END_TICK as u64 * FADE_TICK_FRAMES,
+    );
+    assert!(!sgb(gb).fading);
+}
+
+/// The reference's `sgb.load_state(blob)` (the board's own state carries its clock).
+fn load(gb: &mut GameBoy, blob: &[u8]) {
+    let hw = &mut gb.hw;
+    let unit = hw.sgb.as_deref_mut().unwrap();
+    let mut icd = gameboy_rust::sgb::Icd {
+        joypad: &mut hw.joypad,
+        boot_mapped: hw.boot_mapped,
+        t: hw.t,
+        irq: false,
+    };
+    unit.load_state(blob, &mut icd).unwrap();
+}
+
 // ----- attaching ------------------------------------------------------------------------
 
 #[test]
@@ -134,7 +165,7 @@ fn only_an_sgb_machine_takes_one() {
 fn power_on_picture_is_greys_in_a_black_border() {
     let mut gb = sgb_machine();
     show(&mut gb, &repeat(&[0, 1, 2, 3], 40 * 144), 1);
-    let words = sgb(&gb).render();
+    let words = gb.sgb_render();
     assert_eq!(words.len(), 256 * 224);
     let row: Vec<u16> = (0..4).map(|x| gb_pixel(&words, x, 0)).collect();
     assert_eq!(row, GREY_RAMP);
@@ -210,7 +241,7 @@ fn pal01_and_the_shared_colour_0() {
     command(&mut gb, 0x06, &[0b0100_0100 | 3 << 4, 9]); // ATTR_DIV: rows; 9 is the line
                                                         // cells above row 9: palette 1; row 9: 3; below: 0
     show(&mut gb, &repeat(&[0, 1, 2, 3], 40 * 144), 1);
-    let words = sgb(&gb).render();
+    let words = gb.sgb_render();
     assert_eq!(gb_pixel(&words, 0, 0), 0x2222); // colour 0 is the last one sent, for all palettes
     let at = |y| [1, 2, 3].map(|x| gb_pixel(&words, x, y));
     assert_eq!(at(0), [0x0011, 0x0012, 0x0013]);
@@ -290,7 +321,7 @@ fn pal_trn_attr_trn_and_pal_set() {
     assert_eq!(sgb(&gb).mask, 0);
     assert_eq!(sgb(&gb).attr_map[..4], [1, 2, 3, 0]);
     show(&mut gb, &[1u8; 160 * 144], 1);
-    let words = sgb(&gb).render();
+    let words = gb.sgb_render();
     assert_eq!(gb_pixel(&words, 0, 0), 0x0201); // cell 0: palette 1 = system 300
     assert_eq!(gb_pixel(&words, 8, 0), 0x0101); // cell 1: palette 2 = system 7
     let cgram = &sgb(&gb).cgram;
@@ -320,8 +351,9 @@ fn chr_trn_pct_trn_border() {
     pct[0x840 + 9 * 2..0x840 + 9 * 2 + 2].copy_from_slice(&le(&[0x6666])); // palette 6
     command(&mut gb, 0x00, &le(&[0x0123])); // colour 0: the backdrop
     transfer(&mut gb, 0x14, &pct, 0); // PCT_TRN
+    fade_through(&mut gb);
     assert!(sgb(&gb).border_loaded);
-    let words = sgb(&gb).render();
+    let words = gb.sgb_render();
     assert_eq!(pixel(&words, 0, 1), 0x0123); // row 1 of tile 1 is transparent: the backdrop
     assert_eq!(pixel(&words, 1, 1), 0x0123);
     assert_eq!(pixel(&words, 15, 7), 0x5555); // flipped: row 7, rightmost pixel
@@ -332,20 +364,129 @@ fn chr_trn_pct_trn_border() {
     assert_eq!(words[0], 0x0123);
 }
 
+/// CHR_TRN then PCT_TRN: map entry 0 is tile `tile_number`, whose pixel (0, 1) is colour 9 of
+/// palette 4, which is `color`; the rest is transparent tile 0. Layer line 0 is off the screen,
+/// hence row 1.
+fn one_tile_border(gb: &mut GameBoy, color: u16, tile_number: usize) {
+    let mut tile = [0u8; 32];
+    tile[2..4].copy_from_slice(b"\x80\x00");
+    tile[18..20].copy_from_slice(b"\x00\x80");
+    let mut chr_data = vec![0u8; 32 * tile_number];
+    chr_data.extend_from_slice(&tile);
+    transfer(gb, 0x13, &chr_data, 0);
+    let mut pct = vec![0u8; 4096];
+    pct[0..2].copy_from_slice(&le(&[tile_number as u16 | 4 << 10]));
+    pct[0x800 + 9 * 2..0x800 + 9 * 2 + 2].copy_from_slice(&le(&[color]));
+    transfer(gb, 0x14, &pct, 0);
+}
+
+/// The BIOS's fade as measured on the low-level SGB (docs/sgb.md "The border fade"): every
+/// other SNES frame each channel of palettes 4-6 steps by one, the old border down to black
+/// (32 steps), five steps' pause, then the new border up from black (33 steps).
+#[test]
+fn the_border_fades_out_then_in() {
+    let mut gb = sgb_machine();
+    one_tile_border(&mut gb, 0x7FFF, 1); // white
+    fade_through(&mut gb);
+    assert_eq!(pixel(&gb.sgb_render(), 0, 1), 0x7FFF);
+    one_tile_border(&mut gb, 25 | 10 << 5 | 3 << 10, 2); // a new border (r 25 g 10 b 3)
+    assert_eq!(pixel(&gb.sgb_render(), 0, 1), 0x7FFF); // not yet
+    wait(&mut gb, FADE_DELAY_FRAMES - 1);
+    assert_eq!(pixel(&gb.sgb_render(), 0, 1), 0x7FFF);
+    wait(&mut gb, 1); // tick 1: the old border, each channel down by one
+    assert_eq!(pixel(&gb.sgb_render(), 0, 1), 30 | 30 << 5 | 30 << 10);
+    wait(&mut gb, 29 * FADE_TICK_FRAMES); // tick 30
+    assert_eq!(pixel(&gb.sgb_render(), 0, 1), 1 | 1 << 5 | 1 << 10);
+    wait(&mut gb, 1); // half a tick: no step
+    assert_eq!(pixel(&gb.sgb_render(), 0, 1), 1 | 1 << 5 | 1 << 10);
+    wait(&mut gb, 1); // tick 31: black, and stays black until the new border
+    assert_eq!(pixel(&gb.sgb_render(), 0, 1), 0);
+    assert_eq!(sgb(&gb).border_map[0] & 0xFF, 1); // still the old map
+    wait(&mut gb, (FADE_IN_TICK as u64 - 1 - 31) * FADE_TICK_FRAMES);
+    assert!(sgb(&gb).fade_tick == FADE_IN_TICK - 1 && pixel(&gb.sgb_render(), 0, 1) == 0);
+    wait(&mut gb, FADE_TICK_FRAMES); // the new border, each channel at most 1
+    assert_eq!(sgb(&gb).border_map[0] & 0xFF, 2);
+    assert_eq!(pixel(&gb.sgb_render(), 0, 1), 1 | 1 << 5 | 1 << 10);
+    wait(&mut gb, 9 * FADE_TICK_FRAMES); // fade-in step 10: blue has reached its 3
+    assert_eq!(pixel(&gb.sgb_render(), 0, 1), 10 | 10 << 5 | 3 << 10);
+    wait(
+        &mut gb,
+        (FADE_END_TICK - FADE_IN_TICK - 10) as u64 * FADE_TICK_FRAMES,
+    );
+    assert!(sgb(&gb).fading && pixel(&gb.sgb_render(), 0, 1) == 25 | 10 << 5 | 3 << 10);
+    wait(&mut gb, FADE_TICK_FRAMES); // tick 70: over
+    assert!(!sgb(&gb).fading);
+    let words = gb.sgb_render();
+    assert_eq!(pixel(&words, 0, 1), 25 | 10 << 5 | 3 << 10);
+    // window: no fade
+    assert_eq!(
+        pixel(&words, WINDOW_X as usize, WINDOW_Y as usize),
+        GREY_RAMP[0]
+    );
+}
+
+/// From power-on (boot ROM or skip-boot) there is no border to fade out: black until the new
+/// border's fade-in, which starts at the same time as after any other border.
+#[test]
+fn the_first_border_comes_out_of_black() {
+    let mut gb = sgb_machine();
+    one_tile_border(&mut gb, 0x7FFF, 1);
+    wait(
+        &mut gb,
+        FADE_DELAY_FRAMES + (FADE_IN_TICK as u64 - 2) * FADE_TICK_FRAMES,
+    );
+    assert!(!sgb(&gb).border_loaded && pixel(&gb.sgb_render(), 0, 1) == 0);
+    wait(&mut gb, FADE_TICK_FRAMES);
+    assert!(sgb(&gb).border_loaded && pixel(&gb.sgb_render(), 0, 1) == 1 | 1 << 5 | 1 << 10);
+}
+
+#[test]
+fn commands_hold_the_fade_up_and_the_lcd_does_not_drive_it() {
+    let mut gb = sgb_machine();
+    one_tile_border(&mut gb, 0x7FFF, 1);
+    fade_through(&mut gb);
+    one_tile_border(&mut gb, 0x7FFF, 1);
+    wait(&mut gb, FADE_DELAY_FRAMES);
+    assert_eq!(sgb(&gb).fade_tick, 1);
+    command(&mut gb, 0x17, b"\x00"); // MASK_EN: one SNES frame
+    command(&mut gb, 0x0A, &[0; 9]); // PAL_SET: one more
+    wait(&mut gb, FADE_TICK_FRAMES + 1);
+    assert_eq!(sgb(&gb).fade_tick, 1);
+    wait(&mut gb, 1);
+    assert_eq!(sgb(&gb).fade_tick, 2);
+    command(&mut gb, 0x0F, &[0; 15]); // DATA_SND: none
+    wait(&mut gb, FADE_TICK_FRAMES);
+    assert_eq!(sgb(&gb).fade_tick, 3);
+}
+
+#[test]
+fn a_second_border_during_the_fade_out_takes_the_first_ones_place() {
+    let mut gb = sgb_machine();
+    one_tile_border(&mut gb, 0x7FFF, 1);
+    wait(&mut gb, FADE_DELAY_FRAMES + 9 * FADE_TICK_FRAMES);
+    assert_eq!(sgb(&gb).fade_tick, 10);
+    one_tile_border(&mut gb, 0x001F, 3); // the timeline goes on, held up 3 + 3 frames
+    assert_eq!(sgb(&gb).fade_tick, 10);
+    wait(&mut gb, (FADE_IN_TICK as u64 - 10) * FADE_TICK_FRAMES + 6);
+    assert!(sgb(&gb).fade_tick == FADE_IN_TICK && sgb(&gb).border_map[0] & 0xFF == 3);
+    fade_through(&mut gb);
+    assert_eq!(pixel(&gb.sgb_render(), 0, 1), 0x001F);
+}
+
 #[test]
 fn mask_en() {
     let mut gb = sgb_machine();
     show(&mut gb, &[3u8; 160 * 144], 1);
     command(&mut gb, 0x17, b"\x01"); // freeze
     show(&mut gb, &[1u8; 160 * 144], 1);
-    assert_eq!(gb_pixel(&sgb(&gb).render(), 0, 0), GREY_RAMP[3]);
+    assert_eq!(gb_pixel(&gb.sgb_render(), 0, 0), GREY_RAMP[3]);
     command(&mut gb, 0x17, b"\x02"); // black
-    assert_eq!(gb_pixel(&sgb(&gb).render(), 0, 0), 0);
+    assert_eq!(gb_pixel(&gb.sgb_render(), 0, 0), 0);
     command(&mut gb, 0x17, b"\x03"); // colour 0
-    assert_eq!(gb_pixel(&sgb(&gb).render(), 0, 0), GREY_RAMP[0]);
+    assert_eq!(gb_pixel(&gb.sgb_render(), 0, 0), GREY_RAMP[0]);
     command(&mut gb, 0x17, b"\x00");
     show(&mut gb, &[1u8; 160 * 144], 1);
-    assert_eq!(gb_pixel(&sgb(&gb).render(), 0, 0), GREY_RAMP[1]);
+    assert_eq!(gb_pixel(&gb.sgb_render(), 0, 0), GREY_RAMP[1]);
 }
 
 #[test]
@@ -394,7 +535,7 @@ fn save_state_round_trip() {
     command(&mut gb, 0x00, &le(&[0x1111, 2, 3, 4, 5, 6, 7]));
     command(&mut gb, 0x11, b"\x01");
     show(&mut gb, &[2u8; 160 * 144], 1);
-    let blob = sgb(&gb).save_state();
+    let blob = gb.sgb_save_state();
     let mut other = sgb_machine();
     {
         let hw = &mut other.hw;
@@ -402,13 +543,34 @@ fn save_state_round_trip() {
         let mut icd = gameboy_rust::sgb::Icd {
             joypad: &mut hw.joypad,
             boot_mapped: hw.boot_mapped,
+            t: hw.t,
             irq: false,
         };
         unit.load_state(&blob, &mut icd).unwrap();
     }
-    assert_eq!(sgb(&other).save_state(), blob);
-    assert_eq!(sgb(&other).render(), sgb(&gb).render());
+    assert_eq!(other.sgb_save_state(), blob);
+    assert_eq!(other.sgb_render(), gb.sgb_render());
     assert_eq!(sgb(&other).players, 1);
+}
+
+#[test]
+fn save_state_mid_fade() {
+    let mut gb = sgb_machine();
+    one_tile_border(&mut gb, 0x7FFF, 1);
+    fade_through(&mut gb);
+    one_tile_border(&mut gb, 0x03E0, 2);
+    wait(&mut gb, FADE_DELAY_FRAMES + 12 * FADE_TICK_FRAMES);
+    let blob = gb.sgb_save_state();
+    let mut other = sgb_machine();
+    other.hw.t = gb.hw.t; // the board's own state carries its clock
+    load(&mut other, &blob);
+    assert_eq!(other.sgb_save_state(), blob);
+    for _ in 0..60 {
+        wait(&mut gb, FADE_TICK_FRAMES);
+        wait(&mut other, FADE_TICK_FRAMES);
+        assert_eq!(other.sgb_render(), gb.sgb_render());
+    }
+    assert!(!sgb(&other).fading && pixel(&other.sgb_render(), 0, 1) == 0x03E0);
 }
 
 /// This board's own: the SGB rides in the board's save state (`GameBoy::save_state`).
@@ -423,10 +585,10 @@ fn board_save_state_carries_the_sgb() {
     let mut other = GameBoy::new(cart, machine("sgb").unwrap(), None).unwrap();
     other.load_state(&state).unwrap();
     assert!(other.hw.ppu.taps);
-    assert_eq!(sgb(&other).save_state(), sgb(&gb).save_state());
+    assert_eq!(other.sgb_save_state(), gb.sgb_save_state());
     gb.run_frames(2, 1_000_000);
     other.run_frames(2, 1_000_000);
-    assert_eq!(sgb(&other).save_state(), sgb(&gb).save_state());
+    assert_eq!(other.sgb_save_state(), gb.sgb_save_state());
 }
 
 /// Skip-boot starts after the SGB boot ROM, which leaves the ICD2 at both lines high: a game's

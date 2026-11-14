@@ -1,6 +1,5 @@
 //! The Super Game Boy, high-level: what the SGB's SNES program does with a Game Boy's packets
-//! (gameboy-python `sgb.py`, branch `sgb-hle` `a8bdf5e`; its docs/sgb.md is the transcriber's
-//! guide).
+//! (gameboy-python `sgb.py`, master `ac01aff`; its docs/sgb.md is the transcriber's guide).
 //!
 //! A real Super Game Boy is a Game Boy on a SNES cartridge. The ICD2 chip between them hands the
 //! SNES each LCD line and each 16-byte command packet the Game Boy sends through P1, and drives
@@ -37,10 +36,12 @@
 //! The picture is the SNES's: 256 x 224, the Game Boy's 160 x 144 at (48, 40), colourised through
 //! four 4-colour palettes picked per 8 x 8 cell by the attribute map, under a border of 4bpp
 //! tiles in palettes 4-6. Colours are SNES words, `0bbbbbgggggrrrrr`. Colour 0 is the backdrop:
-//! every shade-0 Game Boy pixel and every transparent border pixel shows `cgram[0]`.
+//! every shade-0 Game Boy pixel and every transparent border pixel shows `cgram[0]`. A new border
+//! fades the old one out and itself in, as the real BIOS does (measured on the low-level SGB:
+//! docs/sgb.md "The border fade"); the fade runs on the Game Boy's clock (`gb.t`).
 //!
 //! Not modelled (docs/sgb.md "Out of scope"): the BIOS's own border artwork, built-in palettes,
-//! menus, boot animation and fades; SOUND/SOU_TRN; DATA_SND/DATA_TRN/JUMP (SNES code and data);
+//! menus and boot animation; SOUND/SOU_TRN; DATA_SND/DATA_TRN/JUMP (SNES code and data);
 //! OBJ_TRN; ICON_EN, ATRC_EN, TEST_EN, PAL_PRI (accepted, no effect). Commands act the moment
 //! their last packet's stop bit arrives; the real BIOS takes frames.
 //!
@@ -54,6 +55,10 @@
 //!   What the reference reaches through `self.gb` (the joypad's input lines, `boot_mapped`) comes
 //!   in an [`Icd`]; the joypad interrupt `set_external` raises is returned through it.
 //! - `GameBoy::attach_sgb` is the constructor's attaching half (taps on, `_update_lines`).
+//! - the fade reads `gb.t`, the board's clock: it comes in `Icd::t` for commands and as a `t`
+//!   argument to `lcd_frame`, `run_fade`, `render` and `save_state` (the last two take `&mut
+//!   self`, since they take the fade's steps due, as the reference's do). `GameBoy::sgb_render`
+//!   and `GameBoy::sgb_save_state` pass the board's own `t`.
 
 use serde::{Deserialize, Serialize};
 
@@ -144,21 +149,55 @@ pub const TRN_PCT: u8 = 5;
 pub const TRANSFER_DELAY: u8 = 2;
 /// 256 tiles of the screen, 16 bytes each
 pub const TRANSFER_BYTES: usize = 4096;
+/// cgram[64:112]: the border's palettes 4-6, the only colours the fade touches
+pub const BORDER_COLORS: usize = 64;
+
+// The border fade (docs/sgb.md "The border fade"), measured on snes-python running the real BIOS:
+// a new border (PCT_TRN) fades the old one out, then the new one in, by stepping each 5-bit
+// channel of palettes 4-6 one unit every other SNES frame. Time is the Game Boy's (`gb.t`),
+// since its LCD may be off (no frame starts) for much of a fade.
+/// one SNES frame in the Game Boy's T-cycles: the SGB clocks its Game Boy at the SNES master
+/// clock / 5 and an NTSC frame is 357,366 master clocks on average (262 lines of 1,364, two
+/// fewer every other frame)
+pub const SNES_FRAME_T: u64 = 71_473;
+/// one fade step every other SNES frame
+pub const FADE_TICK_FRAMES: u64 = 2;
+/// from reading the PCT_TRN data to the first step
+pub const FADE_DELAY_FRAMES: u64 = 4;
+/// steps 1-32 (ticks 1-32): the old border's channels c - step, floored at 0; ticks 33-37 the
+/// border stays black; tick 38 shows the new border and fade-in steps 1-33 (ticks 38-70) show
+/// its channels min(c, step); after tick 70 the fade is over
+pub const FADE_IN_TICK: u8 = 38;
+pub const FADE_END_TICK: u8 = 70;
+/// SNES frames a command holds the fade up while the BIOS handles it (measured during fades;
+/// unlisted commands: 0; CHR_TRN and PCT_TRN unmeasured, taken as the other VRAM transfers)
+pub const COMMAND_FRAMES: [(u8, u64); 8] = [
+    (0x04, 1), // ATTR_BLK
+    (0x09, 8), // SOU_TRN (7 and 9 seen: the upload's length)
+    (0x0A, 1), // PAL_SET
+    (0x0B, 3), // PAL_TRN
+    (0x13, 3), // CHR_TRN
+    (0x14, 3), // PCT_TRN
+    (0x15, 3), // ATTR_TRN
+    (0x17, 1), // MASK_EN
+];
 /// one attribute file: 18 rows of 20 two-bit cells
 pub const ATF_BYTES: usize = 90;
 /// $00-$2C
 pub const ATF_COUNT: usize = 45;
 
-/// A field kind of `STATE_LAYOUT`: one integer (or bool), bytes, or u16 words (little-endian).
+/// A field kind of `STATE_LAYOUT`: one integer (or bool), bytes, u16 words (little-endian), or
+/// one integer in 8 bytes (little-endian).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Kind {
     U8,
     Bytes,
     Words,
+    U64,
 }
 
 /// save_state's layout, in order: (name, kind, length). Plain data for a transcriber.
-pub const STATE_LAYOUT: [(&str, Kind, usize); 26] = [
+pub const STATE_LAYOUT: [(&str, Kind, usize); 31] = [
     ("p1", Kind::U8, 1),
     ("receiving", Kind::U8, 1),
     ("wait_high", Kind::U8, 1),
@@ -185,15 +224,21 @@ pub const STATE_LAYOUT: [(&str, Kind, usize); 26] = [
     ("tiles_pending", Kind::Bytes, 256 * 32),
     ("border_map", Kind::Words, 32 * BORDER_ROWS),
     ("border_loaded", Kind::U8, 1),
+    ("border_map_pending", Kind::Words, 32 * BORDER_ROWS),
+    ("border_colors_pending", Kind::Words, 48),
+    ("fading", Kind::U8, 1),
+    ("fade_tick", Kind::U8, 1),
+    ("fade_due", Kind::U64, 1),
 ];
-pub const STATE_VERSION: u8 = 1;
+pub const STATE_VERSION: u8 = 2;
 
 /// What the reference reaches through `self.gb`: the joypad whose input lines the ICD2 drives,
-/// and whether the boot ROM is mapped (header packets). `irq` is set when `set_external` raised
-/// the joypad interrupt; the board then makes the call.
+/// whether the boot ROM is mapped (header packets) and the board's clock `t` (the fade's time).
+/// `irq` is set when `set_external` raised the joypad interrupt; the board then makes the call.
 pub struct Icd<'a> {
     pub joypad: &'a mut Joypad,
     pub boot_mapped: bool,
+    pub t: u64,
     pub irq: bool,
 }
 
@@ -202,6 +247,7 @@ enum Value<'a> {
     U8(u8),
     Bytes(&'a [u8]),
     Words(&'a [u16]),
+    U64(u64),
 }
 
 /// One field as `load_state` writes it.
@@ -210,6 +256,7 @@ enum Slot<'a> {
     Bool(&'a mut bool),
     Bytes(&'a mut [u8]),
     Words(&'a mut [u16]),
+    U64(&'a mut u64),
 }
 
 /// The ICD2 and an HLE of the SGB's SNES program, attached to one Game Boy.
@@ -262,6 +309,14 @@ pub struct SuperGameBoy {
     pub border_map: Vec<u16>,
     /// before any PCT_TRN the border area is black
     pub border_loaded: bool,
+    /// PCT_TRN's map and colours, shown when the fade reaches FADE_IN_TICK
+    pub border_map_pending: Vec<u16>,
+    pub border_colors_pending: Vec<u16>,
+    /// the border fade: running or not, the last step taken, gb.t of the next step. From a
+    /// boot ROM or from skip-boot alike none runs until the first PCT_TRN
+    pub fading: bool,
+    pub fade_tick: u8,
+    pub fade_due: u64,
 }
 
 impl SuperGameBoy {
@@ -319,6 +374,11 @@ impl SuperGameBoy {
             tiles_pending: vec![0; 256 * 32],
             border_map: vec![0; 32 * BORDER_ROWS],
             border_loaded: false,
+            border_map_pending: vec![0; 32 * BORDER_ROWS],
+            border_colors_pending: vec![0; 48],
+            fading: false,
+            fade_tick: 0,
+            fade_due: 0,
         })
     }
 
@@ -411,15 +471,16 @@ impl SuperGameBoy {
         self.lcd[start..start + GB_W].copy_from_slice(shades);
     }
 
-    /// PPU.frame_start: line 0 begins, so the last frame is whole in `lcd`.
-    pub fn lcd_frame(&mut self) {
+    /// PPU.frame_start: line 0 begins, so the last frame is whole in `lcd` (`t`: `gb.t`).
+    pub fn lcd_frame(&mut self, t: u64) {
+        self.run_fade(t);
         if self.mask != MASK_FREEZE {
             self.shown.copy_from_slice(&self.lcd);
         }
         if self.transfer_wait != 0 {
             self.transfer_wait -= 1;
             if self.transfer_wait == 0 {
-                self.finish_transfer();
+                self.finish_transfer(t);
             }
         }
     }
@@ -488,6 +549,14 @@ impl SuperGameBoy {
         }
         if !self.enabled {
             return;
+        }
+        self.run_fade(icd.t);
+        if self.fading {
+            let frames = COMMAND_FRAMES
+                .iter()
+                .find(|(listed, _)| *listed == code)
+                .map_or(0, |&(_, frames)| frames);
+            self.fade_due += frames * SNES_FRAME_T;
         }
         match code {
             PAL01 => self.pal_pair(c, 0, 1),
@@ -720,7 +789,7 @@ impl SuperGameBoy {
         self.transfer_wait = TRANSFER_DELAY;
     }
 
-    fn finish_transfer(&mut self) {
+    fn finish_transfer(&mut self, t: u64) {
         let data = self.screen_data();
         let kind = self.transfer;
         self.transfer = TRN_NONE;
@@ -741,17 +810,71 @@ impl SuperGameBoy {
             // tiles $80-$FF
             self.tiles_pending[4096..8192].copy_from_slice(&data);
         } else if kind == TRN_PCT {
-            // $000-$73F: the map, 29 rows of 32 entries; $800-$85F: palettes 4-6
-            for i in 0..32 * BORDER_ROWS {
-                self.border_map[i] = data[2 * i] as u16 | (data[2 * i + 1] as u16) << 8;
+            // $000-$73F: the map, 29 rows of 32 entries; $800-$85F: palettes 4-6. Kept until
+            // the fade has taken the old border out (`show_new_border`)
+            for (i, entry) in self.border_map_pending.iter_mut().enumerate() {
+                *entry = data[2 * i] as u16 | (data[2 * i + 1] as u16) << 8;
             }
-            for i in 0..48 {
-                self.cgram[64 + i] =
-                    (data[0x800 + 2 * i] as u16 | (data[0x801 + 2 * i] as u16) << 8) & 0x7FFF;
+            for (i, color) in self.border_colors_pending.iter_mut().enumerate() {
+                let word = data[0x800 + 2 * i] as u16 | (data[0x801 + 2 * i] as u16) << 8;
+                *color = word & 0x7FFF;
             }
-            self.tiles.copy_from_slice(&self.tiles_pending);
-            self.border_loaded = true;
+            if !self.fading || self.fade_tick >= FADE_IN_TICK {
+                // a new fade; one already taking the old border out shows this border instead
+                self.fading = true;
+                self.fade_tick = 0;
+                self.fade_due = t + FADE_DELAY_FRAMES * SNES_FRAME_T;
+            }
         }
+    }
+
+    // ----- the border fade ---------------------------------------------------------------
+
+    /// Take the fade's steps that are due by now (`t`: `gb.t`). Every caller (frame starts,
+    /// commands, `render`, `save_state`) gets the same state for the same time.
+    pub fn run_fade(&mut self, t: u64) {
+        while self.fading && t >= self.fade_due {
+            self.fade_tick += 1;
+            self.fade_due += FADE_TICK_FRAMES * SNES_FRAME_T;
+            if self.fade_tick == FADE_IN_TICK {
+                self.show_new_border();
+            } else if self.fade_tick == FADE_END_TICK {
+                self.fading = false;
+                self.fade_tick = 0;
+            }
+        }
+    }
+
+    /// The faded-out border's place goes to PCT_TRN's (and CHR_TRN's tiles so far).
+    fn show_new_border(&mut self) {
+        self.border_map.copy_from_slice(&self.border_map_pending);
+        self.cgram[BORDER_COLORS..BORDER_COLORS + 48].copy_from_slice(&self.border_colors_pending);
+        self.tiles.copy_from_slice(&self.tiles_pending);
+        self.border_loaded = true;
+    }
+
+    /// `cgram` as the screen shows it: palettes 4-6 through the fade. Fading out (ticks
+    /// 1-37), each 5-bit channel c shows max(c - tick, 0); fading in, min(c, tick - 37).
+    pub fn shown_cgram(&self) -> Vec<u16> {
+        let mut colors = self.cgram.clone();
+        if !self.fading || self.fade_tick == 0 {
+            return colors;
+        }
+        let tick = self.fade_tick as u16;
+        for word in colors[BORDER_COLORS..BORDER_COLORS + 48].iter_mut() {
+            let mut out = 0;
+            for shift in [0, 5, 10] {
+                let mut channel = *word >> shift & 31;
+                if tick < FADE_IN_TICK as u16 {
+                    channel = channel.saturating_sub(tick);
+                } else {
+                    channel = channel.min(tick - FADE_IN_TICK as u16 + 1);
+                }
+                out |= channel << shift;
+            }
+            *word = out;
+        }
+        colors
     }
 
     // ----- the picture -------------------------------------------------------------------
@@ -784,10 +907,11 @@ impl SuperGameBoy {
         (entry >> 10 & 7) as usize * 16 + color as usize
     }
 
-    /// The SNES picture: 256 x 224 BGR555 words, rows top to bottom.
-    pub fn render(&self) -> Vec<u16> {
+    /// The SNES picture: 256 x 224 BGR555 words, rows top to bottom (`t`: `gb.t`).
+    pub fn render(&mut self, t: u64) -> Vec<u16> {
+        self.run_fade(t);
         let mut out = vec![0u16; SNES_W * SNES_H];
-        let cgram = &self.cgram;
+        let cgram = &self.shown_cgram();
         let backdrop = cgram[0];
         let shown = &self.shown;
         for screen_y in 0..SNES_H - BLANK_LINES {
@@ -860,6 +984,11 @@ impl SuperGameBoy {
             "tiles_pending" => Value::Bytes(&self.tiles_pending),
             "border_map" => Value::Words(&self.border_map),
             "border_loaded" => Value::U8(self.border_loaded as u8),
+            "border_map_pending" => Value::Words(&self.border_map_pending),
+            "border_colors_pending" => Value::Words(&self.border_colors_pending),
+            "fading" => Value::U8(self.fading as u8),
+            "fade_tick" => Value::U8(self.fade_tick),
+            "fade_due" => Value::U64(self.fade_due),
             _ => unreachable!("no SGB field {name}"),
         }
     }
@@ -893,6 +1022,11 @@ impl SuperGameBoy {
             "tiles_pending" => Slot::Bytes(&mut self.tiles_pending),
             "border_map" => Slot::Words(&mut self.border_map),
             "border_loaded" => Slot::Bool(&mut self.border_loaded),
+            "border_map_pending" => Slot::Words(&mut self.border_map_pending),
+            "border_colors_pending" => Slot::Words(&mut self.border_colors_pending),
+            "fading" => Slot::Bool(&mut self.fading),
+            "fade_tick" => Slot::U8(&mut self.fade_tick),
+            "fade_due" => Slot::U64(&mut self.fade_due),
             _ => unreachable!("no SGB field {name}"),
         }
     }
@@ -900,11 +1034,13 @@ impl SuperGameBoy {
     /// Everything above as one blob, in STATE_LAYOUT's order, after a version byte. (The board's
     /// own save state carries the SGB through serde; this is the reference's format, which the
     /// lockstep gate hashes.)
-    pub fn save_state(&self) -> Vec<u8> {
+    pub fn save_state(&mut self, t: u64) -> Vec<u8> {
+        self.run_fade(t);
         let mut out = vec![STATE_VERSION];
         for (name, _kind, length) in STATE_LAYOUT {
             match self.get(name) {
                 Value::U8(value) => out.push(value),
+                Value::U64(value) => out.extend_from_slice(&value.to_le_bytes()),
                 Value::Bytes(value) => {
                     assert_eq!(value.len(), length);
                     out.extend_from_slice(value);
@@ -939,13 +1075,19 @@ impl SuperGameBoy {
                     *value = data[at] != 0;
                     at += 1;
                 }
+                Slot::U64(value) => {
+                    let mut bytes = [0u8; 8];
+                    bytes.copy_from_slice(&data[at..at + 8]);
+                    *value = u64::from_le_bytes(bytes);
+                    at += 8;
+                }
                 Slot::Bytes(value) => {
                     value.copy_from_slice(&data[at..at + length]);
                     at += length;
                 }
                 Slot::Words(words) => {
-                    for i in 0..length {
-                        words[i] = data[at + 2 * i] as u16 | (data[at + 2 * i + 1] as u16) << 8;
+                    for (i, word) in words.iter_mut().enumerate().take(length) {
+                        *word = data[at + 2 * i] as u16 | (data[at + 2 * i + 1] as u16) << 8;
                     }
                     at += 2 * length;
                 }

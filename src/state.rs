@@ -7,7 +7,8 @@
 //! loaded into: the cartridge ROM and header, the boot ROM and the machine row. The APU is
 //! gb-apu-rust's, serialised whole through its `serde` feature (since `GBRUST02`; `GBRUST01`
 //! states had no APU and are refused). An attached Super Game Boy (`Hw::sgb`, `sgb.rs`) is in
-//! the state too, with the PPU's `taps` flag (since `GBRUST03`; `GBRUST02` states are refused).
+//! the state too, with the PPU's `taps` flag (since `GBRUST03`; `GBRUST02` states are refused),
+//! and its border fade (since `GBRUST04`; the SGB's fields grew, `GBRUST03` states are refused).
 //! `capture_board_state` is here too.
 
 use serde::{Deserialize, Serialize};
@@ -15,7 +16,7 @@ use sm83::CpuState;
 
 use crate::board::{GameBoy, Hw};
 
-const MAGIC: &[u8; 8] = b"GBRUST03";
+const MAGIC: &[u8; 8] = b"GBRUST04";
 
 #[derive(Serialize, Deserialize)]
 struct Cpu {

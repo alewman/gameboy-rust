@@ -527,6 +527,7 @@ impl GameBoy {
         let mut icd = Icd {
             joypad: &mut hw.joypad,
             boot_mapped: hw.boot_mapped,
+            t: hw.t,
             irq: false,
         };
         sgb.update_lines(&mut icd);
@@ -536,6 +537,29 @@ impl GameBoy {
             self.cpu.request_interrupt(4, false, false);
         }
         Ok(())
+    }
+
+    /// The attached Super Game Boy's picture now (`SuperGameBoy.render`, at the board's `t`).
+    pub fn sgb_render(&mut self) -> Vec<u16> {
+        let t = self.hw.t;
+        let sgb = self
+            .hw
+            .sgb
+            .as_deref_mut()
+            .expect("no Super Game Boy attached");
+        sgb.render(t)
+    }
+
+    /// The attached Super Game Boy's own state blob now (`SuperGameBoy.save_state`, at the
+    /// board's `t`).
+    pub fn sgb_save_state(&mut self) -> Vec<u8> {
+        let t = self.hw.t;
+        let sgb = self
+            .hw
+            .sgb
+            .as_deref_mut()
+            .expect("no Super Game Boy attached");
+        sgb.save_state(t)
     }
 
     /// A P1 write outside a CPU access (harnesses and tests: the reference's `gb.joypad.write`).
@@ -551,6 +575,7 @@ impl GameBoy {
         let mut icd = Icd {
             joypad: &mut hw.joypad,
             boot_mapped: hw.boot_mapped,
+            t: hw.t,
             irq: false,
         };
         sgb.set_pressed(name, down, player, &mut icd);
@@ -886,6 +911,7 @@ impl Hw {
             let mut icd = Icd {
                 joypad: &mut self.joypad,
                 boot_mapped: self.boot_mapped,
+                t: self.t,
                 irq: false,
             };
             sgb.p1_write(select, &mut icd);
@@ -907,7 +933,7 @@ impl Hw {
             for tap in &tapped {
                 match tap {
                     Tap::Line(ly, shades) => sgb.lcd_line(*ly as usize, shades),
-                    Tap::Frame => sgb.lcd_frame(),
+                    Tap::Frame => sgb.lcd_frame(self.t),
                 }
             }
         }

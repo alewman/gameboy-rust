@@ -71,9 +71,8 @@ fn find_boot(choice: &str, machine_key: &str) -> Option<Vec<u8>> {
     }
 }
 
-fn save(gb: &GameBoy, path: &Path) {
-    let sgb = gb.hw.sgb.as_deref().expect("Super Game Boy");
-    let png = rgb24_png_bytes(&rgb_bytes(&sgb.render()), SNES_W, SNES_H);
+fn save(gb: &mut GameBoy, path: &Path) {
+    let png = rgb24_png_bytes(&rgb_bytes(&gb.sgb_render()), SNES_W, SNES_H);
     std::fs::write(path, png).expect("write PNG");
 }
 
@@ -114,12 +113,12 @@ fn main() {
         if let Some(k) = every {
             if frame % k == 0 {
                 std::fs::create_dir_all(&out_dir).expect("out dir");
-                save(&gb, &out_dir.join(format!("sgb_{frame:05}.png")));
+                save(&mut gb, &out_dir.join(format!("sgb_{frame:05}.png")));
             }
         }
     }
     if let Some(path) = png {
-        save(&gb, &path);
+        save(&mut gb, &path);
     }
     let sgb = gb.hw.sgb.as_deref().expect("Super Game Boy");
     eprintln!(
