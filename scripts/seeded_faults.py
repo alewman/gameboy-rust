@@ -81,6 +81,12 @@ FAULTS = [
      "(edge, edge_pal) = (2, inside_pal);", "(edge, edge_pal) = (2, outside_pal);"),
     ("sgb: PAL_SET shared colour 0", "src/sgb.rs",
      "if palette == 0 {", "if palette == 1 {"),
+    # the border fade (gameboy-python ac01aff)
+    ("sgb: fade delay", "src/sgb.rs",
+     "pub const FADE_DELAY_FRAMES: u64 = 4;", "pub const FADE_DELAY_FRAMES: u64 = 3;"),
+    ("sgb: fade-in formula", "src/sgb.rs",
+     "channel = channel.min(tick - FADE_IN_TICK as u16 + 1);",
+     "channel = channel.min(tick - FADE_IN_TICK as u16);"),
 ]
 
 
