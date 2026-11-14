@@ -10,7 +10,7 @@ dependencies, so check them out beside this one.
 
 Each `src/*.rs` file is the transcription of one `gameboy_python` module (`board`, `ppu`,
 `pixels`, `dma`, `timer`, `joypad`, `serial`, `machines`, `cartridge`, `boot`, `testrom`, and
-`sgb`, the high-level Super Game Boy from gameboy-python's `sgb-hle` branch, `c5e9568`), with
+`sgb`, the high-level Super Game Boy from gameboy-python master `ac01aff`), with
 the same names, the same order of work inside an M-cycle and the hardware comments carried over;
 where Rust forced a difference, the module header says so. It is a reference board: correct,
 not fast, and there is no window yet.
@@ -47,15 +47,16 @@ target/release/gameboy-sgb game.gb --frames 900 --png out.png [--machine sgb2] \
 
 **Super Game Boy.** `GameBoy::attach_sgb(palette)` on the `sgb`/`sgb2` rows attaches
 `sgb::SuperGameBoy` (the ICD2 packet receiver and multiplayer lines, and a high-level version of
-the SGB's SNES program: palettes, attribute maps, VRAM transfers, the border). The board owns it
-(`hw.sgb`), it is in save states, and host input goes to `sgb_set_pressed`. `render()` gives
-SNES BGR555 words, `sgb::rgb_bytes` 8-bit RGB. The SGB BIOS's own artwork (default border,
+the SGB's SNES program: palettes, attribute maps, VRAM transfers, the border and the BIOS's
+border fade). The board owns it (`hw.sgb`), it is in save states, and host input goes to
+`sgb_set_pressed`. `GameBoy::sgb_render()` gives SNES BGR555 words, `sgb::rgb_bytes` 8-bit RGB. The SGB BIOS's own artwork (default border,
 built-in palettes) is Nintendo's and not reproduced; see gameboy-python's docs/sgb.md.
 
 ## Status
 
 Every rung passes (measured 2026-11-12; the last rung and the seeded faults at `8887cea`; the
-Super Game Boy row on 2026-11-13 against gameboy-python `c5e9568`, branch `sgb-hle`). Exact
+Super Game Boy row on 2026-11-13 against gameboy-python `ac01aff`: `gameboy-rust-pin-3`,
+`c5e9568`, plus the border fade). Exact
 numbers and commands are in [docs/status.md](docs/status.md). No case was found where
 gameboy-python looks wrong.
 
@@ -69,7 +70,7 @@ gameboy-python looks wrong.
 | 6 | Every machine row; save states | 48 of 48 identical (incl. the CPU CGB C row); save/load round trip identical on every gate case, audio included (871 of 871) |
 | 7 | gb-apu-rust in the gate: APU reads and writes in every comparison, a CRC of each slice's samples | 119 of 119 identical; Gambatte audio 82 of 87, as the reference |
 | faults | 18 one-line faults seeded across PPU, pixels, DMA, timer, cartridge, serial | 17 caught; missed: MBC5 ROM bank bit 8 (no case reads banks 256 and up) |
-| SGB | The HLE Super Game Boy (`src/sgb.rs`) under the gate: a CRC of its 256 x 224 picture and of its state in every slice (`--sgb`, `scripts/cases-sgb.tsv`): the eight SGB games the reference validated against the real BIOS, from the SGB boot ROM, plus SGB2 and all eight from skip-boot | 17 of 17 identical (22,500 slices), save/load round trip 17 of 17; every other table unchanged; PNGs pixel-identical to the reference's; seeded faults 4 of 5 caught (missed: an inside-only ATTR_BLK's edge palette, which no case's game exercises; `tests/sgb.rs` catches it) |
+| SGB | The HLE Super Game Boy (`src/sgb.rs`) under the gate: a CRC of its 256 x 224 picture and of its state in every slice (`--sgb`, `scripts/cases-sgb.tsv`): the eight SGB games the reference validated against the real BIOS, from the SGB boot ROM, plus SGB2, all eight from skip-boot and a save inside a border fade; the fade itself fits the real BIOS's measured palette writes (gameboy-python docs/validation.md "Super Game Boy, the border fade") | 18 of 18 identical (22,800 slices), save/load round trip 18 of 18 (three saves fall inside a fade); every other table unchanged; Donkey Kong's picture at 600 has the reference test's SHA-1; seeded faults 6 of 7 caught (missed: an inside-only ATTR_BLK's edge palette, which no case's game exercises; `tests/sgb.rs` catches it) |
 
 **Save states.** `GameBoy::save_state()` / `load_state()` carry the CPU and the whole board,
 sound unit included (gb-apu-rust's `serde` feature); the cartridge ROM, boot ROM and machine row
