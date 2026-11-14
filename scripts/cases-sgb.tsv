@@ -21,3 +21,6 @@ sgb/skip/pokemon-yellow	1500	$NOINTRO/Nintendo - Game Boy/Pokemon - Yellow Versi
 sgb/skip/zelda-dx	1500	$NOINTRO/Nintendo - Game Boy Color/Legend of Zelda, The - Link's Awakening DX (USA, Europe) (Rev 2) (SGB Enhanced) (GB Compatible).zip	--machine sgb --sgb --input $INPUTS/poke.txt
 sgb/skip/wario-land-2	1500	$NOINTRO/Nintendo - Game Boy/Wario Land II (USA, Europe) (SGB Enhanced).zip	--machine sgb --sgb --input $INPUTS/poke.txt
 sgb/skip/tetris-dx	1500	$NOINTRO/Nintendo - Game Boy Color/Tetris DX (World) (SGB Enhanced) (GB Compatible).zip	--machine sgb --sgb --input $INPUTS/poke.txt
+# a save inside the first border's fade (with --save-at-half: slice 150, fade tick 25, the new border still pending;
+# Mario's Picross's halves fall in its second border's fade: tick 65 from the boot ROM, 22 from skip-boot)
+sgb/skip/donkey-kong-fade	300	$NOINTRO/Nintendo - Game Boy/Donkey Kong (World) (Rev 1) (SGB Enhanced).zip	--machine sgb --sgb --input $INPUTS/poke.txt
