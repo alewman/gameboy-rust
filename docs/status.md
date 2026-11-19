@@ -8,7 +8,10 @@ out at master `ac01aff`, which is `gameboy-rust-pin-3` (`c5e9568`: pin-2 plus `s
 (`2b0b40f`) and a new PNG helper (`image.rgb24_png_bytes`)) plus the border fade, whose `src`
 change is `sgb.py` alone (`git diff c5e9568 ac01aff -- src`), so the board's reference traces
 cached at the pin stay valid (checked: every table identical again); the 17 SGB traces of
-pin-3 were set aside in `external/old/refcache-sgb-pin3` and regenerated. Cloned to
+pin-3 were set aside in `external/old/refcache-sgb-pin3` and regenerated. **Since the history
+reset of 2026-11-19** (see the README) the reference is gameboy-python tag
+`gameboy-rust-pin-4`, commit `030d3a7`, a single commit whose tree is exactly `ac01aff`'s;
+the hashes in this file are from before the reset and name the same trees. Cloned to
 `external/gameboy-python` (not committed); its interpreter is `external/venv` (PyPy 3.11 with
 sm83-python `95f2b8b` and gb-apu-python `f0a7f48`, gameboy-python editable from the clone).
 The crate was built from [handoff-brief.md](handoff-brief.md) (historical).
@@ -52,7 +55,7 @@ reference's `scripts/fetch_references.py` puts in its `tests/test_roms/`; the ca
 and No-Intro dumps from `/data/emu/source/...`: set `GBTR`, `MTS` and `NOINTRO` to move them.
 
 ```sh
-git clone ../gameboy-python external/gameboy-python && git -C external/gameboy-python checkout ac01aff  # pin-3 (pin-2 + sgb.py) + the SGB border fade
+git clone ../gameboy-python external/gameboy-python && git -C external/gameboy-python checkout gameboy-rust-pin-4  # 030d3a7: the tree of ac01aff, pin-3 (pin-2 + sgb.py) + the SGB border fade
 pypy3 -m venv external/venv
 external/venv/bin/pip install "git+file://$PWD/../sm83-python@95f2b8b39c1a1b3890d3b47b39cb1f698e948eca" \
     "git+file://$PWD/../gb-apu-python@f0a7f48b72dab9cf019cefc3968a09d0227fd189"

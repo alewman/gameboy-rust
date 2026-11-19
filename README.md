@@ -1,8 +1,8 @@
 # gameboy-rust
 
 A Rust Game Boy (DMG and CGB) board transcribed from
-[gameboy-python](https://github.com/alewman/gameboy-python) at tag `gameboy-rust-pin-2`
-(`47a97e6`) and proven equivalent to it in lockstep: every CPU bus M-cycle (address, value,
+[gameboy-python](https://github.com/alewman/gameboy-python), whose reference is now tag
+`gameboy-rust-pin-4` (`030d3a7`), and proven equivalent to it in lockstep: every CPU bus M-cycle (address, value,
 direction, board time) and every finished picture, slice by slice. The CPU is
 [sm83-rust](https://github.com/alewman/sm83-rust) (crate `sm83`), the sound
 [gb-apu-rust](https://github.com/alewman/gb-apu-rust) (crate `gb_apu`); both are path
@@ -10,7 +10,7 @@ dependencies, so check them out beside this one.
 
 Each `src/*.rs` file is the transcription of one `gameboy_python` module (`board`, `ppu`,
 `pixels`, `dma`, `timer`, `joypad`, `serial`, `machines`, `cartridge`, `boot`, `testrom`, and
-`sgb`, the high-level Super Game Boy from gameboy-python master `ac01aff`), with
+`sgb`, the high-level Super Game Boy from gameboy-python at `gameboy-rust-pin-4`), with
 the same names, the same order of work inside an M-cycle and the hardware comments carried over;
 where Rust forced a difference, the module header says so. It is a reference board: correct,
 not fast, and there is no window yet.
@@ -59,6 +59,15 @@ Super Game Boy row on 2026-11-13 against gameboy-python `ac01aff`: `gameboy-rust
 `c5e9568`, plus the border fade). Exact
 numbers and commands are in [docs/status.md](docs/status.md). No case was found where
 gameboy-python looks wrong.
+
+**History reset (2026-11-19).** This repository's history and gameboy-python's were each
+reset to a single commit, because earlier commits held code derived from Gambatte (GPL-2.0)
+that the 2026-11-12 clean-up replaced. Neither tree changed: this repository's first commit has
+the tree of its old main `40b9d3b`, and gameboy-python's `030d3a7` (tag `gameboy-rust-pin-4`)
+the tree of its old master `ac01aff`, the reference every result here was measured against
+last. Hashes in the docs written before then (this repository's `8887cea`, `e31d681`,
+`f7a9b78`, and gameboy-python's `efdde44`, `47a97e6`, `c5e9568`, `ac01aff`, tags
+`gameboy-rust-pin-1` to `-3`) refer to the removed histories.
 
 | Rung | What | Result |
 | --- | --- | --- |
