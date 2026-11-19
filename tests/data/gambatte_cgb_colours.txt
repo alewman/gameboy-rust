@@ -1,0 +1,9 @@
+# Copied unchanged from gameboy-python tests/gambatte_cgb_colours.txt at tag gameboy-rust-pin-2 (47a97e6),
+# learned there by scripts/gambatte_learn.py from the Gambatte test ROMs' names and expected PNGs.
+# scripts/gambatte_learn.py over 198 CGB picture tests: RGB555, RRGGBB
+0000 000000
+2108 404040
+2AAA 589058
+5294 A0A0A0
+5555 986098
+7FFF F8F8F8

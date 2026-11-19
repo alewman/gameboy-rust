@@ -1,0 +1,22 @@
+# name	slices	rom	arguments: rung 5 (cartridges): every board class on a dump that uses it, the RTC tests on board time
+cart/rom/alleyway	1200	$NOINTRO/Nintendo - Game Boy/Alleyway (World).zip	--input $INPUTS/poke.txt
+cart/mbc1/4-in-1-fun-pak	1200	$NOINTRO/Nintendo - Game Boy/4-in-1 Fun Pak (USA, Europe).zip	--input $INPUTS/poke.txt
+cart/mbc1+ram+battery/donkey-kong	1800	$NOINTRO/Nintendo - Game Boy/Donkey Kong (World) (Rev 1) (SGB Enhanced).zip	--input $INPUTS/poke.txt
+cart/mbc1m/mortal-kombat-1-2	1800	$NOINTRO/Nintendo - Game Boy/Mortal Kombat & Mortal Kombat II (USA, Europe).zip	--input $INPUTS/poke.txt
+cart/mbc1m/bomberman-collection	1800	$NOINTRO/Nintendo - Game Boy/Bomberman Collection (Japan) (SGB Enhanced).zip	--input $INPUTS/poke.txt
+cart/mbc2/f-1-race	1200	$NOINTRO/Nintendo - Game Boy/F-1 Race (World) (Rev 1).zip	--input $INPUTS/poke.txt
+cart/mbc3+ram+battery/pokemon-blue	1800	$NOINTRO/Nintendo - Game Boy/Pokemon - Blue Version (USA, Europe) (SGB Enhanced).zip	--input $INPUTS/poke.txt
+cart/mbc3+timer/pokemon-gold-cgb	2400	$NOINTRO/Nintendo - Game Boy Color/Pokemon - Gold Version (USA, Europe) (SGB Enhanced) (GB Compatible).zip	--machine cgb --input $INPUTS/poke.txt
+cart/mbc3+timer/pokemon-silver-dmg	2400	$NOINTRO/Nintendo - Game Boy Color/Pokemon - Silver Version (USA, Europe) (SGB Enhanced) (GB Compatible).zip	--input $INPUTS/poke.txt
+cart/mbc3+timer/et-digital-companion	1200	$NOINTRO/Nintendo - Game Boy Color/E.T. - The Extra-Terrestrial - Digital Companion (USA).zip	--machine cgb --input $INPUTS/poke.txt
+cart/mbc30/pocket-monsters-crystal	2400	$NOINTRO/Nintendo - Game Boy Color/Pocket Monsters - Crystal Version (Japan).zip	--machine cgb --input $INPUTS/poke.txt
+cart/mbc5/pokemon-yellow	1800	$NOINTRO/Nintendo - Game Boy/Pokemon - Yellow Version - Special Pikachu Edition (USA, Europe) (CGB+SGB Enhanced).zip	--input $INPUTS/poke.txt
+cart/mbc5+rumble/10-pin-bowling	1200	$NOINTRO/Nintendo - Game Boy Color/10-Pin Bowling (USA) (Rumble Version).zip	--machine cgb --input $INPUTS/poke.txt
+cart/mmm01/momotarou-collection	1800	$NOINTRO/Nintendo - Game Boy/Momotarou Collection (Japan) (SGB Enhanced).zip	--input $INPUTS/poke.txt
+cart/mmm01/momotarou-collection-2	1800	$NOINTRO/Nintendo - Game Boy/Momotarou Collection 2 (Japan) (SGB Enhanced).zip	--input $INPUTS/poke.txt
+rtc3test/basic	900	$GBTR/rtc3test/rtc3test.gb	--input $INPUTS/rtc-basic.txt
+rtc3test/range	700	$GBTR/rtc3test/rtc3test.gb	--input $INPUTS/rtc-range.txt
+rtc3test/sub-second	1800	$GBTR/rtc3test/rtc3test.gb	--input $INPUTS/rtc-subsecond.txt
+rtc3test/basic-cgb	900	$GBTR/rtc3test/rtc3test.gb	--machine cgb --input $INPUTS/rtc-basic.txt
+mbc3-tester	300	$GBTR/mbc3-tester/mbc3-tester.gb	
+mbc3-tester-cgb	300	$GBTR/mbc3-tester/mbc3-tester.gb	--machine cgb

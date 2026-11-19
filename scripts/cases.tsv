@@ -1,0 +1,37 @@
+# name	slices	rom	arguments (shell words); $GBTR $MTS $NOINTRO $INPUTS
+blargg/cpu_instrs-02	40	$GBTR/blargg/cpu_instrs/individual/02-interrupts.gb	
+blargg/instr_timing	60	$GBTR/blargg/instr_timing/instr_timing.gb	
+blargg/mem_timing	120	$GBTR/blargg/mem_timing/mem_timing.gb	
+blargg/mem_timing-2	150	$GBTR/blargg/mem_timing-2/mem_timing.gb	
+blargg/halt_bug	150	$GBTR/blargg/halt_bug.gb	
+blargg/oam_bug-2	150	$GBTR/blargg/oam_bug/rom_singles/2-causes.gb	
+blargg/cpu_instrs-02-cgb	40	$GBTR/blargg/cpu_instrs/individual/02-interrupts.gb	--machine cgb
+dmg-acid2	60	$GBTR/dmg-acid2/dmg-acid2.gb	
+dmg-acid2-cgb	60	$GBTR/dmg-acid2/dmg-acid2.gb	--machine cgb
+cgb-acid2	60	$GBTR/cgb-acid2/cgb-acid2.gbc	--machine cgb
+cgb-acid-hell	60	$GBTR/cgb-acid-hell/cgb-acid-hell.gbc	--machine cgb
+boot/dmg-real	200	$GBTR/dmg-acid2/dmg-acid2.gb	--boot real
+boot/cgb-real	200	$GBTR/cgb-acid2/cgb-acid2.gbc	--machine cgb --boot real
+mooneye/timer/rapid_toggle	40	$MTS/acceptance/timer/rapid_toggle.gb	
+mooneye/timer/tima_reload	40	$MTS/acceptance/timer/tima_reload.gb	
+mooneye/oam_dma_timing	40	$MTS/acceptance/oam_dma_timing.gb	
+mooneye/ppu/intr_2_mode0_timing_sprites	60	$MTS/acceptance/ppu/intr_2_mode0_timing_sprites.gb	
+mooneye/ppu/stat_irq_blocking	40	$MTS/acceptance/ppu/stat_irq_blocking.gb	
+mooneye/serial/boot_sclk_align	60	$MTS/acceptance/serial/boot_sclk_align-dmgABCmgb.gb	
+mealybug/m3_scx_low_3_bits	30	$GBTR/mealybug-tearoom-tests/ppu/m3_scx_low_3_bits.gb	
+mealybug/m3_wx_4_change	30	$GBTR/mealybug-tearoom-tests/ppu/m3_wx_4_change.gb	
+mealybug/m3_lcdc_tile_sel_change-cgb	30	$GBTR/mealybug-tearoom-tests/ppu/m3_lcdc_tile_sel_change.gb	--machine cgb
+mealybug/m3_bgp_change	30	$GBTR/mealybug-tearoom-tests/ppu/m3_bgp_change.gb	
+game/tetris	1800	$NOINTRO/Nintendo - Game Boy/Tetris (World) (Rev 1).zip	--input $INPUTS/poke.txt
+game/super-mario-land	1800	$NOINTRO/Nintendo - Game Boy/Super Mario Land (World) (Rev 1).zip	--input $INPUTS/poke.txt
+game/kirbys-dream-land	1800	$NOINTRO/Nintendo - Game Boy/Kirby's Dream Land (USA, Europe).zip	--input $INPUTS/poke.txt
+game/links-awakening	1800	$NOINTRO/Nintendo - Game Boy/Legend of Zelda, The - Link's Awakening (USA, Europe) (Rev 2).zip	--input $INPUTS/poke.txt
+game/pokemon-red	1800	$NOINTRO/Nintendo - Game Boy/Pokemon - Red Version (USA, Europe) (SGB Enhanced).zip	--input $INPUTS/poke.txt
+game/kirbys-pinball-land	1200	$NOINTRO/Nintendo - Game Boy/Kirby's Pinball Land (USA, Europe).zip	--input $INPUTS/poke.txt
+game/pokemon-yellow-cgb	1800	$NOINTRO/Nintendo - Game Boy/Pokemon - Yellow Version - Special Pikachu Edition (USA, Europe) (CGB+SGB Enhanced).zip	--machine cgb --input $INPUTS/poke.txt
+game/links-awakening-dx-cgb	1800	$NOINTRO/Nintendo - Game Boy Color/Legend of Zelda, The - Link's Awakening DX (USA, Europe) (Rev 2) (SGB Enhanced) (GB Compatible).zip	--machine cgb --input $INPUTS/poke.txt
+game/wario-land-3-cgb	1800	$NOINTRO/Nintendo - Game Boy Color/Wario Land 3 (World) (En,Ja).zip	--machine cgb --input $INPUTS/poke.txt
+game/tetris-dx-dmg	1200	$NOINTRO/Nintendo - Game Boy Color/Tetris DX (World) (SGB Enhanced) (GB Compatible).zip	--input $INPUTS/poke.txt
+game/super-mario-land-cgb-compat	1200	$NOINTRO/Nintendo - Game Boy/Super Mario Land (World) (Rev 1).zip	--machine cgb --input $INPUTS/poke.txt
+game/pokemon-crystal-cgb	1800	$NOINTRO/Nintendo - Game Boy Color/Pokemon - Crystal Version (USA, Europe) (Rev 1).zip	--machine cgb --input $INPUTS/poke.txt
+game/smb-deluxe-cgb	1800	$NOINTRO/Nintendo - Game Boy Color/Super Mario Bros. Deluxe (USA, Europe) (Rev 1).zip	--machine cgb --input $INPUTS/poke.txt

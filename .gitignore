@@ -1,0 +1,6 @@
+/target
+/external
+*.gb
+*.gbc
+*.zip
+__pycache__/

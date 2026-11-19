@@ -1,0 +1,46 @@
+name: CI
+
+# Kept small: main and pull requests, superseded runs cancelled. The reference (gameboy-python)
+# and the test ROMs and dumps are local, so the lockstep and suite rungs run by hand
+# (docs/status.md); CI runs fmt, clippy and the tests. The CPU (alewman/sm83-rust) and the sound
+# core (alewman/gb-apu-rust) are path dependencies, checked out beside this one at pinned
+# commits; both repositories are public, so no token is needed.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: fmt, clippy, test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: gameboy-rust
+      - uses: actions/checkout@v4
+        with:
+          repository: alewman/sm83-rust
+          ref: 105b8c1a440bf665048690df38a96ad0391c01bb
+          path: sm83-rust
+      - uses: actions/checkout@v4
+        with:
+          repository: alewman/gb-apu-rust
+          ref: 4032227f676af2074ee4d489087f2c79d4922d11
+          path: gb-apu-rust
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - run: cargo fmt --check
+        working-directory: gameboy-rust
+      - run: cargo clippy --release --all-targets -- -D warnings
+        working-directory: gameboy-rust
+      - run: cargo test --release
+        working-directory: gameboy-rust
