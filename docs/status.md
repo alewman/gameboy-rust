@@ -13,7 +13,9 @@ reset of 2026-11-19** (see the README) the reference is gameboy-python tag
 `gameboy-rust-pin-4`, commit `030d3a7`, a single commit whose tree is exactly `ac01aff`'s;
 the hashes in this file are from before the reset and name the same trees. Cloned to
 `external/gameboy-python` (not committed); its interpreter is `external/venv` (PyPy 3.11 with
-sm83-python `95f2b8b` and gb-apu-python `f0a7f48`, gameboy-python editable from the clone).
+sm83-python `1f312fa` and gb-apu-python `d4393c6`, gameboy-python editable from the clone;
+until 2026-11-22 `95f2b8b` and `f0a7f48`, the same trees before those repositories' history
+rewrites of 2026-11-21, which took them off every branch).
 The crate was built from [handoff-brief.md](handoff-brief.md) (historical).
 
 At `f7a9b78`: `cargo test --release` 25 pass (3 board, 22 SGB), `cargo fmt --check` and `cargo
@@ -57,8 +59,9 @@ and No-Intro dumps from `/data/emu/source/...`: set `GBTR`, `MTS` and `NOINTRO` 
 ```sh
 git clone ../gameboy-python external/gameboy-python && git -C external/gameboy-python checkout gameboy-rust-pin-4  # 030d3a7: the tree of ac01aff, pin-3 (pin-2 + sgb.py) + the SGB border fade
 pypy3 -m venv external/venv
-external/venv/bin/pip install "git+file://$PWD/../sm83-python@95f2b8b39c1a1b3890d3b47b39cb1f698e948eca" \
-    "git+file://$PWD/../gb-apu-python@f0a7f48b72dab9cf019cefc3968a09d0227fd189"
+external/venv/bin/pip install \
+    "git+https://github.com/alewman/sm83-python@1f312fa3c9e60c2fc43d7044ddf2a95219d0d36b" \
+    "git+https://github.com/alewman/gb-apu-python@d4393c6af0d634e637ff63a421278fd0c6b6700f"
 external/venv/bin/pip install --no-deps -e external/gameboy-python
 # rung 1
 B=${GBTR:-/data/emu/gameboy-python/tests/test_roms/gbtr}/blargg
