@@ -53,8 +53,8 @@ gameboy-rust-pin-1 gameboy-rust-pin-2 -- src`.
 
 Setup, once (the reference repositories beside this one). The test ROMs are the ones the
 reference's `scripts/fetch_references.py` puts in its `tests/test_roms/`; the case tables and
-`gameboy-suite` read them in place, by default from `/data/emu/gameboy-python/tests/test_roms`
-and No-Intro dumps from `/data/emu/source/...`: set `GBTR`, `MTS` and `NOINTRO` to move them.
+`gameboy-suite` read them in place, by default from `external/gameboy-python/tests/test_roms`
+and No-Intro dumps from `$NO_INTRO_DIR`: set `GBTR`, `MTS` and `NOINTRO` to move them.
 
 ```sh
 git clone ../gameboy-python external/gameboy-python && git -C external/gameboy-python checkout gameboy-rust-pin-4  # 030d3a7: the tree of ac01aff, pin-3 (pin-2 + sgb.py) + the SGB border fade
@@ -64,7 +64,7 @@ external/venv/bin/pip install \
     "git+https://github.com/alewman/gb-apu-python@d4393c6af0d634e637ff63a421278fd0c6b6700f"
 external/venv/bin/pip install --no-deps -e external/gameboy-python
 # rung 1
-B=${GBTR:-/data/emu/gameboy-python/tests/test_roms/gbtr}/blargg
+B=${GBTR:-external/gameboy-python/tests/test_roms/gbtr}/blargg
 for f in $B/cpu_instrs/individual/*.gb; do target/release/gameboy $f --protocol blargg-serial --max-frames 2000; done
 ```
 

@@ -33,8 +33,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 DEFAULTS = {
-    "GBTR": "/data/emu/gameboy-python/tests/test_roms/gbtr",
-    "MTS": "/data/emu/gameboy-python/tests/test_roms/mts-20260714-0944-31510e1",
+    "GBTR": str(ROOT / "external/gameboy-python/tests/test_roms/gbtr"),
+    "MTS": str(ROOT / "external/gameboy-python/tests/test_roms/mts-20260714-0944-31510e1"),
     "NOINTRO": os.environ.get("NO_INTRO_DIR", "No-Intro"),
     "INPUTS": str(HERE / "inputs"),
 }

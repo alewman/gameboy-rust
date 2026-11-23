@@ -7,7 +7,8 @@
 //!     gameboy-suite cgb-pictures [--jobs N] [--revision cgb_d|cgb_c]   # real CGB boot ROM, 260 frames
 //!     gameboy-suite pictures                       # dmg-acid2, cgb-acid2, halt_bug, strikethrough
 //!
-//! `$GBTR` moves the test-ROM directory (default gameboy-python's tests/test_roms/gbtr).
+//! `$GBTR` moves the test-ROM directory (default the reference clone's
+//! external/gameboy-python/tests/test_roms/gbtr).
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -24,10 +25,12 @@ const FRAMES: u64 = 334 + 15;
 const CGB_FRAMES: u64 = 186 + 15; // the CGB boot ROM's frames and the 15 the protocol waits
 
 fn gbtr() -> PathBuf {
-    PathBuf::from(
-        std::env::var("GBTR")
-            .unwrap_or_else(|_| "/data/emu/gameboy-python/tests/test_roms/gbtr".into()),
-    )
+    std::env::var("GBTR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| {
+            Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("external/gameboy-python/tests/test_roms/gbtr")
+        })
 }
 
 fn board(rom: &Path, machine: Machine, boot: Option<Vec<u8>>) -> GameBoy {
