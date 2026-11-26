@@ -13,7 +13,7 @@ use std::sync::Mutex;
 
 use serde_json::{json, Value};
 
-use gameboy_rust::boot::{find_boot_rom, quickboot};
+use gameboy_rust::boot::find_boot_rom;
 use gameboy_rust::pngread::read_rgb888;
 use gameboy_rust::testrom::{run_blargg_ram, run_blargg_serial, run_microtest, run_mooneye};
 use gameboy_rust::{load_cartridge, machine, Clock, GameBoy, Machine};
@@ -28,9 +28,6 @@ const GREYS: [u32; 4] = [0xFF, 0xAA, 0x55, 0x00];
 fn boot_image(m: &Machine, boot: &str) -> Result<Option<Vec<u8>>, String> {
     match boot {
         "skip" => Ok(None),
-        "quick" => std::fs::read(quickboot())
-            .map(Some)
-            .map_err(|e| e.to_string()),
         _ => {
             let (image, label) = find_boot_rom(m.boot_rom, None);
             if label != "real boot ROM" {

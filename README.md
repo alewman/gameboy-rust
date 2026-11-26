@@ -28,7 +28,7 @@ target/release/gameboy cpu_instrs.gb --protocol blargg-serial --max-frames 4000
 target/release/gameboy game.gb --machine cgb --boot real --frames 600
 ```
 
-`gameboy ROM [--machine KEY] [--boot skip|real|quick|PATH] [--frames N] [--protocol
+`gameboy ROM [--machine KEY] [--boot skip|real|PATH] [--frames N] [--protocol
 mooneye|blargg-serial|blargg-ram|microtest] [--max-frames N]` runs a ROM headless and prints the
 serial or protocol text. Machine keys are the rows of `src/machines.rs`: `dmg` (= `dmg-b`),
 `dmg-0`, `dmg-a`, `dmg-c`, `mgb`, `sgb`, `sgb2`, `cgb`. Boot ROMs are bring-your-own: `--boot PATH` or `GAMEBOY_BOOT_ROM`, then

@@ -409,8 +409,10 @@ impl GameBoy {
         }
         self.cpu.restore_state(&Self::post_boot(POST_BOOT_DMG, f));
         let hw = &mut self.hw;
-        // DIV $AB; the low byte is the counter phase at handoff: what dmg-sim's quickboot leaves
-        // on this board and the only phase that passes Mooneye boot_div-dmgABCmgb
+        // DIV $AB; the low byte is the counter phase at handoff (TEST ROM: the only phase that
+        // passes Mooneye boot_div-dmgABCmgb, verified on DMG ABC; OBSERVED: the real DMG boot ROM
+        // on the reference board ends with the same counter. Until 2026-11-26 the source named
+        // was dmg-sim's quickboot, set aside: docs/provenance.md "Author respect")
         hw.timer.counter = 0xABC8;
         hw.serial.sc = 0;
         hw.ppu.dma.register = 0xFF;
@@ -421,8 +423,10 @@ impl GameBoy {
         };
         hw.ppu.write_lcdc(0x91, &mut ctx);
         hw.ppu.stat_select = 0;
-        // the PPU is late in line 153 (LY reads 0, mode 1, STAT $85) at handoff, as quickboot
-        // leaves it
+        // the PPU is late in line 153 (LY reads 0, mode 1, STAT $85) at handoff (OBSERVED: the
+        // reference board running the real DMG boot ROM reaches the same line, dot, mode and
+        // counter at $0100; Mooneye acceptance bounds it to within 4 dots. Until 2026-11-26 the
+        // source was dmg-sim's quickboot, set aside: docs/provenance.md "Author respect")
         hw.ppu.place(153, 396, 1, &mut ctx);
         hw.apu.skip_boot();
         hw.boot_mapped = false;

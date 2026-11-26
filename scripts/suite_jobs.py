@@ -5,13 +5,17 @@
 
 Every ROM of each suite the reference judges, not only the ones it passes: Mooneye acceptance,
 misc and emulator-only (on DMG-B from skip-boot, on CGB E from skip-boot, misc from the real CGB
-boot ROM, the boot_* tests from the real boot ROMs and quickboot), blargg (cpu_instrs,
+boot ROM, the boot_* tests from the real boot ROMs), blargg (cpu_instrs,
 instr_timing, mem_timing, mem_timing-2, oam_bug, interrupt_time, dmg_sound, cgb_sound), SameSuite
 and AGE on the CGB, GBMicrotest (poweron_* from the real DMG boot ROM), the DMG-0 boot tests and
 gbdev's GB Emulator Shootout list (its tests, expected pictures and runtimes, read as data the way
 the reference's scripts/shootout.py reads them). Runtimes and frame budgets are the reference
-harnesses'. Each job: id, rom, machine, boot (skip/real/quick), protocol, frames, and for the
+harnesses'. Each job: id, rom, machine, boot (skip/real), protocol, frames, and for the
 shootout model, runtime, passes and fails (expected pictures).
+
+Until 2026-11-26 the boot_* tests also ran from dmg-sim's quickboot (``mooneye-dmg-quick/*``,
+boot ``quick``); the reference removed that boot ROM (dmg-sim is set aside for the author's
+wishes: docs/provenance.md "Author respect"), and the jobs went with it.
 """
 
 from __future__ import annotations
@@ -50,7 +54,6 @@ def main() -> int:
                 add(f"mooneye-cgb-real/{name}", rom, "mooneye", 1500, machine="cgb", boot="real")
             if "boot_" in rom.name:
                 add(f"mooneye-dmg-real/{name}", rom, "mooneye", 1500, boot="real")
-                add(f"mooneye-dmg-quick/{name}", rom, "mooneye", 1500, boot="quick")
                 add(f"mooneye-mgb-real/{name}", rom, "mooneye", 1500, machine="mgb", boot="real")
                 add(f"mooneye-dmg0-real/{name}", rom, "mooneye", 1500, machine="dmg-0", boot="real")
     b = GBTR / "blargg"

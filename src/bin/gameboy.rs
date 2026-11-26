@@ -1,6 +1,6 @@
 //! Run a Game Boy ROM (gameboy-python `__main__.py`, without the window and the trace):
 //!
-//!     gameboy ROM [--machine KEY] [--boot skip|real|quick|PATH] [--frames N]
+//!     gameboy ROM [--machine KEY] [--boot skip|real|PATH] [--frames N]
 //!                 [--protocol mooneye|blargg-serial|blargg-ram|microtest] [--max-frames N]
 //!
 //! Prints the serial text (or the protocol's text) and a summary line on stderr; exits 0 on a
@@ -8,7 +8,7 @@
 
 use std::path::{Path, PathBuf};
 
-use gameboy_rust::boot::{find_boot_rom, quickboot, read_image};
+use gameboy_rust::boot::{find_boot_rom, read_image};
 use gameboy_rust::testrom::{run_blargg_ram, run_blargg_serial, run_microtest, run_mooneye};
 use gameboy_rust::{load_cartridge, machine, Clock, GameBoy};
 
@@ -42,10 +42,6 @@ fn main() {
     let (image, label) = match boot.as_str() {
         "skip" => (None, "skip-boot state".to_string()),
         "real" => find_boot_rom(m.boot_rom, None),
-        "quick" => (
-            Some(std::fs::read(quickboot()).expect("quickboot")),
-            "quickboot (dmg-sim)".to_string(),
-        ),
         path => (
             Some(read_image(Path::new(path)).expect("boot image")),
             format!("boot ROM {path}"),

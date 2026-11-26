@@ -8,10 +8,10 @@
 //! *_late_div_write_*). The serial divider is shared with the main clock but has its own reset,
 //! so its edges run a fixed number of T-cycles ahead of the counter DIV shows: `SERIAL_PHASE_T`.
 //! That constant is **fitted**: with it (and the counter's 4 T power-on phase in board.rs)
-//! Mooneye serial/boot_sclk_align (verified DMG ABC and MGB) passes together with boot_div, from
-//! skip-boot and from dmg-sim's quickboot. It has not been read off the die (dmg-schematics):
-//! UNVERIFIED there. With nothing connected every incoming bit is 1, so a transfer ends with
-//! SB = $FF. The eighth shift clears SC bit 7 and raises IF bit 3.
+//! Mooneye serial/boot_sclk_align (verified DMG ABC and MGB) passes together with boot_div from
+//! skip-boot (and passed from dmg-sim's quickboot until that was set aside, 2026-11-26). It has
+//! not been read off a die: UNVERIFIED there. With nothing connected every incoming bit is 1, so
+//! a transfer ends with SB = $FF. The eighth shift clears SC bit 7 and raises IF bit 3.
 //!
 //! Where Rust forced a difference: the reference raises IF bit 3 through a callback; here
 //! `irq` is set and the board takes it (`take_irq`) right after each call, which is where the

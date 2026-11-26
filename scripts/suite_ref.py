@@ -21,7 +21,7 @@ sys.path.insert(0, str(REF))
 sys.path.insert(0, str(REF / "scripts"))
 
 from gameboy_python import GameBoy, load_cartridge  # noqa: E402
-from gameboy_python.boot import QUICKBOOT, find_boot_rom  # noqa: E402
+from gameboy_python.boot import find_boot_rom  # noqa: E402
 from gameboy_python.machines import MACHINES  # noqa: E402
 from gameboy_python.testrom import (  # noqa: E402
     run_blargg_ram,
@@ -36,8 +36,6 @@ STARTUP: dict[str, float] = {}
 def boot_image(machine, boot):
     if boot == "skip":
         return None
-    if boot == "quick":
-        return QUICKBOOT.read_bytes()
     image, label = find_boot_rom(machine.boot_rom)
     if label != "real boot ROM":
         raise RuntimeError(f"no real boot ROM for {machine.boot_rom}")

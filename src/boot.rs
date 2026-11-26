@@ -3,9 +3,13 @@
 //!
 //! Order: a configured path (`override` or `GAMEBOY_BOOT_ROM`, a raw image or a No-Intro
 //! `.zip`), then a local No-Intro set's `[BIOS]` zips read in place and checked by SHA-256
-//! (`GAMEBOY_NOINTRO_DIR` moves the directory), then dmg-sim's `quickboot.bin` and SameBoy's
-//! open ROM from the reference's `reference/` tree (`GAMEBOY_REFERENCE_ROOT`, default the
-//! pinned checkout under `external/`). Nothing is ever copied into this repository.
+//! (`GAMEBOY_NOINTRO_DIR` moves the directory), then SameBoy's open ROM from the reference's
+//! `reference/` tree (`GAMEBOY_REFERENCE_ROOT`, default the pinned checkout under `external/`),
+//! labelled, because it fails three Mooneye boot-state tests (C7). Nothing is ever copied into
+//! this repository.
+//!
+//! Until 2026-11-26 dmg-sim's `quickboot.bin` came before SameBoy's ROM; dmg-sim is set aside
+//! for the author's wishes (furrtek's lineage: docs/provenance.md "Author respect").
 
 use std::io::Read;
 use std::path::{Path, PathBuf};
@@ -48,10 +52,6 @@ fn reference_root() -> PathBuf {
     std::env::var("GAMEBOY_REFERENCE_ROOT")
         .map(PathBuf::from)
         .unwrap_or_else(|_| Path::new(env!("CARGO_MANIFEST_DIR")).join("external/gameboy-python"))
-}
-
-pub fn quickboot() -> PathBuf {
-    reference_root().join("reference/src/dmg-sim/boot/quickboot.bin")
 }
 
 fn sameboy_open() -> PathBuf {
@@ -103,11 +103,6 @@ pub fn find_boot_rom(name: &str, override_path: Option<&Path>) -> (Option<Vec<u8
                     return (Some(image), "real boot ROM".into());
                 }
             }
-        }
-    }
-    if name == "DMG" && quickboot().exists() {
-        if let Ok(image) = std::fs::read(quickboot()) {
-            return (Some(image), "quickboot (dmg-sim)".into());
         }
     }
     if name == "DMG" && sameboy_open().exists() {
