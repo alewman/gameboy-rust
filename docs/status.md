@@ -11,7 +11,10 @@ cached at the pin stay valid (checked: every table identical again); the 17 SGB 
 pin-3 were set aside in `external/old/refcache-sgb-pin3` and regenerated. **Since the history
 reset of 2026-11-19** (see the README) the reference is gameboy-python tag
 `gameboy-rust-pin-4`, commit `030d3a7`, a single commit whose tree is exactly `ac01aff`'s;
-the hashes in this file are from before the reset and name the same trees. Cloned to
+the hashes in this file are from before the reset and name the same trees. **Since 2026-11-26**
+the clone is at gameboy-python `3d1d93e` (pin-4 plus the author-respect change: dmg-sim's
+quickboot removed, comments re-cited; `git diff 030d3a7 3d1d93e -- src` touches no hardware
+behaviour), and every rung was rerun against it (below, "Carry-down rerun"). Cloned to
 `external/gameboy-python` (not committed); its interpreter is `external/venv` (PyPy 3.11 with
 sm83-python `1f312fa` and gb-apu-python `d4393c6`, gameboy-python editable from the clone;
 until 2026-11-22 `95f2b8b` and `f0a7f48`, the same trees before those repositories' history
@@ -44,7 +47,7 @@ gameboy-rust-pin-1 gameboy-rust-pin-2 -- src`.
 | 1 | blargg `cpu_instrs` 01-11 pass natively (and the combined ROM, 3,191 frames) | see below |
 | 2 | Lockstep gate built: 36 of 36 cases identical (23 test-ROM cases incl. real DMG and CGB boot, 13 commercial dumps on DMG and CGB, 1,200-1,800 slices each, with `scripts/inputs/poke.txt`), APU register values included | `python3 scripts/lockstep.py --reference-cache external/refcache` |
 | 3 | Mealybug DMG 24 of 24 pixel-exact; CGB-D 20 of 21 exact, the 21st (`m3_lcdc_obj_size_change_scx`, 15 pixels: the reference's documented photo match) differing by the same 15 pixels on the reference; CPU CGB C (`--revision cgb_c`, `cgb-c` row) 24 of 27 exact, the three the reference leaves open differing by its pixel counts (`m3_lcdc_obj_size_change_scx` 15, `m3_lcdc_tile_sel_change2` and `m3_lcdc_tile_sel_win_change2` 166 each); cgb-acid-hell, cgb-acid2, dmg-acid2, halt_bug, strikethrough exact. Gambatte from skip-boot: DMG-08 1,695 of 1,784 and CGB-04c on `cgb-c` (`--cgb --machine cgb-c`) 2,892 of 3,221, both the reference's `tests/gambatte_*_pass.txt` exactly. Lockstep: `cases-rung3.tsv` 229 of 229 identical (all Mealybug DMG and CGB-D from the real boot ROMs, acid pictures, every 20th/30th Gambatte listed ROM); `cases-oamdma-cgb.tsv` 418 of 418 (every Gambatte oamdma ROM with a CGB-04c verdict, on `cgb-c`: the rewritten DMA conflict rules) | `gameboy-suite pictures`, `gameboy-suite mealybug-dmg`, `gameboy-suite cgb-pictures`, `gameboy-suite cgb-pictures --revision cgb_c`, `gameboy-suite gambatte [--cgb --machine cgb-c] --skip-boot --write F` and diff with `external/gameboy-python/tests/gambatte_*_pass.txt`; `lockstep.py --cases scripts/cases-rung3.tsv`, `--cases scripts/cases-oamdma-cgb.tsv` |
-| 4 | 1,379 suite jobs (rerun at pin-2 on 2026-11-13: the same jobs, 0 differ), every result field identical on both boards (verdict, text, B-L registers, T-cycles, frames; shootout verdict and measured startup time): Mooneye acceptance/emulator-only/misc on DMG-B and CGB E (111 each: 94 and 87 pass), misc from the real CGB boot ROM, the boot_* ROMs from the real DMG/MGB/DMG-0 boot ROMs and quickboot; blargg 47 of 49 (cpu_instrs, instr_timing, mem_timing, mem_timing-2, oam_bug, interrupt_time, dmg_sound, cgb_sound); SameSuite + AGE on CGB 78 of 125 and DMG 11 of 125; GBMicrotest 481 of 513 (= the reference's list); GB Emulator Shootout 257 PASS (pin-1: 256; daid `ppu_scanline_bgp` on GBC now passes, as the reference's CGB line-153 change says it should) | `external/venv/bin/python scripts/suite_jobs.py --out external/rung4-pin2/suite-jobs.jsonl`; `target/release/gameboy-jobs external/rung4-pin2/suite-jobs.jsonl --out external/rung4-pin2/suite-rust.jsonl`; `external/venv/bin/python scripts/suite_ref.py external/rung4-pin2/suite-jobs.jsonl --out external/rung4-pin2/suite-ref.jsonl --jobs 9` (about 90 min); `python3 scripts/suite_compare.py external/rung4-pin2/suite-ref.jsonl external/rung4-pin2/suite-rust.jsonl` |
+| 4 | 1,360 suite jobs (2026-11-26 at gameboy-python `3d1d93e`, 0 differ; until then 1,379, with the 19 `mooneye-dmg-quick/*` jobs, which went with dmg-sim; rerun at pin-2 on 2026-11-13: the same jobs, 0 differ), every result field identical on both boards (verdict, text, B-L registers, T-cycles, frames; shootout verdict and measured startup time): Mooneye acceptance/emulator-only/misc on DMG-B and CGB E (111 each: 94 and 87 pass), misc from the real CGB boot ROM, the boot_* ROMs from the real DMG/MGB/DMG-0 boot ROMs (and dmg-sim's quickboot until 2026-11-26); blargg 47 of 49 (cpu_instrs, instr_timing, mem_timing, mem_timing-2, oam_bug, interrupt_time, dmg_sound, cgb_sound); SameSuite + AGE on CGB 78 of 125 and DMG 11 of 125; GBMicrotest 481 of 513 (= the reference's list); GB Emulator Shootout 257 PASS (pin-1: 256; daid `ppu_scanline_bgp` on GBC now passes, as the reference's CGB line-153 change says it should) | `external/venv/bin/python scripts/suite_jobs.py --out external/rung4-pin2/suite-jobs.jsonl`; `target/release/gameboy-jobs external/rung4-pin2/suite-jobs.jsonl --out external/rung4-pin2/suite-rust.jsonl`; `external/venv/bin/python scripts/suite_ref.py external/rung4-pin2/suite-jobs.jsonl --out external/rung4-pin2/suite-ref.jsonl --jobs 9` (about 90 min); `python3 scripts/suite_compare.py external/rung4-pin2/suite-ref.jsonl external/rung4-pin2/suite-rust.jsonl` |
 | 5 | Every board class under the gate on a dump that uses it: `cases-rung5.tsv` 21 of 21 identical (ROM-only, MBC1, MBC1+RAM+battery, MBC1M multicart x2, MBC2, MBC3+RAM+battery, MBC3+timer x3 incl. CGB, MBC30, MBC5, MBC5+rumble, MMM01 x2; rtc3test basic/range/sub-second and mbc3-tester on DMG and CGB). The MBC3 clock runs on board time on both sides. (No No-Intro dump uses ROM+RAM, $08/$09.) Dumps found by `scripts/mapper_dumps.py` | `lockstep.py --cases scripts/cases-rung5.tsv` |
 | 6 | Every row of `machines.py` under the gate: `cases-rung6.tsv` 48 of 48 identical (DMG-0/A/B/C and MGB from their real boot ROMs, SGB/SGB2 from skip-boot, CGB; dmg-acid2, boot_regs, boot_hwio, stat_irq_blocking, oam_bug 5, Tetris; CPU CGB C: Tetris and stat_irq_blocking from the real boot ROM, Mealybug m3_scy/bgp/obp0_change, Gambatte ly0 lycint152 x3). Save states (`src/state.rs`, the reference has none): the round trip (save half way, load into a new console, go on) identical to the reference's uninterrupted trace on every case of `cases.tsv`, `cases-rung5.tsv` and `cases-rung6.tsv` (105 of 105; with the APU in the state since 2026-11-13, every table: 871 of 871, see "Save states"); `tests/board.rs` checks it without ROMs | `lockstep.py --cases scripts/cases-rung6.tsv`; add `--save-at-half` for the round trip |
 | 7 | gb-apu-rust adopted (by path, 0c2c240). APU register reads and writes are in every gate comparison (all case tables above, identical). `cases-rung7.tsv` with `--extra=--audio` (a CRC of each slice's 44.1 kHz samples, `apu.capture`): 119 of 119 identical (blargg dmg_sound and cgb_sound singles, SameSuite apu, every 12th Gambatte outaudio ROM from the real boot ROM, the 13 game cases). Gambatte audio (`gameboy-suite gambatte-audio`, real DMG boot ROM, `APU.audible()` in the last of 15 frames): 82 of 87 agree with the DMG-08, the same 82 as the reference at the pin (its committed `tests/gambatte_audio_pass.txt` has 76: stale by 6). blargg dmg_sound/cgb_sound verdicts are in rung 4's jobs, identical | `lockstep.py --cases scripts/cases-rung7.tsv --extra=--audio`; `gameboy-suite gambatte-audio --write F` and diff with the reference's `scripts/gambatte_audio.py --write` |
@@ -57,7 +60,7 @@ reference's `scripts/fetch_references.py` puts in its `tests/test_roms/`; the ca
 and No-Intro dumps from `$NO_INTRO_DIR`: set `GBTR`, `MTS` and `NOINTRO` to move them.
 
 ```sh
-git clone ../gameboy-python external/gameboy-python && git -C external/gameboy-python checkout gameboy-rust-pin-4  # 030d3a7: the tree of ac01aff, pin-3 (pin-2 + sgb.py) + the SGB border fade
+git clone ../gameboy-python external/gameboy-python && git -C external/gameboy-python checkout 3d1d93e  # pin-4 (030d3a7: the tree of ac01aff, pin-3 + the SGB border fade) + author respect (quickboot removed)
 pypy3 -m venv external/venv
 external/venv/bin/pip install \
     "git+https://github.com/alewman/sm83-python@1f312fa3c9e60c2fc43d7044ddf2a95219d0d36b" \
@@ -67,6 +70,29 @@ external/venv/bin/pip install --no-deps -e external/gameboy-python
 B=${GBTR:-external/gameboy-python/tests/test_roms/gbtr}/blargg
 for f in $B/cpu_instrs/individual/*.gb; do target/release/gameboy $f --protocol blargg-serial --max-frames 2000; done
 ```
+
+## Carry-down rerun (2026-11-26)
+
+These are the rungs at `cd31eff` (the quick boot removed) against gameboy-python `3d1d93e`. The
+reference traces were regenerated into an empty `external/refcache`, and the old ones were set aside
+in `external/old/refcache-pin4-030d3a7`. The runs used CPUs 16-23 (`taskset -c 16-23`) with 4 jobs,
+at load averages of 12-25 on 32 cores. sm83-rust was at `70f7ed5` and gb-apu-rust at main `f662a29`
+(clones beside a worktree), because the gb-apu-rust checkout was on another session's branch.
+
+- Rung 1: `cpu_instrs` 11 of 11, and the combined ROM passes.
+- Lockstep, plain and `--save-at-half`, every table identical: cases 36, rung 3 229, rung 5 21,
+  rung 6 48, oamdma 418, SGB 18, and rung 7 with `--audio` 119.
+- All 889 regenerated reference traces are byte-identical to the pin-4 cache.
+- Gambatte: DMG-08 1,695 of 1,784 and CGB-04c 2,892 of 3,221, both exactly the reference's pass
+  lists. Gambatte audio: 82, identical to the reference's `gambatte_audio.py`.
+- Mealybug DMG 24 of 24. CGB-D 20 of 21. CGB C 25 of 28 (with cgb-acid-hell). The pictures are
+  exact.
+- Rung 4: 1,360 jobs, 0 differ (outputs in `external/carry-2026-11-26/`). The reference's 1,360
+  results equal pin-2's on every job that remains.
+
+The seeded faults were not rerun: the change touches no line that a fault mutates. (`cf927a5`, a
+comment, came after the runs.) `cargo test --release` gives 25 pass. `cargo fmt --check` is clean, and so is
+stable clippy (1.99) with `-D warnings`.
 
 ## Super Game Boy
 
