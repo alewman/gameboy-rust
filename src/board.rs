@@ -788,7 +788,7 @@ impl Hw {
         self.timer.write_div();
     }
 
-    /// STOP (Pan Docs "Using the STOP instruction", SonoSooS "NOP and STOP"; SameBoy stop()).
+    /// STOP (Pan Docs "Using the STOP instruction", LIJI's flowchart; SameBoy stop()).
     ///
     /// With a selected button held there is no stop: a pending interrupt makes it a one-byte
     /// no-op, else it is a two-byte HALT. On a CGB in CGB mode with KEY1 bit 0 set it switches

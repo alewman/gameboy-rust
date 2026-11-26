@@ -39,3 +39,10 @@ from `boot.rs`, `gameboy.rs`, `gameboy-jobs.rs`, `suite_jobs.py` and `suite_ref.
 the three comments above as upstream did, rerun rung 4 (one fewer job group) and record it in
 docs/status.md. The die rung does not exist in this tier; nothing else in the ladder used the
 lineage.
+
+**SonoSooS's *Gameboy CPU internals*: set aside (Aubrey, 2026-11-26).** It credits
+emu-russia/dmgcpu, which builds on msinger's dmg-schematics (furrtek-derived), so it is in the
+lineage; the question sm83-python's provenance.md left open is answered. This repository never
+pinned it. Its one citation, the `stop` doc comment in `src/board.rs`, now names Pan Docs' STOP
+page with LIJI's flowchart and SameBoy `stop()`, as gameboy-python `ff3c643` does. Comment
+only; no cycle changes, so no ladder run is owed for it.
